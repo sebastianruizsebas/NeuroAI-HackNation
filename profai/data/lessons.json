@@ -1,0 +1,35 @@
+{
+  "lesson_1": {
+    "topic": "Types of AI Models",
+    "overview": "AI, or Artificial Intelligence, is a field of computer science that involves the development of machines capable of performing tasks that would normally require human intelligence. AI models are various methodologies that provide a framework for the creation and use of artificial intelligence. There are several types of AI models, each with its own strengths and weaknesses. In this lesson, we will be discussing four main types: Rule-Based Systems, Machine Learning, Deep Learning, and Hybrid AI models.",
+    "chunks": [
+      {
+        "title": "Rule-Based Systems",
+        "content": "Rule-Based AI systems are the earliest form of AI, and operate based on pre-set rules. These systems are programmed with specific rules and they make decisions based on those rules. For instance, if a certain condition is met, the system will perform a specific action. These systems are straightforward and easy to control, but they lack the ability to learn or adapt to new situations.",
+        "key_point": "Rule-Based Systems operate based on pre-set rules, but lack the ability to learn or adapt."
+      },
+      {
+        "title": "Machine Learning",
+        "content": "Machine Learning is a type of AI that learns and improves from experience. It uses statistical techniques to enable machines to improve at tasks with experience. Machine Learning models are trained on data and they learn patterns in the data to make predictions or decisions without being explicitly programmed to do so. However, the quality of the output heavily depends on the quality of the input data.",
+        "key_point": "Machine Learning models learn and improve from experience, but the quality of the output depends on the quality of the input data."
+      },
+      {
+        "title": "Deep Learning",
+        "content": "Deep Learning is a subset of Machine Learning that mimics the workings of the human brain in processing data for use in decision making. Deep Learning models are designed with layers of artificial neural networks, and are particularly effective for tasks such as image and speech recognition. However, these models require large amounts of data and computational power to train.",
+        "key_point": "Deep Learning models mimic the human brain and are effective for tasks like image and speech recognition, but require large amounts of data and computational power."
+      },
+      {
+        "title": "Hybrid AI Models",
+        "content": "Hybrid AI models combine different AI methodologies to overcome the limitations of individual models. For instance, a Hybrid model might combine a Rule-Based system with a Machine Learning model to achieve a balance between control and learning capacity. These models are more complex to design but can be more effective in handling a variety of tasks.",
+        "key_point": "Hybrid AI models combine different AI methodologies to overcome the limitations of individual models, but are more complex to design."
+      }
+    ],
+    "key_takeaways": [
+      "AI models provide a framework for the creation and use of artificial intelligence. The choice of model depends on the task at hand and the resources available.",
+      "Rule-Based Systems are straightforward and easy to control, but lack the ability to learn or adapt.",
+      "Machine Learning models learn from experience, but their output depends on the quality of the input data.",
+      "Deep Learning models are effective for tasks like image and speech recognition but require large amounts of data and computational power.",
+      "Hybrid AI models combine different AI methodologies to overcome the limitations of individual models, but are more complex to design."
+    ]
+  }
+}
