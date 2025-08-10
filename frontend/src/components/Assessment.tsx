@@ -105,28 +105,42 @@ export const Assessment: React.FC<AssessmentProps> = ({ topic, userId, onComplet
 
   const completeAssessment = async () => {
     try {
-      console.log('Completing V2 enhanced assessment...');
+      console.log('Assessment: Starting V2 enhanced assessment completion...');
       let result: any;
       
       if (assessmentPhase === 'adaptive' || assessmentPhase === 'initial') {
         // V2 Enhanced completion with full assessment analysis
+        console.log('Assessment: Completing with enhanced analysis');
+        console.log('Assessment: Initial answers:', initialAnswers);
+        console.log('Assessment: Adaptive answers:', adaptiveAnswers);
+        console.log('Assessment: All questions count:', allQuestions.length);
+        
         result = await apiService.completeFullAssessment(userId, topic, initialAnswers, adaptiveAnswers, allQuestions);
+        console.log('Assessment: Enhanced result received:', result);
+        
         // Enhanced result has overall_score
         onComplete(result.overall_score || 0, result);
       } else {
         // Legacy completion - use submitAssessment instead
+        console.log('Assessment: Using legacy completion');
         result = await apiService.submitAssessment(answers, questions, userId, topic);
+        console.log('Assessment: Legacy result received:', result);
+        
         // Legacy result has score
         onComplete(result.score || 0, result);
       }
     } catch (error) {
-      console.error('Failed to complete assessment:', error);
+      console.error('Assessment: Failed to complete assessment:', error);
       // Fallback completion
       try {
+        console.log('Assessment: Attempting fallback completion');
         const result = await apiService.submitAssessment(answers, questions, userId, topic);
         onComplete(result.score || 0);
       } catch (fallbackError) {
-        console.error('Fallback completion failed:', fallbackError);
+        console.error('Assessment: Fallback completion failed:', fallbackError);
+        // Don't leave user stuck - provide a minimal completion
+        console.log('Assessment: Providing minimal completion to prevent blank screen');
+        onComplete(5.0, { overall_score: 5.0, knowledge_gaps: [], strong_areas: [] });
       }
     }
   };
