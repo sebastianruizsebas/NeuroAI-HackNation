@@ -1,0 +1,46 @@
+{
+  "user_1": {
+    "name": "Sebastian Ruiz",
+    "created_at": "2025-08-09T22:34:09.740668",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_2": {
+    "name": "Bob",
+    "created_at": "2025-08-09T22:34:59.581670",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_3": {
+    "name": "Bob",
+    "created_at": "2025-08-09T22:35:28.260169",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_4": {
+    "name": "Test",
+    "created_at": "2025-08-09T22:36:03.479147",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  }
+}

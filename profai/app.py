@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import json
 import os
-from profai_engine import ProfAIEngine
+from backend.profai_engine import ProfAIEngine
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Change this in production

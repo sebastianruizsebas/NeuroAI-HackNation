@@ -10,4 +10,4 @@ if not OPENAI_API_KEY:
 # Simple settings
 MAX_LESSON_CHUNKS = 4
 ASSESSMENT_QUESTIONS = 5
-DATA_DIR = "data"
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")

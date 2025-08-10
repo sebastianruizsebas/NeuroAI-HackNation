@@ -39,12 +39,27 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
   const handleNext = async () => {
     if (responses[currentChunk].trim()) {
       try {
-        const sentiment = await apiService.analyzeSentiment(responses[currentChunk]);
+        console.log('Using V2 enhanced sentiment analysis with lesson context...');
+        // V2 Enhanced: Sentiment analysis with lesson context
+        const lessonContext = `${chunk.title}: ${chunk.content}\nKey Point: ${chunk.key_point}`;
+        const sentiment = await apiService.analyzeSentiment(
+          responses[currentChunk], 
+          lessonContext
+        );
         const newSentimentData = [...sentimentData];
         newSentimentData[currentChunk] = sentiment;
         setSentimentData(newSentimentData);
       } catch (error) {
-        console.error('Failed to analyze sentiment:', error);
+        console.error('Failed to analyze sentiment with context, falling back to basic:', error);
+        // Fallback to basic sentiment analysis
+        try {
+          const sentiment = await apiService.analyzeSentiment(responses[currentChunk]);
+          const newSentimentData = [...sentimentData];
+          newSentimentData[currentChunk] = sentiment;
+          setSentimentData(newSentimentData);
+        } catch (fallbackError) {
+          console.error('Failed to analyze sentiment:', fallbackError);
+        }
       }
     }
 

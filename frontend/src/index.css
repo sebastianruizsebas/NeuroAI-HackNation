@@ -355,3 +355,127 @@ a:hover {
     opacity: 0.5;
   }
 }
+
+/* V2 Enhanced Features Styles */
+.enhanced-results {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.knowledge-analysis {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.strong-areas, .knowledge-gaps, .learning-path {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.strong-areas {
+  border-left-color: #10b981;
+}
+
+.knowledge-gaps {
+  border-left-color: #f59e0b;
+}
+
+.learning-path {
+  border-left-color: var(--primary-color);
+}
+
+.progress-summary {
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.recommendations {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.enhanced-results h3, .progress-summary h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.enhanced-results h4, .progress-summary h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.enhanced-results ul, .enhanced-results ol, 
+.progress-summary ul, .progress-summary ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.enhanced-results li, .progress-summary li {
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+
+/* Adaptive assessment styles */
+.assessment-type-indicator {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.assessment-type-adaptive {
+  background: #f59e0b;
+}
+
+.assessment-type-final {
+  background: #059669;
+}
+
+/* Enhanced sentiment feedback */
+.sentiment-understanding-high {
+  border-left-color: #10b981;
+  background: #f0fdf4;
+}
+
+.sentiment-understanding-medium {
+  border-left-color: #f59e0b;
+  background: #fefbf3;
+}
+
+.sentiment-understanding-low {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Progress indicators */
+.competency-meter {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.competency-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
