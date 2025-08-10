@@ -402,5 +402,47 @@
     "user_id": "user_7",
     "timestamp": "2025-08-10T04:24:00.934010",
     "session_id": "session_10"
+  },
+  {
+    "topic": "Introduction to How to optimize a model",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_11",
+    "timestamp": "2025-08-10T05:02:38.629080",
+    "session_id": "session_11"
   }
 ]

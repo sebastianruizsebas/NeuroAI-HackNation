@@ -25,5 +25,13 @@
     "session_history": [
       "session_10"
     ]
+  },
+  "user_11": {
+    "lessons_completed": 0,
+    "total_lessons": 0,
+    "average_quiz_score": 0,
+    "session_history": [
+      "session_11"
+    ]
   }
 }

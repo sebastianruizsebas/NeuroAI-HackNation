@@ -584,5 +584,51 @@ def tts():
 
     return send_file(path, mimetype='audio/mpeg', max_age=3600)
 
+@app.route('/api/library/<user_id>', methods=['GET'])
+def get_topics_library(user_id):
+    """Get organized topics library for user"""
+    try:
+        library = engine.get_topics_library(user_id)
+        return jsonify({'library': library})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/library/<user_id>/search', methods=['POST'])
+def search_topics_library(user_id):
+    """Search user's topics library"""
+    try:
+        data = request.get_json()
+        query = data.get('query', '')
+        filters = data.get('filters', {})
+        
+        results = engine.search_topics_library(user_id, query, filters)
+        return jsonify({'results': results})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/lesson/enhanced', methods=['POST'])
+def generate_enhanced_lesson():
+    """Generate enhanced lesson content with academic rigor"""
+    try:
+        data = request.get_json()
+        topic = data.get('topic', '')
+        user_id = data.get('user_id', '')
+        
+        if not topic:
+            return jsonify({'error': 'Topic is required'}), 400
+        
+        # Get user profile for personalization
+        user_data = engine.get_user(user_id) if user_id else {}
+        user_profile = {
+            'competency_scores': user_data.get('competency_scores', {}),
+            'knowledge_gaps': user_data.get('knowledge_gaps', {}),
+            'learning_path': user_data.get('learning_path', [])
+        }
+        
+        lesson = engine.generate_lesson_content(topic, user_profile)
+        return jsonify({'lesson': lesson})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)

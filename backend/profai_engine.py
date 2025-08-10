@@ -93,11 +93,63 @@ class ProfAIEngine:
             print(f"RAG retrieval failed: {rag_e}")
             context = ""
 
-        prompt = f"""You are an expert AI tutor. Use the following course material as context to create a lesson about {topic} for someone with competency level {competency}/10.
+        prompt = f"""You are a world-class AI educator with expertise in {topic}. Use the following authentic course material to create a comprehensive, university-level lesson for someone with competency level {competency}/10.
 
-Course context (from real lecture notes):\n{context}\n
-        ]
-        """
+Course context (from real lecture notes):
+{context}
+
+LESSON REQUIREMENTS:
+- Build directly on the provided course material
+- Academic rigor appropriate for university-level study
+- Include mathematical formulations and equations from the context
+- Provide concrete examples and real-world case studies
+- Connect theory to cutting-edge applications
+- Address common misconceptions and potential pitfalls
+- Reference current research and industry developments
+
+DEPTH CALIBRATION:
+- Competency 0-3: Clear explanations with step-by-step derivations
+- Competency 4-6: Intermediate mathematical concepts and implementation details
+- Competency 7-10: Advanced theory, research frontier, complex optimization problems
+
+ACADEMIC STANDARDS:
+- Each section should be substantial (200+ words)
+- Include quantitative examples with actual numbers
+- Reference equations and proofs from the source material
+- Connect to broader field and interdisciplinary applications
+- Provide multiple perspectives on complex topics
+
+Return ONLY a JSON object with this enhanced format:
+{{
+    "topic": "{topic}",
+    "competency_level": {competency},
+    "overview": "Comprehensive overview establishing context, importance, and learning objectives. Should connect to broader field and reference the source material.",
+    "chunks": [
+        {{
+            "title": "Descriptive Academic Title",
+            "content": "Detailed, rigorous explanation with mathematical derivations, concrete examples, and connections to applications. Minimum 200 words.",
+            "key_point": "Specific, actionable takeaway demonstrating mastery",
+            "mathematical_concepts": ["concept1", "concept2"],
+            "examples": ["example1", "example2"],
+            "applications": ["application1", "application2"],
+            "source_references": ["reference to course material"],
+            "difficulty_level": "1-5 scale",
+            "estimated_time": "15-20 minutes"
+        }}
+    ],
+    "key_takeaways": [
+        "Specific technical knowledge with quantitative understanding",
+        "Practical implementation skills developed",
+        "Conceptual frameworks mastered",
+        "Real-world applications identified"
+    ],
+    "prerequisites": ["specific prerequisite topics"],
+    "mathematical_foundations": ["foundational math concepts"],
+    "further_reading": ["academic papers", "textbook chapters"],
+    "assessment_criteria": ["measurable learning outcomes"],
+    "industry_connections": ["how this applies in practice"],
+    "common_misconceptions": ["typical student errors to avoid"]
+}}"""
         try:
             print(f"Calling OpenAI for lesson generation with RAG context...")
             print(f"Topic: {topic}, Competency: {competency}")
@@ -634,10 +686,15 @@ Course context (from real lecture notes):\n{context}\n
             correct_answer = question_data.get("correct", "")
             concept = question_data.get("concept", "")
             
-            # 1. Check basic structure
-            if not question or len(question.strip()) < 10:
-                validation_results["issues"].append("Question text is too short or empty")
+            # 1. Check basic structure - more rigorous standards
+            if not question or len(question.strip()) < 30:
+                validation_results["issues"].append("Question text is too short (minimum 30 characters)")
                 validation_results["is_valid"] = False
+            
+            # Check for academic rigor
+            if len(question.split()) < 8:
+                validation_results["issues"].append("Question lacks depth (minimum 8 words)")
+                validation_results["quality_score"] -= 0.2
             
             if len(options) != 4:
                 validation_results["issues"].append(f"Expected 4 options, got {len(options)}")
@@ -670,10 +727,16 @@ Course context (from real lecture notes):\n{context}\n
                 
                 option_lengths = [len(opt) for opt in clean_options]
                 
-                # Check for very short options
-                if any(length < 3 for length in option_lengths):
-                    validation_results["issues"].append("Some options are too short")
-                    validation_results["quality_score"] -= 0.1
+                # Check for very short options - more strict
+                if any(length < 8 for length in option_lengths):
+                    validation_results["issues"].append("Some options are too short (minimum 8 characters)")
+                    validation_results["quality_score"] -= 0.2
+                
+                # Check for academic depth in options
+                option_word_counts = [len(opt.split()) for opt in clean_options]
+                if any(count < 3 for count in option_word_counts):
+                    validation_results["issues"].append("Options lack substance (minimum 3 words per option)")
+                    validation_results["quality_score"] -= 0.15
                 
                 # Check for similar options (potential duplicates)
                 unique_options = set(opt.lower().strip() for opt in clean_options)
@@ -730,18 +793,29 @@ Course context (from real lecture notes):\n{context}\n
             
             question_text = json.dumps(question_data, indent=2)
             
-            prompt = f"""Evaluate this multiple choice question for the topic "{topic}":
+            prompt = f"""As an expert educator, rigorously evaluate this multiple choice question for the topic "{topic}":
 
 {question_text}
 
-Rate the question on a scale of 0.0 to 1.0 based on:
-1. Educational value (does it test important concepts?)
-2. Clarity (is the question clearly worded?)
-3. Accuracy (is the correct answer actually correct?)
-4. Fairness (are the distractors reasonable but wrong?)
-5. Appropriateness for the topic
+EVALUATION CRITERIA (rate 0.0-1.0):
+1. ACADEMIC RIGOR: Does it test deep understanding vs. surface knowledge?
+2. CLARITY: Is the question unambiguous and professionally written?
+3. TECHNICAL ACCURACY: Are all facts and concepts correct?
+4. FAIRNESS: Are distractors plausible but clearly wrong to experts?
+5. APPROPRIATENESS: Is complexity suitable for the topic level?
+6. REAL-WORLD RELEVANCE: Does it connect to practical applications?
+7. COGNITIVE DEMAND: Does it require analysis/synthesis vs. mere recall?
 
-Return only a single number between 0.0 and 1.0."""
+QUALITY THRESHOLDS:
+- 0.9-1.0: Excellent, publication-ready question
+- 0.7-0.8: Good, minor improvements needed  
+- 0.5-0.6: Adequate but needs significant improvement
+- 0.3-0.4: Poor, major issues present
+- 0.0-0.2: Unacceptable quality
+
+Consider: Does this question distinguish between students who truly understand {topic} versus those who've just memorized facts?
+
+Return only a single decimal number between 0.0 and 1.0."""
             
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -760,33 +834,50 @@ Return only a single number between 0.0 and 1.0."""
             return 0.5  # Neutral score if assessment fails
     
     def _regenerate_single_question(self, topic: str, concept: str, difficulty: str = "Beginner") -> Dict:
-        """Regenerate a single question for a specific concept"""
+        """Regenerate a single question for a specific concept with higher quality standards"""
         try:
             client = openai.OpenAI(api_key=OPENAI_API_KEY)
             
-            prompt = f"""Create ONE high-quality multiple choice question about "{concept}" in the context of "{topic}" at {difficulty} level.
+            prompt = f"""Create ONE high-quality, academically rigorous multiple choice question about "{concept}" in the context of "{topic}" at {difficulty} level.
 
-Focus on:
-- Clear, unambiguous question text
-- Four distinct, plausible options
-- One definitively correct answer
-- Educational value
+STRICT REQUIREMENTS:
+- Question must be at least 30 words and present a realistic scenario
+- Test deep understanding, not memorization
+- Include quantitative elements where appropriate
+- Each option must be substantive (minimum 10 words)
+- Distractors should reflect actual misconceptions experts encounter
+- Use precise, technical language appropriate for university level
+
+QUALITY STANDARDS:
+- The correct answer must be unambiguous and defensible
+- Wrong answers should be plausible to novices but clearly wrong to experts
+- Include real-world context or applications
+- Test analytical thinking, not just recall
+
+EXAMPLE STRUCTURE:
+"In a neural network optimization scenario where [specific context], which approach would yield the most effective results considering [specific constraints]?"
 
 Return JSON format:
 {{
-    "question": "Clear question text",
-    "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
+    "question": "Comprehensive question with specific scenario and technical details (minimum 30 words)",
+    "options": [
+        "A) Detailed technical option with specific reasoning and implications (minimum 10 words)",
+        "B) Alternative approach with different technical rationale and trade-offs", 
+        "C) Common misconception with plausible but flawed reasoning",
+        "D) Another misconception or oversimplified approach with specific technical errors"
+    ],
     "correct": "A",
     "concept": "{concept}",
-    "difficulty": 1
+    "difficulty": 3,
+    "explanation": "Detailed explanation of why the correct answer is right and why each distractor is wrong, including technical reasoning"
 }}"""
             
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=500,
-                temperature=0.5,
-                timeout=20
+                max_tokens=800,
+                temperature=0.3,
+                timeout=30
             )
             
             content = response.choices[0].message.content.strip()
@@ -795,50 +886,61 @@ Return JSON format:
             elif content.startswith('```'):
                 content = content[3:-3]
             
-            return json.loads(content)
+            question = json.loads(content)
+            
+            # Validate the regenerated question
+            validation = self.validate_question_quality(question, topic)
+            if validation["quality_score"] < 0.6:
+                print(f"Regenerated question still low quality: {validation['quality_score']}")
+                return None
+                
+            return question
             
         except Exception as e:
             print(f"Failed to regenerate question: {e}")
             return None
     
     def _generate_fallback_question(self, topic: str, question_num: int) -> Dict:
-        """Generate a fallback question when AI generation fails"""
+        """Generate a rigorous fallback question when AI generation fails"""
         fallback_questions = {
             1: {
-                "question": f"What is the primary purpose of {topic}?",
+                "question": f"In the context of {topic}, which mathematical foundation is most critical for understanding the underlying computational processes and optimization techniques used in modern implementations?",
                 "options": [
-                    "A) To process and understand information",
-                    "B) To store data permanently", 
-                    "C) To generate random numbers",
-                    "D) To manage file systems"
+                    "A) Linear algebra and calculus, as they provide the mathematical framework for gradient-based optimization and matrix operations essential to most algorithms",
+                    "B) Basic arithmetic and simple statistics, which are sufficient for most practical applications", 
+                    "C) Only probability theory, since all AI systems are fundamentally probabilistic",
+                    "D) Discrete mathematics alone, as AI systems only work with digital discrete values"
                 ],
                 "correct": "A",
-                "concept": "Basic Understanding",
-                "difficulty": 1
+                "concept": "Mathematical Foundations",
+                "difficulty": 2,
+                "explanation": "Linear algebra and calculus are fundamental because most AI algorithms rely on matrix operations and gradient-based optimization methods."
             },
             2: {
-                "question": f"Which field is most closely related to {topic}?",
+                "question": f"When implementing {topic} in a production environment, which consideration is most critical for ensuring both computational efficiency and model performance?",
                 "options": [
-                    "A) Computer Science and AI",
-                    "B) Mechanical Engineering",
-                    "C) Chemistry",
-                    "D) Geography"
+                    "A) Balancing model complexity with computational resources while maintaining accuracy requirements for the specific use case",
+                    "B) Always choosing the most complex model available regardless of computational cost",
+                    "C) Focusing solely on speed without considering accuracy metrics",
+                    "D) Using only pre-trained models without any customization or fine-tuning"
                 ],
                 "correct": "A", 
-                "concept": "Domain Knowledge",
-                "difficulty": 1
+                "concept": "Implementation Trade-offs",
+                "difficulty": 3,
+                "explanation": "Production environments require careful balance between computational efficiency and performance, considering real-world constraints."
             },
             3: {
-                "question": f"What would be a typical application of {topic}?",
+                "question": f"Which approach best demonstrates understanding of the theoretical principles underlying {topic} when faced with a novel problem domain?",
                 "options": [
-                    "A) Solving complex problems and analysis",
-                    "B) Building physical structures",
-                    "C) Cooking meals",
-                    "D) Painting artwork"
+                    "A) Analyzing the problem structure to identify relevant mathematical properties and selecting appropriate algorithmic approaches based on theoretical guarantees",
+                    "B) Randomly trying different popular algorithms until one produces reasonable results",
+                    "C) Always using the same algorithm regardless of problem characteristics",
+                    "D) Relying entirely on automated machine learning tools without understanding the underlying methods"
                 ],
                 "correct": "A",
-                "concept": "Applications",
-                "difficulty": 1
+                "concept": "Problem Analysis and Algorithm Selection",
+                "difficulty": 4,
+                "explanation": "Deep understanding requires analyzing problem structure and applying theoretical knowledge to select appropriate methods."
             }
         }
         
@@ -923,7 +1025,49 @@ Return JSON format:
             print(f"RAG retrieval failed (assessment): {rag_e}")
             context = ""
 
-        prompt = f"""You are an expert AI tutor. Use the following course material as context to create exactly 5 multiple choice questions for an initial assessment on \"{topic}\".\n\nCourse context (from real lecture notes):\n{context}\n\nThese questions should:\n1. Cover different fundamental aspects of {topic}\n2. Range from basic to intermediate difficulty\n3. Help identify what areas the student knows vs doesn't know\n4. Be diagnostic rather than just testing\n\nReturn ONLY a JSON array with this exact format:\n[\n    {{\n        \"question\": \"Question text here\",\n        \"options\": [\"A) Option 1\", \"B) Option 2\", \"C) Option 3\", \"D) Option 4\"],\n        \"correct\": \"A\",\n        \"concept\": \"fundamental_concept_being_tested\",\n        \"difficulty\": 1\n    }}\n]\n"""
+        prompt = f"""You are a world-class AI educator with expertise in {topic}. Create exactly 5 diagnostic multiple choice questions for an initial assessment.
+
+Course context from lecture notes:
+{context}
+
+REQUIREMENTS for each question:
+1. Test DEEP understanding, not memorization
+2. Use real-world scenarios and applications
+3. Include mathematical concepts where relevant
+4. Test conceptual reasoning and problem-solving
+5. Avoid trivial or obvious questions
+6. Make distractors plausible but definitively incorrect
+7. Use precise, academic language
+8. Test different cognitive levels (comprehension, application, analysis)
+
+QUALITY STANDARDS:
+- Question stem should be at least 20 words and present a clear scenario
+- Each option should be substantive (at least 8 words)
+- Correct answer must be unambiguous and defensible
+- Distractors should reflect common misconceptions
+- Include quantitative elements where appropriate
+
+DIFFICULTY PROGRESSION:
+- Questions 1-2: Fundamental concepts and definitions
+- Questions 3-4: Application and analysis
+- Question 5: Synthesis and evaluation
+
+Return ONLY a JSON array with this exact format:
+[
+    {{
+        "question": "In the context of [specific scenario], which approach would be most effective for [specific problem]? Consider the trade-offs between computational complexity and accuracy.",
+        "options": [
+            "A) [Detailed technical option with specific reasoning]",
+            "B) [Alternative approach with different trade-offs]", 
+            "C) [Common misconception with plausible reasoning]",
+            "D) [Another misconception or oversimplified approach]"
+        ],
+        "correct": "A",
+        "concept": "specific_technical_concept",
+        "difficulty": 1,
+        "explanation": "Why the correct answer is right and others are wrong"
+    }}
+]"""
 
         try:
             print(f"Calling OpenAI API for initial assessment on topic: {topic}")
@@ -1010,25 +1154,52 @@ Return JSON format:
     def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
         """Generate personalized lesson content for a topic and user profile, always using OpenAI."""
         competency = user_profile.get('competency_scores', {}).get(topic, 0)
-        prompt = f"""Create a lesson about {topic} for someone with competency level {competency}/10.
+        prompt = f"""Create a comprehensive, university-level lesson on {topic} for someone with competency level {competency}/10.
 
-Structure the lesson with:
-1. Brief overview
-2. 4 main learning chunks (each should be digestible in 2-3 minutes)
-3. Key takeaways
+LESSON REQUIREMENTS:
+- Academic rigor appropriate for advanced learners
+- Include mathematical formulations where relevant  
+- Provide concrete examples and case studies
+- Connect theory to practical applications
+- Include potential pitfalls and common misconceptions
+- Reference current research and developments
+
+STRUCTURE GUIDELINES:
+1. Overview should establish context and importance (2-3 paragraphs)
+2. Each chunk should be substantial (150-200 words minimum)
+3. Include quantitative examples and equations where applicable
+4. Connect concepts to real-world problems and solutions
+5. Progressive complexity building from fundamentals
+
+DEPTH REQUIREMENTS:
+- For competency 0-3: Focus on clear explanations with simple examples
+- For competency 4-6: Include intermediate mathematical concepts and applications  
+- For competency 7-10: Advanced theory, cutting-edge research, complex scenarios
 
 Return ONLY a JSON object with this format:
 {{
     "topic": "{topic}",
-    "overview": "Brief overview...",
+    "overview": "Comprehensive overview establishing context, importance, and learning objectives. Should connect to broader field and practical applications.",
     "chunks": [
         {{
-            "title": "Chunk 1 Title",
-            "content": "Detailed explanation...",
-            "key_point": "Main takeaway"
+            "title": "Descriptive, Academic Title",
+            "content": "Detailed, rigorous explanation with examples, mathematical concepts where relevant, and connections to applications. Minimum 150 words.",
+            "key_point": "Specific, actionable takeaway that demonstrates mastery",
+            "mathematical_concepts": ["concept1", "concept2"] or null,
+            "examples": ["example1", "example2"],
+            "applications": ["application1", "application2"]
         }}
     ],
-    "key_takeaways": ["Point 1", "Point 2", "Point 3"]
+    "key_takeaways": [
+        "Specific technical knowledge gained",
+        "Practical skills developed", 
+        "Conceptual understanding achieved",
+        "Applications mastered"
+    ],
+    "prerequisites": ["prerequisite1", "prerequisite2"],
+    "further_reading": ["resource1", "resource2"],
+    "assessment_criteria": ["criteria1", "criteria2"]
+}}
 }}
 """
         try:
@@ -1140,23 +1311,32 @@ Return ONLY a JSON object with this format:
             
             Generate 3 personalized learning topics that match their interests and current skill level.
             
-            For each topic, provide:
-            1. A clear, engaging title
-            2. A detailed description (2-3 sentences)
-            3. Difficulty level (beginner/intermediate/advanced)
-            4. Estimated learning time in hours
-            5. Learning intensity (light/moderate/intensive)
-            6. A base topic category from: [machine_learning, neural_networks, ai_ethics, computer_vision, nlp, deep_learning, reinforcement_learning]
-            7. A suggested completion deadline (7-30 days from now)
+            IMPORTANT: Create descriptive titles that reflect what the student will actually learn, not just generic introductions.
             
-            Make the topics specific to their request while being educational and achievable.
+            For each topic:
+            1. First outline the key learning objectives and main concepts that will be covered
+            2. Create a specific, descriptive title that captures the core learning outcome (e.g., "Building Convolutional Neural Networks for Image Classification" instead of "Introduction to Neural Networks")
+            3. Write a detailed description that explains what specific skills and knowledge the student will gain
+            4. Select appropriate difficulty, timing, and intensity based on the content depth
+            
+            Title Guidelines:
+            - Be specific about what will be learned or built
+            - Include the main technique, tool, or outcome
+            - Avoid generic words like "Introduction to" or "Basics of"
+            - Focus on practical applications and concrete skills
+            
+            Examples of good titles:
+            - "Implementing Gradient Descent Optimization in Python"
+            - "Designing Computer Vision Systems for Medical Imaging"
+            - "Building Natural Language Processing Pipelines with Transformers"
+            - "Applying Reinforcement Learning to Game AI Development"
             
             Return as JSON array with this exact structure:
             [
                 {{
                     "id": "custom_topic_1",
-                    "title": "Topic Title",
-                    "description": "Detailed description...",
+                    "title": "Specific, Descriptive Title About What Will Be Learned",
+                    "description": "Detailed description explaining the specific skills, techniques, and knowledge the student will gain...",
                     "userInput": "{user_input}",
                     "baseTopic": "machine_learning",
                     "difficulty": "beginner",
@@ -1200,11 +1380,44 @@ Return ONLY a JSON object with this format:
     def _generate_fallback_topics(self, user_input: str, user_id: str) -> List[Dict]:
         """Generate fallback topics when AI generation fails"""
         base_date = datetime.now()
+        
+        # Create a more descriptive title based on the user input
+        def create_descriptive_title(input_text: str) -> str:
+            input_lower = input_text.lower()
+            
+            # Map common topics to specific learning outcomes
+            if "neural network" in input_lower or "neural net" in input_lower:
+                return "Building and Training Neural Networks from Scratch"
+            elif "machine learning" in input_lower or "ml" in input_lower:
+                return "Implementing Core Machine Learning Algorithms"
+            elif "deep learning" in input_lower or "dl" in input_lower:
+                return "Developing Deep Learning Models with PyTorch"
+            elif "computer vision" in input_lower or "cv" in input_lower:
+                return "Creating Computer Vision Systems for Image Analysis"
+            elif "nlp" in input_lower or "natural language" in input_lower:
+                return "Building Natural Language Processing Applications"
+            elif "reinforcement learning" in input_lower or "rl" in input_lower:
+                return "Designing Reinforcement Learning Agents for Decision Making"
+            elif "ai" in input_lower or "artificial intelligence" in input_lower:
+                return "Applying Artificial Intelligence Techniques to Real-World Problems"
+            elif "data science" in input_lower:
+                return "Mastering Data Science Workflows and Analytics"
+            elif "algorithm" in input_lower:
+                return "Implementing and Optimizing Core Algorithms"
+            elif "python" in input_lower:
+                return "Advanced Python Programming for Data Science and AI"
+            else:
+                # For other topics, create a more specific title
+                clean_input = input_text.replace("I'm interested in", "").replace("learning about", "").strip()
+                return f"Mastering {clean_input}: From Theory to Implementation"
+        
+        title = create_descriptive_title(user_input)
+        
         return [
             {
                 "id": f"{user_id}_custom_{base_date.strftime('%Y%m%d_%H%M%S')}_0",
-                "title": f"Introduction to {user_input}",
-                "description": f"Learn the fundamentals and basics of {user_input} in an easy-to-understand format.",
+                "title": title,
+                "description": f"Develop practical skills and deep understanding in {user_input}. This comprehensive course covers essential concepts, hands-on implementation, and real-world applications to build your expertise from the ground up.",
                 "userInput": user_input,
                 "baseTopic": "machine_learning",
                 "difficulty": "beginner",
@@ -1214,6 +1427,103 @@ Return ONLY a JSON object with this format:
                 "intensity": "moderate"
             }
         ]
+    
+    def generate_descriptive_title_from_content(self, user_input: str, lesson_outline: Dict = None) -> str:
+        """Generate a descriptive title based on lesson content and learning objectives"""
+        try:
+            if lesson_outline and 'learningObjectives' in lesson_outline:
+                objectives = lesson_outline.get('learningObjectives', [])
+                modules = lesson_outline.get('modules', [])
+                
+                # Extract key skills and concepts from objectives and modules
+                key_concepts = []
+                for obj in objectives:
+                    # Extract action verbs and key concepts
+                    if 'implement' in obj.lower() or 'build' in obj.lower():
+                        key_concepts.append('implementation')
+                    elif 'design' in obj.lower() or 'create' in obj.lower():
+                        key_concepts.append('design')
+                    elif 'analyze' in obj.lower() or 'evaluate' in obj.lower():
+                        key_concepts.append('analysis')
+                    elif 'optimize' in obj.lower():
+                        key_concepts.append('optimization')
+                
+                module_topics = [module.get('title', '') for module in modules]
+                
+                # Generate title based on content
+                prompt = f"""
+                Based on the following lesson content, create a specific, descriptive title that captures what students will actually learn and be able to do:
+                
+                User Interest: {user_input}
+                Learning Objectives: {objectives}
+                Module Topics: {module_topics}
+                Key Concepts: {key_concepts}
+                
+                Create a title that:
+                1. Focuses on practical skills and outcomes
+                2. Includes specific techniques or applications
+                3. Avoids generic terms like "Introduction" or "Basics"
+                4. Reflects the depth and scope of learning
+                
+                Examples of good titles:
+                - "Building Convolutional Neural Networks for Medical Image Analysis"
+                - "Implementing Natural Language Processing with Transformer Models"
+                - "Developing Reinforcement Learning Agents for Strategic Games"
+                - "Creating Computer Vision Systems for Autonomous Vehicles"
+                
+                Return only the title, nothing else.
+                """
+                
+                response = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are an educational content specialist who creates descriptive, outcome-focused course titles."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=50,
+                    temperature=0.7,
+                    timeout=15
+                )
+                
+                title = response.choices[0].message.content.strip()
+                return title if title else self._generate_fallback_title(user_input)
+                
+            else:
+                return self._generate_fallback_title(user_input)
+                
+        except Exception as e:
+            print(f"Error generating descriptive title: {e}")
+            return self._generate_fallback_title(user_input)
+    
+    def _generate_fallback_title(self, user_input: str) -> str:
+        """Generate a fallback descriptive title when AI generation fails"""
+        input_lower = user_input.lower()
+        
+        # Map common topics to specific learning outcomes
+        if "neural network" in input_lower:
+            return "Building and Training Neural Networks from Scratch"
+        elif "machine learning" in input_lower:
+            return "Implementing Core Machine Learning Algorithms"
+        elif "deep learning" in input_lower:
+            return "Developing Deep Learning Models with PyTorch"
+        elif "computer vision" in input_lower:
+            return "Creating Computer Vision Systems for Image Analysis"
+        elif "nlp" in input_lower or "natural language" in input_lower:
+            return "Building Natural Language Processing Applications"
+        elif "reinforcement learning" in input_lower:
+            return "Designing Reinforcement Learning Agents for Decision Making"
+        elif "ai" in input_lower or "artificial intelligence" in input_lower:
+            return "Applying Artificial Intelligence Techniques to Real-World Problems"
+        elif "data science" in input_lower:
+            return "Mastering Data Science Workflows and Analytics"
+        elif "algorithm" in input_lower:
+            return "Implementing and Optimizing Core Algorithms"
+        elif "python" in input_lower:
+            return "Advanced Python Programming for Data Science and AI"
+        else:
+            # For other topics, create a more specific title
+            clean_input = user_input.replace("I'm interested in", "").replace("learning about", "").strip()
+            return f"Mastering {clean_input}: From Theory to Implementation"
     
     def save_custom_topic(self, user_id: str, topic: Dict):
         """Save a custom topic to user's library"""
@@ -1228,15 +1538,26 @@ Return ONLY a JSON object with this format:
         if user_id not in custom_topics:
             custom_topics[user_id] = []
         
-        # Add progress tracking fields
+        # Add progress tracking fields and library metadata
         topic.update({
             'progress': 0,
             'timeSpent': 0,
-            'lastAccessed': None
+            'lastAccessed': None,
+            'createdDate': datetime.now().isoformat(),
+            'status': 'not_started',
+            'completionDate': None,
+            'totalSessions': 0,
+            'averageSessionTime': 0,
+            'competencyScore': None,
+            'tags': topic.get('baseTopic', '').split('_'),
+            'isLibraryItem': True
         })
         
         custom_topics[user_id].append(topic)
         self.save_data(custom_topics_file, custom_topics)
+        
+        # Also save to topics library for better organization
+        self._add_to_topics_library(user_id, topic)
     
     def get_user_custom_topics(self, user_id: str) -> List[Dict]:
         """Get user's custom topics library"""
@@ -1266,6 +1587,111 @@ Return ONLY a JSON object with this format:
         
         custom_topics[user_id] = user_topics
         self.save_data(custom_topics_file, custom_topics)
+    
+    def _add_to_topics_library(self, user_id: str, topic: Dict):
+        """Add topic to organized library structure"""
+        library_file = f"{DATA_DIR}/topics_library.json"
+        if not os.path.exists(library_file):
+            with open(library_file, 'w') as f:
+                json.dump({}, f)
+        
+        library = self.load_data(library_file)
+        if user_id not in library:
+            library[user_id] = {
+                'by_category': {},
+                'by_difficulty': {},
+                'recent': [],
+                'favorites': [],
+                'completed': []
+            }
+        
+        # Categorize by base topic
+        category = topic.get('baseTopic', 'general')
+        if category not in library[user_id]['by_category']:
+            library[user_id]['by_category'][category] = []
+        library[user_id]['by_category'][category].append(topic['id'])
+        
+        # Categorize by difficulty
+        difficulty = topic.get('difficulty', 'beginner')
+        if difficulty not in library[user_id]['by_difficulty']:
+            library[user_id]['by_difficulty'][difficulty] = []
+        library[user_id]['by_difficulty'][difficulty].append(topic['id'])
+        
+        # Add to recent (keep last 10)
+        library[user_id]['recent'].insert(0, topic['id'])
+        if len(library[user_id]['recent']) > 10:
+            library[user_id]['recent'] = library[user_id]['recent'][:10]
+        
+        self.save_data(library_file, library)
+    
+    def get_topics_library(self, user_id: str) -> Dict:
+        """Get organized topics library for user"""
+        library_file = f"{DATA_DIR}/topics_library.json"
+        custom_topics = self.get_user_custom_topics(user_id)
+        
+        if not os.path.exists(library_file):
+            return {'by_category': {}, 'by_difficulty': {}, 'recent': [], 'favorites': [], 'completed': []}
+        
+        library = self.load_data(library_file)
+        user_library = library.get(user_id, {'by_category': {}, 'by_difficulty': {}, 'recent': [], 'favorites': [], 'completed': []})
+        
+        # Populate with full topic data
+        topics_by_id = {topic['id']: topic for topic in custom_topics}
+        
+        result = {
+            'by_category': {},
+            'by_difficulty': {},
+            'recent': [],
+            'favorites': [],
+            'completed': [],
+            'stats': {
+                'total_topics': len(custom_topics),
+                'completed_topics': len([t for t in custom_topics if t.get('progress', 0) == 100]),
+                'in_progress': len([t for t in custom_topics if 0 < t.get('progress', 0) < 100]),
+                'total_time_spent': sum(t.get('timeSpent', 0) for t in custom_topics)
+            }
+        }
+        
+        # Populate categories
+        for category, topic_ids in user_library['by_category'].items():
+            result['by_category'][category] = [topics_by_id.get(tid) for tid in topic_ids if tid in topics_by_id]
+            result['by_category'][category] = [t for t in result['by_category'][category] if t is not None]
+        
+        # Populate recent
+        result['recent'] = [topics_by_id.get(tid) for tid in user_library['recent'][:5] if tid in topics_by_id]
+        result['recent'] = [t for t in result['recent'] if t is not None]
+        
+        return result
+    
+    def search_topics_library(self, user_id: str, query: str, filters: Dict = None) -> List[Dict]:
+        """Search user's topics library"""
+        custom_topics = self.get_user_custom_topics(user_id)
+        
+        query_lower = query.lower()
+        results = []
+        
+        for topic in custom_topics:
+            # Search in title, description, tags
+            searchable_text = f"{topic.get('title', '')} {topic.get('description', '')} {' '.join(topic.get('tags', []))}"
+            if query_lower in searchable_text.lower():
+                results.append(topic)
+        
+        # Apply filters
+        if filters:
+            if filters.get('difficulty'):
+                results = [t for t in results if t.get('difficulty') == filters['difficulty']]
+            if filters.get('status'):
+                results = [t for t in results if t.get('status') == filters['status']]
+            if filters.get('category'):
+                results = [t for t in results if t.get('baseTopic') == filters['category']]
+        
+        # Sort by relevance and recency
+        results.sort(key=lambda x: (
+            query_lower in x.get('title', '').lower(),
+            x.get('lastAccessed', '2000-01-01')
+        ), reverse=True)
+        
+        return results
     
     def start_learning_session(self, user_id: str, topic_id: str) -> str:
         """Start a learning session and return session ID"""

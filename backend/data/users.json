@@ -118,5 +118,77 @@
     "completed_lessons": [],
     "total_lessons": 0,
     "current_curriculum": null
+  },
+  "user_9": {
+    "name": "Test User Library",
+    "created_at": "2025-08-10T04:46:51.838109",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_10": {
+    "name": "Sebastian",
+    "created_at": "2025-08-10T04:48:13.453944",
+    "competency_scores": {
+      "Introduction to I'm Interested in learning more about Neural Networks, I know they are used in computational neuroscience but don't know how": 0.0
+    },
+    "knowledge_gaps": {
+      "Introduction to I'm Interested in learning more about Neural Networks, I know they are used in computational neuroscience but don't know how": [
+        "Mathematical Foundations",
+        "Implementation Trade-offs",
+        "Problem Analysis and Algorithm Selection"
+      ]
+    },
+    "strong_areas": {
+      "Introduction to I'm Interested in learning more about Neural Networks, I know they are used in computational neuroscience but don't know how": []
+    },
+    "learning_path": [
+      "Mathematical Foundations",
+      "Implementation Trade-offs",
+      "Problem Analysis and Algorithm Selection"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_11": {
+    "name": "Seba",
+    "created_at": "2025-08-10T04:55:01.803798",
+    "competency_scores": {
+      "Introduction to I wanna learn about transformers": 0.0
+    },
+    "knowledge_gaps": {
+      "Introduction to I wanna learn about transformers": [
+        "Mathematical Foundations",
+        "Implementation Trade-offs",
+        "Problem Analysis and Algorithm Selection"
+      ]
+    },
+    "strong_areas": {
+      "Introduction to I wanna learn about transformers": []
+    },
+    "learning_path": [
+      "Mathematical Foundations",
+      "Implementation Trade-offs",
+      "Problem Analysis and Algorithm Selection"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_12": {
+    "name": "Sebas",
+    "created_at": "2025-08-10T05:04:49.855609",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
   }
 }

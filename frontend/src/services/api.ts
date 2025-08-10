@@ -102,6 +102,13 @@ export interface CustomTopic {
   progress?: number;
   timeSpent?: number; // in minutes
   lastAccessed?: string;
+  status?: 'not_started' | 'in_progress' | 'completed';
+  tags?: string[];
+  completionDate?: string;
+  totalSessions?: number;
+  averageSessionTime?: number;
+  competencyScore?: number;
+  isLibraryItem?: boolean;
 }
 
 export interface LearningSession {

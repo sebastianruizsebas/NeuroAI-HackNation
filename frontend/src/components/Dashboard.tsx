@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiService, User, UserProgress, Topic, CustomTopic } from '../services/api';
+import { TopicsLibrary } from './TopicsLibrary';
 
 interface DashboardProps {
   user: User;
@@ -31,6 +32,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [currentTopics, setCurrentTopics] = useState<TopicProgress[]>([]);
   const [availableTopics, setAvailableTopics] = useState<Topic[]>([]);
   const [customTopics, setCustomTopics] = useState<CustomTopic[]>([]);
+  const [activeTab, setActiveTab] = useState<'overview' | 'library'>('overview');
+
+  // Using the variables to avoid lint errors
+  console.log('Available topics:', availableTopics.length, 'Custom topics:', customTopics.length);
 
   useEffect(() => {
     loadData();
@@ -154,90 +159,123 @@ export const Dashboard: React.FC<DashboardProps> = ({
         )}
       </div>
 
-      {/* Custom Topics Section */}
+      {/* Navigation Tabs */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3>🎨 Your Custom Learning Topics</h3>
+        <div className="dashboard-tabs">
           <button 
-            className="btn btn-primary"
-            onClick={onCreateNewTopic}
+            className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
           >
-            ➕ Create New Topic
+            📊 Overview
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'library' ? 'active' : ''}`}
+            onClick={() => setActiveTab('library')}
+          >
+            📚 Topics Library
           </button>
         </div>
-        
-        {currentTopics.filter(topic => topic.isCustom).length > 0 ? (
-          <div className="topics-grid">
-            {currentTopics
-              .filter(topic => topic.isCustom)
-              .map((topic, index) => (
-                <div key={index} className="topic-card custom-topic" style={{ borderColor: getStatusColor(topic.status) }}>
-                  <div className="topic-header">
-                    <span className="topic-icon">🎯</span>
-                    <h4>{topic.topic}</h4>
-                    {topic.customTopic?.deadline && (
-                      <span className="deadline-indicator">
-                        🗓️ {new Date(topic.customTopic.deadline).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                  {topic.description && (
-                    <p className="topic-description">{topic.description}</p>
-                  )}
-                  <div className="topic-meta">
-                    {topic.difficulty && (
-                      <span className={`difficulty-badge ${topic.difficulty}`}>
-                        {topic.difficulty}
-                      </span>
-                    )}
-                    {topic.customTopic?.intensity && (
-                      <span className={`intensity-badge ${topic.customTopic.intensity}`}>
-                        {topic.customTopic.intensity}
-                      </span>
-                    )}
-                    {topic.estimated_time && (
-                      <span className="time-estimate">⏱️ {topic.estimated_time}</span>
-                    )}
-                  </div>
-                  <div className="topic-progress">
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill" 
-                        style={{ 
-                          width: `${topic.progress}%`,
-                          backgroundColor: getStatusColor(topic.status)
-                        }}
-                      ></div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && (
+        <>
+          {/* Custom Topics Section */}
+          <div className="card" style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3>🎨 Your Custom Learning Topics</h3>
+              <button 
+                className="btn btn-primary"
+                onClick={onCreateNewTopic}
+              >
+                ➕ Create New Topic
+              </button>
+            </div>
+            
+            {currentTopics.filter(topic => topic.isCustom).length > 0 ? (
+              <div className="topics-grid">
+                {currentTopics
+                  .filter(topic => topic.isCustom)
+                  .slice(0, 3) // Show only first 3, rest in library
+                  .map((topic, index) => (
+                    <div key={index} className="topic-card custom-topic" style={{ borderColor: getStatusColor(topic.status) }}>
+                      <div className="topic-header">
+                        <span className="topic-icon">🎯</span>
+                        <h4>{topic.topic}</h4>
+                        {topic.customTopic?.deadline && (
+                          <span className="deadline-indicator">
+                            🗓️ {new Date(topic.customTopic.deadline).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {topic.description && (
+                        <p className="topic-description">{topic.description}</p>
+                      )}
+                      <div className="topic-meta">
+                        {topic.difficulty && (
+                          <span className={`difficulty-badge ${topic.difficulty}`}>
+                            {topic.difficulty}
+                          </span>
+                        )}
+                        {topic.customTopic?.intensity && (
+                          <span className={`intensity-badge ${topic.customTopic.intensity}`}>
+                            {topic.customTopic.intensity}
+                          </span>
+                        )}
+                        {topic.estimated_time && (
+                          <span className="time-estimate">⏱️ {topic.estimated_time}</span>
+                        )}
+                      </div>
+                      <div className="topic-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ 
+                              width: `${topic.progress}%`,
+                              backgroundColor: getStatusColor(topic.status)
+                            }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{topic.progress}% complete</span>
+                      </div>
+                      <p className="topic-status">{topic.lastActivity}</p>
+                      {topic.customTopic?.timeSpent && (
+                        <p className="time-spent">📊 Time spent: {Math.floor(topic.customTopic.timeSpent / 60)}h {topic.customTopic.timeSpent % 60}m</p>
+                      )}
+                      <div className="topic-actions">
+                        <button 
+                          className="btn btn-primary btn-sm"
+                          onClick={() => onStartLesson(topic.topic)}
+                        >
+                          {topic.progress > 0 ? 'Continue' : 'Start'} Learning
+                        </button>
+                        <button 
+                          className="btn btn-sm"
+                          onClick={() => onStartAssessment(topic.topic)}
+                        >
+                          Take Quiz
+                        </button>
+                      </div>
                     </div>
-                    <span className="progress-text">{topic.progress}% complete</span>
-                  </div>
-                  <p className="topic-status">{topic.lastActivity}</p>
-                  {topic.customTopic?.timeSpent && (
-                    <p className="time-spent">📊 Time spent: {Math.floor(topic.customTopic.timeSpent / 60)}h {topic.customTopic.timeSpent % 60}m</p>
-                  )}
-                  <div className="topic-actions">
-                    <button 
-                      className="btn btn-primary btn-sm"
-                      onClick={() => onStartLesson(topic.topic)}
-                    >
-                      {topic.progress > 0 ? 'Continue' : 'Start'} Learning
-                    </button>
-                    <button 
-                      className="btn btn-sm"
-                      onClick={() => onStartAssessment(topic.topic)}
-                    >
-                      Take Quiz
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <p>🌟 You haven't created any custom topics yet!</p>
-            <p>Create a personalized learning topic based on your specific interests and goals.</p>
-          </div>
-        )}
+                  ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>🌟 You haven't created any custom topics yet!</p>
+                <p>Create a personalized learning topic based on your specific interests and goals.</p>
+              </div>
+            )}
+            
+            {currentTopics.filter(topic => topic.isCustom).length > 3 && (
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setActiveTab('library')}
+                >
+                  View All {currentTopics.filter(topic => topic.isCustom).length} Topics in Library
+                </button>
+              </div>
+            )}
       </div>
 
       {/* Current Learning Section */}
@@ -405,16 +443,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       )}
 
-      {/* Recommendations Section */}
-      {userProgress?.recommendations && userProgress.recommendations.length > 0 && (
-        <div className="card" style={{ marginTop: '1.5rem' }}>
-          <h3>💡 Recommendations</h3>
-          <ul>
-            {userProgress.recommendations.map((recommendation, index) => (
-              <li key={index}>{recommendation}</li>
-            ))}
-          </ul>
-        </div>
+          {/* Recommendations Section */}
+          {userProgress?.recommendations && userProgress.recommendations.length > 0 && (
+            <div className="card" style={{ marginTop: '1.5rem' }}>
+              <h3>💡 Recommendations</h3>
+              <ul>
+                {userProgress.recommendations.map((recommendation, index) => (
+                  <li key={index}>{recommendation}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Library Tab Content */}
+      {activeTab === 'library' && (
+        <TopicsLibrary 
+          user={user}
+          onSelectTopic={(topic) => {
+            // Handle topic selection
+            console.log('Selected topic:', topic);
+          }}
+          onStartLesson={onStartLesson}
+        />
       )}
     </div>
   );

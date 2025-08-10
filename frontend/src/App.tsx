@@ -8,8 +8,9 @@ import { Assessment } from './components/Assessment';
 import { LessonView } from './components/LessonView';
 import QualityReport from './components/QualityReport';
 import LessonOutline from './components/LessonOutline';
+import { TopicsLibrary } from './components/TopicsLibrary';
 
-type AppState = 'setup' | 'dashboard' | 'topic-selection' | 'assessment' | 'lesson-outline' | 'lesson' | 'complete' | 'quality-test';
+type AppState = 'setup' | 'dashboard' | 'library' | 'topic-selection' | 'assessment' | 'lesson-outline' | 'lesson' | 'complete' | 'quality-test';
 
 const uniq = (arr: string[] = []) => Array.from(new Set(arr));
 
@@ -155,6 +156,10 @@ function App() {
     if (selectedCustomTopic && user) {
       apiService.updateTopicProgress(user.user_id, selectedCustomTopic.id, 0, duration);
     }
+    // Navigate back to dashboard after ending session
+    setCurrentState('dashboard');
+    setSelectedCustomTopic(null);
+    setCurrentTopic('');
   };
 
   const handleBackToDashboard = () => {
