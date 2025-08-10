@@ -1,584 +1,373 @@
 :root {
-  --primary-color: #2563eb;
-  --primary-dark: #1d4ed8;
-  --secondary-color: #10b981;
-  --accent-color: #f59e0b;
-  --danger-color: #ef4444;
-  --background: #f8fafc;
+  /* Brand */
+  --primary: #2563eb;
+  --primary-600: #1e55d6;
+  --primary-700: #1b4cc0;
+  --secondary: #10b981;
+  --accent: #f59e0b;
+  --danger: #ef4444;
+
+  /* Neutrals (light) */
+  --bg: #f7f9fc;
   --surface: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border: #e2e8f0;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --border: #e6eaf0;
+
+  /* Effects */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,.06), 0 1px 1px rgba(16,24,40,.04);
+  --shadow: 0 4px 14px rgba(16,24,40,.08);
+  --shadow-lg: 0 14px 30px rgba(16,24,40,.12);
+
+  /* Layout */
+  --container: 1200px;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+
+  /* Focus ring */
+  --ring: 0 0 0 3px rgba(37, 99, 235, .15);
+
   color-scheme: light;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
 }
 
-/* Dark mode variables */
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary-color: #3b82f6;
-    --primary-dark: #2563eb;
-    --secondary-color: #10b981;
-    --accent-color: #f59e0b;
-    --danger-color: #ef4444;
-    --background: #0f172a;
-    --surface: #1e293b;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --border: #334155;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --primary: #3b82f6;
+    --primary-600: #2f74ef;
+    --primary-700: #2968d6;
+    --secondary: #10b981;
+    --accent: #f59e0b;
+    --danger: #ef4444;
+
+    --bg: #0b1220;
+    --surface: #111827;
+    --text: #e5eefb;
+    --text-muted: #9fb0c6;
+    --border: #243244;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.25);
+    --shadow: 0 6px 20px rgba(0,0,0,.35);
+    --shadow-lg: 0 20px 44px rgba(0,0,0,.45);
+
     color-scheme: dark;
   }
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* ========== Resets & Base ==========\*/
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--background);
-  color: var(--text-primary);
-  line-height: 1.6;
-  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-600); }
+
+/* Improve readability & rhythm inside cards/sections */
+.card > * + *,
+.enhanced-results > * + *,
+.progress-summary > * + * { margin-top: var(--space-4); }
+
+/* Prevent text overflow everywhere */
+.card, .enhanced-results, .progress-summary, .recommendations {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ========== App Shell ==========\*/
 .app {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--background);
-  color: var(--text-primary);
+  background: var(--bg);
 }
 
 .app-header {
-  background: var(--surface);
-  padding: 1rem 2rem;
-  box-shadow: var(--shadow);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: saturate(1.2) blur(8px);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4) var(--space-7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .app-header h1 {
-  color: var(--primary-color);
-  font-size: 1.5rem;
-  font-weight: 700;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--primary);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  gap: var(--space-4);
+  color: var(--text-muted);
+  font-size: .9rem;
 }
 
 .lesson-count {
-  background: var(--primary-color);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-a {
-  font-weight: 500;
-  color: var(--primary-color);
-  text-decoration: inherit;
-}
-a:hover {
-  color: var(--primary-dark);
+  background: var(--primary);
+  color: #fff;
+  padding: .35rem .7rem;
+  border-radius: 999px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .app-main {
   flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
-  background: var(--background);
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-7) var(--space-8);
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50vh;
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  background: var(--background);
-}
-
-/* Card Components */
+/* ========== Cards ==========\*/
 .card {
   background: var(--surface);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
   border: 1px solid var(--border);
-  transition: all 0.2s ease;
-  color: var(--text-primary);
-  margin: 1rem 0;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  color: var(--text);
+}
+.card:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.card-header { margin-bottom: var(--space-4); }
+.card-title { font-size: 1.125rem; font-weight: 700; }
+.card-description { color: var(--text-muted); }
+
+/* Section variants with subtle accent bar */
+.question-card { border-left: 5px solid var(--primary); }
+.lesson-chunk { border-left: 5px solid var(--secondary); }
+
+/* Dedicated session “tip/notice” style */
+.tip {
+  background: color-mix(in oklab, var(--primary) 6%, var(--surface));
+  border: 1px solid color-mix(in oklab, var(--primary) 20%, var(--border));
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
 }
 
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-.card-header {
-  margin-bottom: 1rem;
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.card-description {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-/* Button Components */
+/* ========== Buttons ==========\*/
 .btn {
+  --btn-bg: var(--primary);
+  --btn-bg-hover: var(--primary-600);
+  --btn-fg: #fff;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  border: none;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: .95rem;
+  border: 1px solid transparent;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
   line-height: 1;
-  color: white;
+}
+.btn:hover { background: var(--btn-bg-hover); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+.btn-primary { }
+.btn-secondary { --btn-bg: var(--secondary); --btn-bg-hover: color-mix(in oklab, var(--secondary) 85%, black); }
+.btn-ghost {
+  --btn-bg: transparent; --btn-bg-hover: transparent; --btn-fg: var(--text);
+  border-color: var(--border); background: transparent;
+}
+.btn-ghost:hover { border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); box-shadow: var(--shadow-sm); }
+.btn-outline {
+  --btn-bg: transparent; --btn-bg-hover: transparent; --btn-fg: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+}
+.btn-outline:hover { background: color-mix(in oklab, var(--primary) 7%, var(--surface)); }
+
+/* Button bar */
+.actions {
+  display: flex; gap: .5rem; flex-wrap: wrap; margin-top: var(--space-5);
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* ========== Loading ==========\*/
+.loading {
+  display: grid; place-items: center; min-height: 40vh;
+  color: var(--text-muted);
 }
 
-.btn-primary {
-  background: var(--primary-color);
-  color: white;
+/* ========== Forms ==========\*/
+.form-group { margin-bottom: var(--space-5); }
+.form-label { display: block; margin-bottom: .5rem; font-weight: 600; }
+.form-input, .response-section textarea {
+  width: 100%; padding: .8rem .9rem; border-radius: var(--radius-md);
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-input:focus, .response-section textarea:focus {
+  outline: none; border-color: var(--primary); box-shadow: var(--ring);
+}
+.form-input:disabled { background: color-mix(in oklab, var(--surface) 80%, var(--border)); color: var(--text-muted); }
+
+/* ========== Lesson ==========\*/
+.lesson-content { margin-top: var(--space-5); }
+.lesson-content h3 { margin: 0 0 var(--space-3); font-size: 1.1rem; }
+.lesson-content p { color: var(--text); }
+
+.key-point {
+  background: color-mix(in oklab, var(--primary) 5%, var(--surface));
+  border: 1px solid color-mix(in oklab, var(--primary) 25%, var(--border));
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
+.response-section { margin-top: var(--space-5); }
+
+/* Sentiment feedback cards */
+.card[class*="sentiment-"] {
+  border-left: 5px solid var(--secondary);
+}
+.sentiment-excellent { border-left-color: var(--secondary); }
+.sentiment-good { border-left-color: var(--secondary); }
+.sentiment-fair { border-left-color: var(--accent); }
+.sentiment-poor { border-left-color: var(--danger); }
+
+.sentiment-metrics {
+  display: flex; gap: var(--space-4); margin-top: var(--space-2);
+  color: var(--text-muted); font-size: .92rem;
 }
 
-.btn-secondary {
-  background: var(--secondary-color);
-  color: white;
-}
+.lesson-controls { margin-top: var(--space-6); text-align: right; }
 
-.btn-secondary:hover:not(:disabled) {
-  background: #059669;
-  transform: translateY(-1px);
-}
-
-/* Container and layout */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background: var(--background);
-}
-
-/* Question and lesson cards */
-.question-card {
-  border-left: 4px solid var(--primary-color);
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.lesson-chunk {
-  border-left: 4px solid var(--secondary-color);
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-/* Progress bar */
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background-color: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease;
-}
-
-/* Assessment styles */
-.question-content {
-  margin: 1.5rem 0;
-  color: var(--text-primary);
-}
-
-.question-content h3 {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin: 1rem 0;
-}
-
+/* ========== Assessment ==========\*/
+.question-content { margin: var(--space-5) 0; }
+.options { display: grid; gap: var(--space-3); }
 .option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: var(--surface);
-  color: var(--text-primary);
+  display: grid; grid-template-columns: auto 1fr; align-items: start; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-md);
+  border: 1px solid var(--border); background: var(--surface);
+  transition: border-color .15s ease, background .15s ease, transform .1s ease;
 }
-
-.option:hover {
-  background: var(--background);
-  border-color: var(--primary-color);
-}
-
-.option input[type="radio"] {
-  margin: 0;
-  accent-color: var(--primary-color);
-}
+.option:hover { border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); background: color-mix(in oklab, var(--primary) 6%, var(--surface)); }
+.option input[type="radio"] { margin-top: .15rem; accent-color: var(--primary); }
 
 .assessment-controls {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
+  display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-6);
 }
 
 .assessment-phase-indicator {
-  background: var(--primary-color);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-block;
-  margin: 0.5rem 0;
+  background: var(--primary);
+  color: #fff;
+  padding: .45rem .8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: .85rem;
 }
 
-/* Lesson styles */
-.lesson-content {
-  margin: 1.5rem 0;
-  color: var(--text-primary);
+/* ========== Progress Bars ==========\*/
+.progress-bar {
+  width: 100%; height: 8px; background: var(--border);
+  border-radius: 999px; overflow: hidden; margin: .5rem 0;
 }
-
-.lesson-content h3 {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-}
-
-.lesson-content p {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-}
-
-.key-point {
-  background: var(--background);
-  border-left: 4px solid var(--primary-color);
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 4px;
-  color: var(--text-primary);
-}
-
-.response-section {
-  margin: 1.5rem 0;
-}
-
-.response-section label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.response-section textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-family: inherit;
-  resize: vertical;
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.response-section textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.sentiment-metrics {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.lesson-controls {
-  margin-top: 2rem;
-  text-align: right;
-}
-
-/* Form styles */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.form-input:disabled {
-  background: var(--border);
-  color: var(--text-secondary);
-}
-
-.pulse {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* V2 Enhanced Features Styles */
-.enhanced-results {
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  color: var(--text-primary);
-}
-
-.enhanced-results h3 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.enhanced-results h4 {
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-}
-
-.knowledge-analysis {
-  display: grid;
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.strong-areas, .knowledge-gaps, .learning-path {
-  background: var(--surface);
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid var(--primary-color);
-  color: var(--text-primary);
-}
-
-.strong-areas {
-  border-left-color: var(--secondary-color);
-}
-
-.knowledge-gaps {
-  border-left-color: var(--accent-color);
-}
-
-.learning-path {
-  border-left-color: var(--primary-color);
-}
-
-.progress-summary {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  color: var(--text-primary);
-}
-
-.progress-summary h3 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.progress-summary h4 {
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-}
-
-.recommendations {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: var(--background);
-  border-radius: 8px;
-  color: var(--text-primary);
-}
-
-.enhanced-results ul, .enhanced-results ol, 
-.progress-summary ul, .progress-summary ol {
-  margin: 0.5rem 0;
-  padding-left: 1.5rem;
-}
-
-.enhanced-results li, .progress-summary li {
-  margin-bottom: 0.25rem;
-  color: var(--text-primary);
-}
-
-/* Sentiment feedback styles */
-.sentiment-excellent, .sentiment-good {
-  border-left-color: var(--secondary-color);
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.sentiment-fair {
-  border-left-color: var(--accent-color);
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.sentiment-poor {
-  border-left-color: var(--danger-color);
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-/* Better contrast for all sentiment cards */
-.card[class*="sentiment-"] {
-  background: var(--surface);
-  color: var(--text-primary);
-}
-
-.card[class*="sentiment-"] h4 {
-  color: var(--text-primary);
-}
-
-.card[class*="sentiment-"] p {
-  color: var(--text-primary);
-}
-
-.card[class*="sentiment-"] strong {
-  color: var(--text-primary);
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-600));
+  transition: width .3s ease;
 }
 
 /* Competency meter */
 .competency-meter {
-  width: 100%;
-  height: 8px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0.5rem 0;
+  width: 100%; height: 8px; background: var(--border);
+  border-radius: 999px; overflow: hidden; margin-top: .5rem;
 }
-
 .competency-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--danger-color) 0%, var(--accent-color) 50%, var(--secondary-color) 100%);
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--danger) 0%, var(--accent) 45%, var(--secondary) 100%);
+  transition: width .35s ease;
 }
 
-/* Ensure good contrast for all text elements */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-primary);
+/* ========== Enhanced Results / Progress ==========\*/
+.enhanced-results,
+.progress-summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow);
+}
+.enhanced-results h3, .progress-summary h3 { color: var(--primary); margin: 0; }
+.enhanced-results h4, .progress-summary h4 { margin: 0; font-size: 1rem; }
+
+.knowledge-analysis {
+  display: grid; gap: var(--space-5); margin-top: var(--space-4);
+}
+.strong-areas, .knowledge-gaps, .learning-path {
+  background: color-mix(in oklab, var(--primary) 4%, var(--surface));
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+}
+.strong-areas { border-left-color: var(--secondary); }
+.knowledge-gaps { border-left-color: var(--accent); }
+
+.enhanced-results ul, .enhanced-results ol,
+.progress-summary ul, .progress-summary ol {
+  padding-left: 1.25rem;
+}
+.enhanced-results li, .progress-summary li { margin: .15rem 0; }
+
+/* Recommendations block */
+.recommendations {
+  padding: var(--space-4);
+  background: color-mix(in oklab, var(--secondary) 5%, var(--surface));
+  border-radius: var(--radius-md);
 }
 
-p {
-  color: var(--text-primary);
+/* ========== Utilities ==========\*/
+.container { max-width: var(--container); margin: 0 auto; padding: 0 var(--space-7); }
+.stack > * + * { margin-top: var(--space-4); }
+
+/* Make italic notes readable and contained */
+em { color: var(--text-muted); font-style: italic; }
+.card em { display: block; }
+
+/* ========== Accessibility & Motion ==========\*/
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--radius-sm); }
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
 
-span {
-  color: inherit;
-}
-
-/* Fix any remaining dark theme issues */
-@media (prefers-color-scheme: dark) {
-  .card {
-    background: var(--surface);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-  }
-  
-  .option {
-    background: var(--surface);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-  }
-  
-  .form-input, .response-section textarea {
-    background: var(--surface);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-  }
-  
-  .key-point {
-    background: var(--background);
-    color: var(--text-primary);
-  }
+/* ========== Small Screens ==========\*/
+@media (max-width: 640px) {
+  .app-header { padding: var(--space-4) var(--space-4); }
+  .app-main { padding: var(--space-6) var(--space-4) var(--space-7); }
+  .assessment-controls { flex-direction: column; gap: var(--space-3); align-items: stretch; }
+  .actions { gap: .4rem; }
 }

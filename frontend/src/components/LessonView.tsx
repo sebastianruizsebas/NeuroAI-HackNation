@@ -37,38 +37,33 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
   };
 
   const handleNext = async () => {
-    if (responses[currentChunk].trim()) {
+    const chunk = lesson!.chunks[currentChunk];
+    let updated = [...sentimentData];
+
+    if (responses[currentChunk]?.trim()) {
       try {
-        console.log('Using V2 enhanced sentiment analysis with lesson context...');
-        // V2 Enhanced: Sentiment analysis with lesson context
         const lessonContext = `${chunk.title}: ${chunk.content}\nKey Point: ${chunk.key_point}`;
-        const sentiment = await apiService.analyzeSentiment(
-          responses[currentChunk], 
-          lessonContext
-        );
-        const newSentimentData = [...sentimentData];
-        newSentimentData[currentChunk] = sentiment;
-        setSentimentData(newSentimentData);
-      } catch (error) {
-        console.error('Failed to analyze sentiment with context, falling back to basic:', error);
-        // Fallback to basic sentiment analysis
+        const sentiment = await apiService.analyzeSentiment(responses[currentChunk], lessonContext);
+        updated[currentChunk] = sentiment;
+        setSentimentData(updated);
+      } catch {
         try {
           const sentiment = await apiService.analyzeSentiment(responses[currentChunk]);
-          const newSentimentData = [...sentimentData];
-          newSentimentData[currentChunk] = sentiment;
-          setSentimentData(newSentimentData);
-        } catch (fallbackError) {
-          console.error('Failed to analyze sentiment:', fallbackError);
-        }
+          updated[currentChunk] = sentiment;
+          setSentimentData(updated);
+        } catch {}
       }
     }
 
-    if (lesson && currentChunk < lesson.chunks.length - 1) {
-      setCurrentChunk(currentChunk + 1);
-    } else {
-      onComplete(sentimentData);
+    const isLast = lesson && currentChunk >= lesson!.chunks.length - 1;
+    if (!isLast) {
+      setCurrentChunk(c => c + 1);
+      return;
     }
+    // hand the parent the *updated* array
+    onComplete(updated);
   };
+
 
   if (loading) {
     return <div className="loading">Generating your personalized lesson...</div>;
