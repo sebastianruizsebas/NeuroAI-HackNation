@@ -80,6 +80,30 @@ export interface UserProgress {
   recommendations: string[];
 }
 
+export type TTSOptions = {
+  voice_id?: string;
+  model_id?: string;
+  stability?: number;
+  similarity_boost?: number;
+  style?: number;
+  speed?: number;
+  use_speaker_boost?: boolean;
+};
+
+async function tts(text: string, opts: TTSOptions = {}): Promise<string> {
+  const res = await fetch(`${API_BASE_URL}/tts`, {  // << was '/api/tts'
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, ...opts }),
+  });
+  if (!res.ok) throw new Error('TTS failed');
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
+
+
+
 export const apiService = {
   // Create a new user (V2 Enhanced)
   async createUser(name: string): Promise<User> {
@@ -343,5 +367,6 @@ export const apiService = {
     }
     
     return response.json();
-  }
+  },
+  tts
 };
