@@ -27,6 +27,7 @@ interface LessonOutlineData {
 interface LessonOutlineProps {
   topic: string;
   difficulty: string;
+  userId?: string;
   assessmentResults?: any;
   onStartLesson: () => void;
   onBackToAssessment: () => void;
@@ -35,6 +36,7 @@ interface LessonOutlineProps {
 const LessonOutline: React.FC<LessonOutlineProps> = ({ 
   topic, 
   difficulty, 
+  userId,
   assessmentResults, 
   onStartLesson, 
   onBackToAssessment 
@@ -44,9 +46,9 @@ const LessonOutline: React.FC<LessonOutlineProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('LessonOutline useEffect triggered:', { topic, difficulty, assessmentResults });
+    console.log('LessonOutline useEffect triggered:', { topic, difficulty, userId, assessmentResults });
     generateOutline();
-  }, [topic, difficulty, assessmentResults]);
+  }, [topic, difficulty, userId, assessmentResults]);
 
   const generateOutline = async () => {
     console.log('LessonOutline: Starting outline generation...');
@@ -63,6 +65,7 @@ const LessonOutline: React.FC<LessonOutlineProps> = ({
       const requestBody = {
         topic,
         difficulty,
+        user_id: userId || 'default_user',
         assessment_results: assessmentResults
       };
       console.log('LessonOutline: Request body:', requestBody);

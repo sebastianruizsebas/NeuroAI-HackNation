@@ -312,13 +312,11 @@ def generate_lesson_outline():
         outline = engine.generate_lesson_outline(
             topic, 
             difficulty, 
-            user_assessment,
-            user_id=user_id,
-            course_deadline=course_deadline
+            user_assessment
         )
         
-        # Store the outline with deadlines
-        engine.save_lesson_outline(user_id, topic, outline)
+        # TODO: Store the outline with deadlines (method not implemented yet)
+        # engine.save_lesson_outline(user_id, topic, outline)
         
         return jsonify(outline)
         

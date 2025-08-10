@@ -682,5 +682,47 @@
     "user_id": "user_18",
     "timestamp": "2025-08-10T07:04:44.492458",
     "session_id": "session_18"
+  },
+  {
+    "topic": "Neural Networks",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_21",
+    "timestamp": "2025-08-10T08:42:36.310612",
+    "session_id": "session_19"
   }
 ]

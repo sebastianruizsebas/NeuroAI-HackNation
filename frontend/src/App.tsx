@@ -280,6 +280,7 @@ function App() {
             <LessonOutline
               topic={currentTopic}
               difficulty={selectedCustomTopic?.difficulty || 'beginner'}
+              userId={user?.user_id}
               assessmentResults={enhancedAssessmentResult}
               onStartLesson={() => setCurrentState('lesson')}
               onBackToAssessment={() => setCurrentState('assessment')}

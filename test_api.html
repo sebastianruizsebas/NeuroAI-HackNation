@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Lesson Outline API</title>
+</head>
+<body>
+    <h1>Testing /api/lesson/outline</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/lesson/outline', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        topic: 'Neural Networks',
+                        difficulty: 'beginner',
+                        user_id: 'test_user',
+                        assessment_results: {}
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = '<h2>SUCCESS!</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = '<h2>ERROR ' + response.status + '</h2><pre>' + errorText + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<h2>NETWORK ERROR</h2><pre>' + error.message + '</pre>';
+            }
+        }
+    </script>
+</body>
+</html>

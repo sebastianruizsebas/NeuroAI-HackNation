@@ -391,5 +391,55 @@
     "completed_lessons": [],
     "total_lessons": 0,
     "current_curriculum": null
+  },
+  "user_21": {
+    "name": "Doggy Doggy",
+    "created_at": "2025-08-10T08:41:36.813401",
+    "competency_scores": {
+      "Neural Networks": 0.0
+    },
+    "knowledge_gaps": {
+      "Neural Networks": [
+        "Mathematical Foundations",
+        "Implementation Trade-offs",
+        "Problem Analysis and Algorithm Selection"
+      ]
+    },
+    "strong_areas": {
+      "Neural Networks": []
+    },
+    "learning_path": [
+      "Mathematical Foundations",
+      "Implementation Trade-offs",
+      "Problem Analysis and Algorithm Selection"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_22": {
+    "name": "Doggy Doggy",
+    "created_at": "2025-08-10T08:42:58.456459",
+    "competency_scores": {
+      "Building and Training Neural Networks from Scratch": 0.0
+    },
+    "knowledge_gaps": {
+      "Building and Training Neural Networks from Scratch": [
+        "Mathematical Foundations",
+        "Implementation Trade-offs",
+        "Problem Analysis and Algorithm Selection"
+      ]
+    },
+    "strong_areas": {
+      "Building and Training Neural Networks from Scratch": []
+    },
+    "learning_path": [
+      "Mathematical Foundations",
+      "Implementation Trade-offs",
+      "Problem Analysis and Algorithm Selection"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
   }
 }
