@@ -2,6 +2,7 @@
 backend/data/
 profai/data/
 data/
+frontend/node_modules/
 
 # Specific data files (if you want to be more specific)
 *.json
