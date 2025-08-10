@@ -7,53 +7,38 @@ from flask import send_file
 from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID, DATA_DIR
 
 
+
+
+# Initialize Flask app and CORS
 app = Flask(__name__)
 CORS(app)
 
 # Initialize the engine
 engine = ProfAIEngine()
 
+# Add POST /api/users endpoint for user creation with debug prints
 @app.route('/api/users', methods=['POST'])
-def create_user():
-    """Create a new user"""
-    print("[API] Received user creation request")
-    print("[API] Request data:", request.get_json())
+def create_user_api():
+    print("[API] /api/users POST endpoint called")
     try:
-        print("[API] Starting user creation request")
         data = request.get_json()
-        if not data:
-            print("[API] No JSON data received")
-            return jsonify({'error': 'No JSON data received'}), 400
-            
+        print(f"[API] Received data: {data}")
         name = data.get('name')
         if not name:
-            print("[API] Name is required but not provided")
+            print("[API] No name provided in request")
             return jsonify({'error': 'Name is required'}), 400
-        
-        print(f"[API] Attempting to create user with name: {name}")
-        # Create the user
         user_id = engine.create_user(name)
-        if not user_id:
-            print("[API] Failed to create user - engine returned None")
-            return jsonify({'error': 'Failed to create user. Please check server logs for details.'}), 500
-            
-        print(f"[API] User created successfully with ID: {user_id}")
-        # Get the user data
-        user_data = engine.get_user(user_id)
-        if not user_data:
-            print(f"[API] Failed to retrieve data for user_id: {user_id}")
-            return jsonify({'error': 'User created but failed to retrieve data'}), 500
-            
-        print("[API] Successfully retrieved user data")
-        return jsonify({
-            'user_id': user_id,
-            'user_data': user_data
-        })
+        if user_id:
+            print(f"[API] User created successfully: {user_id}")
+            return jsonify({'user_id': user_id}), 201
+        else:
+            print("[API] Failed to create user (engine.create_user returned None)")
+            return jsonify({'error': 'Failed to create user'}), 500
     except Exception as e:
+        print(f"[API] Exception during user creation: {str(e)}")
         import traceback
-        print(f"[API] Error in create_user endpoint: {str(e)}")
-        print(f"[API] Stack trace: {traceback.format_exc()}")
-        return jsonify({'error': 'Internal server error. Please try again.'}), 500
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/users/<user_id>', methods=['GET'])
 def get_user(user_id):
@@ -186,13 +171,13 @@ def generate_adaptive_assessment():
     data = request.get_json()
     user_id = data.get('user_id')
     topic = data.get('topic')
-    initial_results = data.get('initial_results')  # Results from first 5 questions
-    
+    initial_results = data.get('initial_results')
+    if not initial_results and data.get('previous_answers'):
+        initial_results = data.get('previous_answers')
     if not all([user_id, topic, initial_results]):
         return jsonify({'error': 'Missing required fields'}), 400
-    
     try:
-        print(f"Generating adaptive assessment for user {user_id}")
+        print(f"Generating adaptive assessment for user {user_id} on topic '{topic}' with initial results: {initial_results}")
         questions = engine.generate_adaptive_assessment(topic, initial_results)
         return jsonify({
             'questions': questions,
@@ -272,15 +257,28 @@ def generate_lesson_quiz():
 
 @app.route('/api/quiz/submit', methods=['POST'])
 def submit_lesson_quiz():
-    """Submit quiz answers and get results"""
+    """Submit quiz answers and get results with gentle feedback"""
     data = request.get_json()
     user_id = data.get('user_id')
     lesson_id = data.get('lesson_id')
     answers = data.get('answers')
     questions = data.get('questions')
+    is_final = data.get('is_final', False)  # Whether this is a final assessment
     
     try:
-        results = engine.evaluate_lesson_quiz(user_id, lesson_id, answers, questions)
+        # Get user's current competency level
+        user_data = engine.get_user(user_id)
+        competency_level = user_data.get('competency_level', 'beginner')
+        
+        # Evaluate answers and get personalized feedback
+        results = engine.evaluate_lesson_quiz(
+            user_id, 
+            lesson_id, 
+            answers, 
+            questions,
+            provide_answers=is_final,  # Only show correct answers in final assessment
+            competency_level=competency_level
+        )
         return jsonify(results)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -298,19 +296,72 @@ def get_user_progress(user_id):
 
 @app.route('/api/lesson/outline', methods=['POST'])
 def generate_lesson_outline():
-    """Generate a lesson outline based on topic and assessment results"""
+    """Generate a lesson outline with deadlines based on topic and assessment results"""
     try:
         data = request.get_json()
         topic = data.get('topic')
+        user_id = data.get('user_id')
         difficulty = data.get('difficulty', 'beginner')
         user_assessment = data.get('assessment_results')
+        course_deadline = data.get('course_deadline')  # Overall course deadline
         
-        if not topic:
-            return jsonify({'error': 'Topic is required'}), 400
+        if not all([topic, user_id]):
+            return jsonify({'error': 'Topic and user_id are required'}), 400
         
-        outline = engine.generate_lesson_outline(topic, difficulty, user_assessment)
+        # Generate outline with deadlines
+        outline = engine.generate_lesson_outline(
+            topic, 
+            difficulty, 
+            user_assessment,
+            user_id=user_id,
+            course_deadline=course_deadline
+        )
+        
+        # Store the outline with deadlines
+        engine.save_lesson_outline(user_id, topic, outline)
+        
         return jsonify(outline)
         
+    except Exception as e:
+        print(f"Error generating lesson outline: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/lesson/progress', methods=['PUT'])
+def update_lesson_progress():
+    """Update progress for a specific lesson"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        topic_id = data.get('topic_id')
+        lesson_id = data.get('lesson_id')
+        progress = data.get('progress')  # Percentage complete
+        completion_time = data.get('completion_time')  # When the lesson was completed
+        
+        if not all([user_id, topic_id, lesson_id, progress is not None]):
+            return jsonify({'error': 'Missing required fields'}), 400
+            
+        # Update lesson progress
+        engine.update_lesson_progress(
+            user_id, 
+            topic_id, 
+            lesson_id, 
+            progress, 
+            completion_time
+        )
+        
+        # Get updated progress data
+        progress_data = engine.get_topic_progress(user_id, topic_id)
+        
+        return jsonify(progress_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/lesson/deadlines/<user_id>/<topic_id>', methods=['GET'])
+def get_lesson_deadlines(user_id, topic_id):
+    """Get deadlines for all lessons in a topic"""
+    try:
+        deadlines = engine.get_lesson_deadlines(user_id, topic_id)
+        return jsonify(deadlines)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -453,14 +504,22 @@ def save_custom_topic():
         data = request.get_json()
         user_id = data.get('user_id')
         topic = data.get('topic')
-        
         if not user_id or not topic:
             return jsonify({'error': 'User ID and topic are required'}), 400
-        
-        # Save the custom topic
+        # Always generate a general, academic title for the topic
+        if isinstance(topic, dict):
+            user_input = topic.get('userInput', topic.get('title', ''))
+        else:
+            user_input = topic
+            topic = {'userInput': user_input}
+        if hasattr(engine, '_analyze_topic_title'):
+            analyzed = engine._analyze_topic_title(user_input)
+            course_title = analyzed.get('course_title', user_input)
+        else:
+            course_title = user_input
+        topic['title'] = course_title
         engine.save_custom_topic(user_id, topic)
-        
-        return jsonify({'message': 'Custom topic saved successfully'})
+        return jsonify({'message': 'Custom topic saved successfully', 'course_title': course_title})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -475,20 +534,37 @@ def get_user_custom_topics(user_id):
 
 @app.route('/api/topics/progress', methods=['PUT'])
 def update_topic_progress():
-    """Update custom topic progress"""
+    """Update topic progress with detailed tracking"""
     try:
         data = request.get_json()
         user_id = data.get('user_id')
         topic_id = data.get('topic_id')
         progress = data.get('progress')
         time_spent = data.get('time_spent')
+        lesson_completions = data.get('lesson_completions', {})
+        current_section = data.get('current_section')
         
         if not all([user_id, topic_id, progress is not None]):
             return jsonify({'error': 'User ID, topic ID, and progress are required'}), 400
         
-        engine.update_topic_progress(user_id, topic_id, progress, time_spent)
+        # Update detailed progress
+        progress_data = engine.update_topic_progress(
+            user_id, 
+            topic_id, 
+            progress, 
+            time_spent,
+            lesson_completions=lesson_completions,
+            current_section=current_section
+        )
         
-        return jsonify({'message': 'Progress updated successfully'})
+        # Get complete progress data including deadlines
+        topic_data = engine.get_topic_complete_data(user_id, topic_id)
+        
+        return jsonify({
+            'message': 'Progress updated successfully',
+            'progress_data': progress_data,
+            'topic_data': topic_data
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

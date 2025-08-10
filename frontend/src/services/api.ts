@@ -14,7 +14,33 @@ export interface User {
     completed_lessons: string[];
     total_lessons: number;
     current_curriculum?: string;
+    competency_level?: string;
   };
+}
+
+export interface Deadline {
+  due_date: string;
+  completed: boolean;
+  completion_date?: string;
+}
+
+export interface LessonProgress {
+  lesson_id: string;
+  title: string;
+  progress: number;
+  deadline: Deadline;
+  completion_time?: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'overdue';
+}
+
+export interface TopicProgress {
+  topic_id: string;
+  overall_progress: number;
+  time_spent: number;
+  current_section: string;
+  lesson_completions: Record<string, LessonProgress>;
+  course_deadline: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'overdue';
 }
 
 export interface Question {

@@ -44,5 +44,15 @@
       "session_14",
       "session_15"
     ]
+  },
+  "user_18": {
+    "lessons_completed": 0,
+    "total_lessons": 0,
+    "average_quiz_score": 0,
+    "session_history": [
+      "session_16",
+      "session_17",
+      "session_18"
+    ]
   }
 }

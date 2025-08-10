@@ -9,6 +9,7 @@ interface Module {
   activities: string[];
   assessmentType: string;
   addressesGaps: string[];
+  deadline?: string;
 }
 
 interface LessonOutlineData {
@@ -271,10 +272,23 @@ const LessonOutline: React.FC<LessonOutlineProps> = ({
                   color: '#374151',
                   padding: '4px 8px',
                   borderRadius: '12px',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  marginRight: '8px'
                 }}>
                   ⏱️ {module.estimatedTime}
                 </span>
+                {module.deadline && (
+                  <span style={{ 
+                    backgroundColor: '#e0e7ff',
+                    color: '#3730a3',
+                    padding: '4px 8px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    marginRight: '8px'
+                  }}>
+                    📅 Due: {new Date(module.deadline).toLocaleDateString()}
+                  </span>
+                )}
                 <span style={{ fontSize: '20px' }}>
                   {getAssessmentTypeIcon(module.assessmentType)}
                 </span>

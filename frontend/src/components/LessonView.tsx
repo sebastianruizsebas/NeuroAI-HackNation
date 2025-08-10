@@ -1,5 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { apiService, SentimentAnalysis } from '../services/api';
+import { 
+  apiService, 
+  SentimentAnalysis, 
+  TopicProgress, 
+  LessonProgress, 
+  Deadline 
+} from '../services/api';
+
+// Helper functions
+const calculateTimeRemaining = (deadline: string): number => {
+  const now = new Date().getTime();
+  const deadlineTime = new Date(deadline).getTime();
+  return Math.max(0, deadlineTime - now);
+};
+
+const formatTimeRemaining = (timeMs: number): string => {
+  const days = Math.floor(timeMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  return `${days}d ${hours}h remaining`;
+};
 
 interface LessonChunk {
   title: string;
@@ -29,22 +48,38 @@ interface Lesson {
 interface LessonViewProps {
   topic: string;
   userId: string;
+  topicId: string;
+  courseDeadline?: string;
   onComplete: (sentimentData: SentimentAnalysis[]) => void;
+  onProgressUpdate: (progress: TopicProgress) => void;
 }
 
 const VOICE_ID = '2qfp6zPuviqeCOZIE9RZ';
 
-export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplete }) => {
+export const LessonView: React.FC<LessonViewProps> = ({ 
+  topic, 
+  userId, 
+  topicId,
+  courseDeadline,
+  onComplete,
+  onProgressUpdate 
+}) => {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [responses, setResponses] = useState<string[]>([]);
   const [sentimentData, setSentimentData] = useState<SentimentAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
+  // const [progress, setProgress] = useState<number>(0); // Removed duplicate progress state
+  const [deadlines, setDeadlines] = useState<Record<string, Deadline>>({});
 
-  // TTS state (INSIDE the component)
+  // TTS state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ttsLoading, setTtsLoading] = useState(false);
+
+  // Time tracking
+  const [startTime] = useState<number>(Date.now());
+  const [timeSpent, setTimeSpent] = useState<number>(0);
 
   useEffect(() => {
     const loadLesson = async () => {

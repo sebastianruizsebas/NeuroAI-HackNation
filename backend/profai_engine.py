@@ -2,8 +2,15 @@ import json
 import os
 import traceback
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Optional
 import openai
+from progress_utils import (
+    calculate_lesson_deadlines,
+    update_lesson_progress,
+    get_lesson_deadlines,
+    update_topic_progress,
+    get_topic_complete_data
+)
 
 # Import from local config
 from config import OPENAI_API_KEY, DATA_DIR
@@ -13,6 +20,114 @@ openai.api_key = OPENAI_API_KEY
 client = openai.OpenAI()
 
 class ProfAIEngine:
+    def generate_initial_assessment(self, topic: str) -> List[Dict]:
+        """Generate 5 very beginner-friendly questions for pre-competency test."""
+        try:
+            from rag_utils import load_all_chunks, find_relevant_chunks
+            base_dir = os.path.dirname(__file__)
+            chunk_files = [
+                os.path.join(base_dir, 'math_ml_chunks.json'),
+                os.path.join(base_dir, 'mit_ocw_chunks.json'),
+            ]
+            chunks = load_all_chunks(chunk_files)
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)
+            if relevant_chunks:
+                context = '\n\n'.join([f"EDUCATIONAL CONTENT FROM {fname}:\n{chunk}" for fname, chunk in relevant_chunks])
+            else:
+                context = "No specific course material found. Use general machine learning principles."
+        except Exception as rag_e:
+            print(f"RAG retrieval failed (assessment): {rag_e}")
+            context = "No specific course material found. Use general machine learning principles."
+
+        prompt = f"""You are a world-class AI tutor. Create exactly 5 multiple-choice questions for a PRE-TEST on the topic '{topic}'.\n\nREQUIREMENTS:\n1. All questions must be suitable for ABSOLUTE BEGINNERS with no prior experience.\n2. Focus on basic definitions, simple concepts, and fundamental understanding.\n3. Avoid technical jargon, advanced math, or code.\n4. Each question should have 4 options (A-D), only one correct.\n5. Use clear, simple language and real-world analogies if possible.\n6. Base questions on the following course material if available:\n{context}\n\nReturn ONLY a JSON array with this format:\n[\n    {{\n        \"question\": \"...\",\n        \"options\": [\"A) ...\", \"B) ...\", \"C) ...\", \"D) ...\"],\n        \"correct\": \"A\",\n        \"concept\": \"...\",\n        \"difficulty\": 1,\n        \"explanation\": \"...\"\n    }}\n]\n"""
+        try:
+            print(f"Calling OpenAI API for initial beginner assessment on topic: {topic}")
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.5,
+                timeout=30
+            )
+            content = response.choices[0].message.content.strip()
+            if content.startswith('```json'):
+                content = content[7:-3]
+            elif content.startswith('```'):
+                content = content[3:-3]
+            questions = json.loads(content)
+            return questions
+        except Exception as e:
+            print(f"Error generating initial assessment: {e}")
+            # Fallback: return 5 basic template questions
+            return [
+                {
+                    "question": f"What is the main idea of {topic}?",
+                    "options": ["A) A basic explanation", "B) An unrelated concept", "C) A technical detail", "D) None of the above"],
+                    "correct": "A",
+                    "concept": topic,
+                    "difficulty": 1,
+                    "explanation": f"{topic} is best understood as..."
+                }
+            ] * 5
+
+    def generate_adaptive_assessment(self, topic: str, previous_answers: list) -> List[Dict]:
+        """Generate 5 more questions, adaptively increasing difficulty if user did well on the first 5."""
+        # Count correct answers (assume previous_answers is a list of bools or 0/1)
+        correct = sum(1 for a in previous_answers if a)
+        if correct >= 4:
+            difficulty = "intermediate to advanced"
+            prompt_level = "Increase the difficulty for each question. Include some intermediate and advanced concepts, simple math, or real-world scenarios."
+        elif correct >= 2:
+            difficulty = "intermediate"
+            prompt_level = "Make the questions a mix of basic and intermediate. Introduce some practical scenarios or slightly more technical terms."
+        else:
+            difficulty = "basic"
+            prompt_level = "Keep all questions beginner-friendly, but introduce a few slightly more detailed concepts."
+        try:
+            from rag_utils import load_all_chunks, find_relevant_chunks
+            base_dir = os.path.dirname(__file__)
+            chunk_files = [
+                os.path.join(base_dir, 'math_ml_chunks.json'),
+                os.path.join(base_dir, 'mit_ocw_chunks.json'),
+            ]
+            chunks = load_all_chunks(chunk_files)
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)
+            if relevant_chunks:
+                context = '\n\n'.join([f"EDUCATIONAL CONTENT FROM {fname}:\n{chunk}" for fname, chunk in relevant_chunks])
+            else:
+                context = "No specific course material found. Use general machine learning principles."
+        except Exception as rag_e:
+            print(f"RAG retrieval failed (adaptive assessment): {rag_e}")
+            context = "No specific course material found. Use general machine learning principles."
+
+        prompt = f"""You are a world-class AI tutor. Create exactly 5 multiple-choice questions for a COMPETENCY TEST on the topic '{topic}'.\n\nREQUIREMENTS:\n1. Each question should be {difficulty}. {prompt_level}\n2. Each question should have 4 options (A-D), only one correct.\n3. Use clear, academic language, but keep it accessible.\n4. Base questions on the following course material if available:\n{context}\n\nReturn ONLY a JSON array with this format:\n[\n    {{\n        \"question\": \"...\",\n        \"options\": [\"A) ...\", \"B) ...\", \"C) ...\", \"D) ...\"],\n        \"correct\": \"A\",\n        \"concept\": \"...\",\n        \"difficulty\": 2,\n        \"explanation\": \"...\"\n    }}\n]\n"""
+        try:
+            print(f"Calling OpenAI API for adaptive assessment on topic: {topic}, difficulty: {difficulty}")
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.6,
+                timeout=30
+            )
+            content = response.choices[0].message.content.strip()
+            if content.startswith('```json'):
+                content = content[7:-3]
+            elif content.startswith('```'):
+                content = content[3:-3]
+            questions = json.loads(content)
+            return questions
+        except Exception as e:
+            print(f"Error generating adaptive assessment: {e}")
+            # Fallback: return 5 template questions
+            return [
+                {
+                    "question": f"(Adaptive) What is a key concept in {topic}?",
+                    "options": ["A) Correct concept", "B) Wrong", "C) Wrong", "D) Wrong"],
+                    "correct": "A",
+                    "concept": topic,
+                    "difficulty": 2,
+                    "explanation": f"This is a key concept in {topic}."
+                }
+            ] * 5
     def __init__(self):
         print("[__init__] Initializing ProfAIEngine")
         self.users_file = os.path.join(DATA_DIR, "users.json")  # Use os.path.join for cross-platform compatibility
@@ -24,7 +139,7 @@ class ProfAIEngine:
         print(f"[__init__] Users file path: {self.users_file}")
         self.client = openai.OpenAI(api_key=OPENAI_API_KEY)
         self._ensure_data_files()
-    
+
     def _ensure_data_files(self):
         """Create data files if they don't exist"""
         try:
@@ -49,18 +164,27 @@ class ProfAIEngine:
             print(f"[_ensure_data_files] Stack trace: {traceback.format_exc()}")
     
     def load_data(self, file_path: str) -> Any:
-        """Load JSON data from file"""
+        """Load JSON data from file, with self-healing for missing/corrupt files."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read().strip()
                 if not content:  # Empty file
+                    print(f"[load_data] {file_path} is empty, resetting to default.")
+                    self.save_data(file_path, {} if file_path != self.sessions_file else [])
                     return {} if file_path != self.sessions_file else []
-                return json.loads(content)
-        except json.JSONDecodeError:
-            print(f"[load_data] Invalid JSON in {file_path}, resetting to default")
+                try:
+                    return json.loads(content)
+                except json.JSONDecodeError:
+                    print(f"[load_data] Invalid JSON in {file_path}, resetting to default.")
+                    self.save_data(file_path, {} if file_path != self.sessions_file else [])
+                    return {} if file_path != self.sessions_file else []
+        except FileNotFoundError:
+            print(f"[load_data] {file_path} not found, creating new file.")
+            self.save_data(file_path, {} if file_path != self.sessions_file else [])
             return {} if file_path != self.sessions_file else []
         except Exception as e:
             print(f"[load_data] Error reading {file_path}: {str(e)}")
+            self.save_data(file_path, {} if file_path != self.sessions_file else [])
             return {} if file_path != self.sessions_file else []
     
     def save_data(self, file_path: str, data: Any):
@@ -209,8 +333,7 @@ class ProfAIEngine:
             print(f"[create_user] Stack trace: {traceback.format_exc()}")
             return None
     
-    def generate_lesson_outline(self, topic: str, difficulty: str, assessment_results: Dict = None) -> Dict:
-        """Generate a detailed, topic-specific lesson outline."""
+    # Duplicate generate_lesson_outline removed (see robust version at end of file)
         try:
             prompt = f"""Create a detailed, topic-specific lesson outline for {topic} at {difficulty} level.
 
@@ -255,24 +378,14 @@ Return a JSON object with detailed, topic-specific outline information."""
                 ]
             }
 
-    def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
-<<<<<<< HEAD
-        """Generate sequential, in-depth lesson content structured like a tutoring session."""
+    # Duplicate generate_lesson_content removed (see robust version at end of file)
         competency = user_profile.get('competency_scores', {}).get(topic, 0)
         knowledge_gaps = user_profile.get('knowledge_gaps', {}).get(topic, [])
         learning_path = user_profile.get('learning_path', [])
         completed_lessons = user_profile.get('completed_lessons', [])
-        
-        # --- RAG: Retrieve relevant chunks from course materials ---
-=======
-        """Generate personalized lesson content that delivers on the specific outcomes promised in the topic title."""
-        competency = user_profile.get('competency_scores', {}).get(topic, 0)
-        
         # Extract actionable components from the topic title
         title_analysis = self._analyze_topic_title(topic)
-        
-        # --- RAG: Retrieve relevant chunks ---
->>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
+        # --- RAG: Retrieve relevant chunks from course materials ---
         try:
             from rag_utils import load_all_chunks, find_relevant_chunks
             import os
@@ -282,131 +395,21 @@ Return a JSON object with detailed, topic-specific outline information."""
                 os.path.join(base_dir, 'mit_ocw_chunks.json'),
             ]
             chunks = load_all_chunks(chunk_files)
-<<<<<<< HEAD
-            # Get more chunks for in-depth content
-            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)
-            context = '\n\n'.join([f"From {fname}: {chunk}" for fname, chunk in relevant_chunks])
-=======
             relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)  # Get more chunks for better coverage
-            
             if relevant_chunks:
                 context = '\n\n'.join([f"EDUCATIONAL CONTENT FROM {fname}:\n{chunk}" for fname, chunk in relevant_chunks])
                 print(f"Successfully retrieved {len(relevant_chunks)} relevant chunks for topic: {topic}")
             else:
                 print(f"No relevant chunks found for topic: {topic}")
                 context = ""
->>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
         except Exception as rag_e:
             print(f"RAG retrieval failed: {rag_e}")
             context = ""
-
-<<<<<<< HEAD
         # Determine the next topic in the learning path
         current_topic_index = learning_path.index(topic) if topic in learning_path else -1
         is_sequential = current_topic_index >= 0 and len(completed_lessons) > 0
-        
-        prompt = f"""You are a world-class AI tutor teaching {topic}. Create a detailed, sequential lesson that builds on the student's current knowledge and guides them through complex concepts step by step. Current competency level: {competency}/10.
-
-{'Previous topics completed: ' + ', '.join(completed_lessons) if completed_lessons else 'This is the first lesson.'}
-{'This lesson should build upon and reference concepts from previous lessons.' if is_sequential else 'This is a foundational lesson that will be referenced in future topics.'}
-=======
-        prompt = f"""You are a world-class AI educator creating a lesson that MUST deliver on the specific learning outcomes promised in the title: "{topic}".
->>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
-
-Title Analysis:
-- Action words: {title_analysis['actions']}
-- Technical components: {title_analysis['technologies']}
-- Application domain: {title_analysis['domain']}
-- Expected deliverables: {title_analysis['deliverables']}
-
-EDUCATIONAL FOUNDATION - YOU MUST BASE YOUR LESSON ON THIS MATERIAL:
-{context}
-
-<<<<<<< HEAD
-TUTORING APPROACH:
-1. Start with a clear connection to previously learned concepts
-2. Break down complex ideas into digestible steps
-3. Use concrete examples that build in complexity
-4. Provide detailed explanations of each concept
-5. Include practical applications and real-world scenarios
-6. Challenge common misconceptions
-7. Guide through mathematical derivations step-by-step
-8. Connect theory to implementation
-
-DEPTH AND SEQUENCING:
-- Build concepts sequentially, each building on the last
-- Minimum 500 words per section for thorough explanations
-- Include detailed mathematical derivations with explanations
-- Provide multiple examples with increasing complexity
-- Connect theoretical concepts to practical applications
-- Reference and build upon concepts from previous lessons
-- Challenge understanding with thought-provoking questions
-=======
-CRITICAL REQUIREMENTS:
-1. DIRECTLY INCORPORATE the provided educational content from MIT OCW and lecture notes
-2. Build lesson content that references and expands on the specific concepts from the source material
-3. Use the mathematical formulations, examples, and explanations from the provided chunks
-4. Ensure lesson content reflects the title and enables students to {', '.join(title_analysis['actions'])} the specific {', '.join(title_analysis['technologies'])} for {title_analysis['domain']} applications
-5. Create substantial content (200+ words per chunk) that demonstrates deep understanding of the source material
-
-CONTENT ALIGNMENT STRATEGY:
-- Quote key definitions and theorems from the source material
-- Build upon mathematical formulations provided in the chunks
-- Reference specific examples and case studies from the educational content
-- Connect theoretical concepts from the source to practical applications
-- Ensure each lesson chunk directly builds from the foundation laid in the source material
-
-LESSON STRUCTURE REQUIREMENTS:
-1. THEORETICAL FOUNDATION - Start with concepts from the source material
-2. MATHEMATICAL FORMULATION - Use equations and proofs from the chunks where relevant
-3. PRACTICAL APPLICATION - Show how theory applies to the domain specified in the title
-4. IMPLEMENTATION GUIDANCE - Provide step-by-step guidance for achieving the title's promise
-
-CONTENT DEPTH (Competency Level {competency}/10):
-- Competency 0-3: Explain source concepts clearly with detailed examples from the material
-- Competency 4-6: Connect source theory to intermediate applications with mathematical rigor
-- Competency 7-10: Extend source material to advanced applications and cutting-edge techniques
-
-Each section must be substantial (200+ words) with:
-- Direct references to the source educational material
-- Mathematical formulations from the chunks when relevant
-- Concrete examples that build upon source content
-- Clear connection between source theory and title's promised outcome
->>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
-
-Return ONLY a JSON object with this enhanced format:
-{{
-    "topic": "{topic}",
-    "competency_level": {competency},
-    "title_promises": {title_analysis},
-    "source_material_used": true,
-    "overview": "Overview that explicitly connects source material to the lesson objectives and states what students will BUILD/IMPLEMENT/MASTER as promised in the title, with clear foundation in the provided educational content.",
-    "chunks": [
-        {{
-            "title": "Descriptive Academic Title",
-            "content": "Detailed explanation that DIRECTLY REFERENCES and BUILDS UPON the provided source material. Include specific concepts, mathematical formulations, and examples from the educational chunks. Minimum 200 words that demonstrate deep engagement with the source content.",
-            "key_point": "Specific, actionable takeaway that connects source theory to practical mastery",
-            "source_connections": ["Specific references to concepts from the provided chunks"],
-            "mathematical_concepts": ["concept1 from source", "concept2 from source"],
-            "examples": ["examples that build on source material"],
-            "applications": ["applications that realize the title's promise"],
-            "difficulty_level": "1-5 scale",
-            "estimated_time": "15-20 minutes"
-        }}
-    ],
-    "key_takeaways": [
-        "Specific technical knowledge gained from source material",
-        "Practical implementation skills connecting source to application",
-        "Mathematical understanding drawn from provided content",
-        "Real-world capabilities that fulfill the title's promise"
-    ],
-    "prerequisites": ["specific concepts from source material"],
-    "mathematical_foundations": ["foundational concepts from the educational chunks"],
-    "further_reading": ["references that extend the source material"],
-    "assessment_criteria": ["how to verify achievement of title's promise"],
-    "source_material_references": ["specific chunks and concepts used"]
-}}"""
         try:
+            prompt = f"""You are a world-class AI educator creating a lesson that MUST deliver on the specific learning outcomes promised in the title: \"{topic}\".\n\nTitle Analysis:\n- Action words: {title_analysis['actions']}\n- Technical components: {title_analysis['technologies']}\n- Application domain: {title_analysis['domain']}\n- Expected deliverables: {title_analysis['deliverables']}\n\nEDUCATIONAL FOUNDATION - YOU MUST BASE YOUR LESSON ON THIS MATERIAL:\n{context}\n"""
             print(f"Calling OpenAI for lesson generation with RAG context...")
             print(f"Topic: {topic}, Competency: {competency}")
             response = client.chat.completions.create(
@@ -1410,88 +1413,7 @@ Return JSON format:
             print(f"RAG retrieval failed (assessment): {rag_e}")
             context = "No specific course material found. Use general machine learning principles."
 
-        prompt = f"""You are a world-class AI tutor assessing deep understanding of {topic}. Create exactly 5 challenging multiple-choice questions that test specific technical knowledge and problem-solving abilities.
-
-FOUNDATIONAL COURSE MATERIAL TO BASE QUESTIONS ON:
-{context}
-
-<<<<<<< HEAD
-QUESTION REQUIREMENTS:
-1. Highly Specific Focus:
-   - Target one precise concept or technique per question
-   - Test understanding of implementation details and edge cases
-   - Include specific numerical examples or code snippets when relevant
-
-2. Technical Depth:
-   - Require understanding of underlying mathematical principles
-   - Test ability to identify correct approaches to complex problems
-   - Include real parameter values and specific scenarios
-
-3. Practical Application:
-   - Present real-world scenarios that require applying theoretical knowledge
-   - Include industry-relevant problems and solutions
-   - Test ability to choose optimal approaches in concrete situations
-
-4. Conceptual Understanding:
-   - Require understanding of why certain approaches work or fail
-   - Test ability to identify subtle differences between similar concepts
-   - Challenge common misconceptions with carefully crafted distractors
-
-5. Question Structure:
-   - Clear, unambiguous wording using technical terminology
-   - Detailed scenario or problem description (2-3 sentences minimum)
-   - All options should be plausible but only one correct
-   - Include specific numbers, parameters, or conditions
-   - Reference actual frameworks, libraries, or tools when relevant
-8. Test different cognitive levels (comprehension, application, analysis)
-=======
-CRITICAL REQUIREMENT: Questions MUST be based on the specific concepts, mathematical formulations, and examples provided in the course material above. If course material is available, draw questions directly from it.
-
-REQUIREMENTS for each question:
-1. Base questions on SPECIFIC concepts from the provided course material
-2. Use mathematical formulations and examples from the source content when available
-3. Test DEEP understanding of the source material, not just memorization
-4. Reference specific algorithms, theorems, or techniques mentioned in the chunks
-5. Make distractors based on common misconceptions about the source concepts
-6. Use precise, academic language consistent with the source material
-7. Test different cognitive levels (comprehension, application, analysis)
-
-QUESTION DEVELOPMENT STRATEGY:
-- Extract key concepts, definitions, and theorems from the provided course material
-- Create scenarios that test understanding of mathematical formulations from the chunks
-- Use specific examples and case studies mentioned in the source content
-- Test ability to apply theoretical concepts from the material to new situations
->>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
-
-QUALITY STANDARDS:
-- Question stem should reference specific concepts from the course material (at least 20 words)
-- Each option should be substantive (at least 8 words) and based on course content
-- Correct answer must reflect accurate understanding of the source material
-- Distractors should represent realistic misunderstandings of the course concepts
-- Include quantitative elements from the source material where appropriate
-
-DIFFICULTY PROGRESSION:
-- Questions 1-2: Fundamental definitions and concepts from the course material
-- Questions 3-4: Mathematical applications and analysis from the source content
-- Question 5: Synthesis and evaluation of course concepts in new contexts
-
-Return ONLY a JSON array with this exact format:
-[
-    {{
-        "question": "Based on the [specific concept from course material], when [specific scenario from source content], which approach would be most effective? Consider the [specific mathematical property or constraint mentioned in the material].",
-        "options": [
-            "A) [Solution based on correct understanding of source material with specific technical reasoning]",
-            "B) [Alternative approach that misapplies a concept from the source material]", 
-            "C) [Common misconception about the source concept with plausible reasoning]",
-            "D) [Another misconception or oversimplified approach contradicting the source material]"
-        ],
-        "correct": "A",
-        "concept": "specific_concept_from_source_material",
-        "difficulty": 1,
-        "source_reference": "Reference to specific chunk or concept used",
-        "explanation": "Why the correct answer aligns with the course material and others misunderstand it"
-    }}
-]"""
+        prompt = f"""You are a world-class AI tutor. Create exactly 5 multiple-choice questions for a PRE-TEST on the topic '{topic}'.\n\nREQUIREMENTS:\n1. All questions must be suitable for BEGINNERS with no prior experience.\n2. Focus on basic definitions, simple concepts, and fundamental understanding.\n3. Avoid technical jargon, advanced math, or code unless absolutely necessary.\n4. Each question should have 4 options (A-D), only one correct.\n5. Use clear, simple language and real-world analogies if possible.\n6. Base questions on the following course material if available:\n{context}\n\nReturn ONLY a JSON array with this format:\n[\n    {{\n        \"question\": \"...\",\n        \"options\": [\"A) ...\", \"B) ...\", \"C) ...\", \"D) ...\"],\n        \"correct\": \"A\",\n        \"concept\": \"...\",\n        \"difficulty\": 1,\n        \"explanation\": \"...\"\n    }}\n]\n"""
 
         try:
             print(f"Calling OpenAI API for initial assessment on topic: {topic}")
@@ -2007,11 +1929,20 @@ Return ONLY a JSON object with this format:
         if not deliverables:
             deliverables = ['practical implementation']
         
+        # Generate a non-verbatim, academic course title
+        base = technologies[0] if technologies else "AI Topic"
+        if actions:
+            course_title = f"Introduction to {base}" if any(a in actions for a in ['learn', 'understand']) else f"{actions[0].capitalize()} {base}"
+        else:
+            course_title = f"{base} Fundamentals"
+        if domain and domain != "general application":
+            course_title += f" for {domain.title()}"
         return {
             'actions': actions if actions else ['learn', 'understand'],
             'technologies': technologies if technologies else ['core concepts'],
             'domain': domain,
-            'deliverables': deliverables
+            'deliverables': deliverables,
+            'course_title': course_title
         }
     
     def save_custom_topic(self, user_id: str, topic: Dict):
@@ -2027,6 +1958,11 @@ Return ONLY a JSON object with this format:
         if user_id not in custom_topics:
             custom_topics[user_id] = []
         
+        # Always use a non-verbatim, academic course title
+        if 'title' not in topic or not topic['title'] or topic['title'].strip().lower() == topic.get('userInput', '').strip().lower():
+            # Generate a descriptive title from the topic or userInput
+            analysis = self._analyze_topic_title(topic.get('userInput', topic.get('title', '')))
+            topic['title'] = analysis.get('course_title', topic.get('title', ''))
         # Add progress tracking fields and library metadata
         topic.update({
             'progress': 0,
@@ -2093,7 +2029,6 @@ Return ONLY a JSON object with this format:
                 'favorites': [],
                 'completed': []
             }
-        
         # Categorize by base topic
         category = topic.get('baseTopic', 'general')
         if category not in library[user_id]['by_category']:
@@ -2240,179 +2175,73 @@ Return ONLY a JSON object with this format:
         return [s for s in sessions if s['userId'] == user_id and s['active']]
     
     def generate_lesson_outline(self, topic: str, difficulty: str = "beginner", user_assessment: Dict = None) -> Dict:
-        """Generate a comprehensive lesson outline that delivers on the specific outcomes promised in the topic title"""
+        """Generate a comprehensive, pedagogically progressive lesson outline with numbered modules, model-specific titles, and deepening content."""
         try:
-            # Analyze the topic title to understand what students should achieve
-            title_analysis = self._analyze_topic_title(topic)
-            
-            # Use assessment results to personalize outline
-            knowledge_gaps = []
-            strong_areas = []
-            if user_assessment:
-                knowledge_gaps = user_assessment.get('knowledge_gaps', [])
-                strong_areas = user_assessment.get('strong_areas', [])
-            
-            prompt = f"""Create a comprehensive lesson outline for "{topic}" that MUST deliver on the specific learning outcomes promised in the title.
-
-Title Analysis:
-- Action words: {title_analysis['actions']}
-- Technical components: {title_analysis['technologies']}
-- Application domain: {title_analysis['domain']}
-- Expected deliverables: {title_analysis['deliverables']}
-
-User's Knowledge Profile:
-- Knowledge gaps: {knowledge_gaps}
-- Strong areas: {strong_areas}
-- Difficulty level: {difficulty}
-
-CRITICAL REQUIREMENT: Students must be able to actually {', '.join(title_analysis['actions'])} {', '.join(title_analysis['technologies'])} for {title_analysis['domain']} by the end of this lesson.
-
-Create a hands-on, implementation-focused outline with:
-
-1. Learning Objectives (3-5 specific, measurable goals that directly fulfill the title's promise)
-   - Must include action verbs from the title
-   - Must specify what students will BUILD/CREATE/IMPLEMENT
-   - Must mention the specific technology and application domain
-
-2. Lesson Structure (4-6 practical modules)
-   - Each module builds toward the final deliverable mentioned in the title
-   - Include hands-on coding/implementation sections
-   - Progress from theory to practical application
-   - Culminate in the specific outcome promised in the title
-
-3. Each Module Requirements:
-   - Title reflecting a specific skill/component being built
-   - Estimated time for hands-on work
-   - Key concepts with implementation focus
-   - Practical activities (coding, building, testing)
-   - Assessment that verifies capability, not just knowledge
-   - How it contributes to the title's promised outcome
-
-4. Final Project/Deliverable:
-   - Must match exactly what the title promises
-   - Concrete, measurable output
-   - Real-world application in the specified domain
-
-Focus on DOING rather than just learning - address knowledge gaps through practical implementation.
-
-Return ONLY a JSON object with this format:
-{{
-    "topic": "{topic}",
-    "difficulty": "{difficulty}",
-    "title_promises": {title_analysis},
-    "estimatedDuration": "3-4 hours for hands-on implementation",
-    "learningObjectives": [
-        "Students will BUILD/IMPLEMENT/CREATE [specific deliverable] using [specific technology]",
-        "Students will APPLY [technique] to solve [domain-specific problem]",
-        "Students will DEMONSTRATE mastery by [specific measurable outcome]"
-    ],
-    "prerequisites": ["Basic understanding of...", "Familiarity with..."],
-    "modules": [
-        {{
-            "id": "module_1",
-            "title": "Module Title",
-            "estimatedTime": "30 minutes",
-            "description": "What this module covers",
-            "keyConcepts": ["Concept 1", "Concept 2"],
-            "activities": ["Activity 1", "Activity 2"],
-            "assessmentType": "quiz/discussion/practical",
-            "addressesGaps": ["gap1", "gap2"]
-        }}
-    ],
-    "resources": ["Resource 1", "Resource 2"],
-    "expectedOutcomes": ["Outcome 1", "Outcome 2"]
-}}"""
-            
+            analysis = self._analyze_topic_title(topic)
+            course_title = analysis.get('course_title') or topic
+            # Make course title more specific if needed
+            if course_title.strip().lower() == topic.strip().lower() or 'i wanna' in course_title.lower() or 'learn' in course_title.lower():
+                course_title = self._generate_fallback_title(topic)
+            knowledge_gaps = user_assessment.get('knowledge_gaps', []) if user_assessment else []
+            strong_areas = user_assessment.get('strong_areas', []) if user_assessment else []
+            prompt = f"""You are an expert AI curriculum designer. Create a comprehensive, implementation-focused lesson outline for the course titled: '{course_title}'.\n\nREQUIREMENTS:\n- Number each module sequentially (e.g., Module 1, Module 2, ...).\n- Each module must deepen in complexity and build on the previous.\n- Make the course title specific to the type of model or topic.\n- For each module, elaborate on mathematical concepts, provide concrete examples, and include practical applications.\n- Add a variety of content types: math boxes, code boxes, real-world case studies, visual explanations, and summary tables.\n- Each module must have: title, estimated time, description, key concepts, activities, assessment type, and which gaps it addresses.\n- The outline must show clear pedagogical progression from fundamentals to advanced applications.\n- Include a final project/deliverable that is concrete and measurable.\n- List prerequisites and resources.\n- Use the following user knowledge profile:\n  - Knowledge gaps: {knowledge_gaps}\n  - Strong areas: {strong_areas}\n  - Difficulty: {difficulty}\n- Return ONLY a JSON object with this format:\n{{\n    \"course_title\": \"{course_title}\",\n    \"topic\": \"{topic}\",\n    \"difficulty\": \"{difficulty}\",\n    \"title_promises\": {analysis},\n    \"estimatedDuration\": \"4-6 hours for hands-on implementation\",\n    \"learningObjectives\": [\"...\"],\n    \"prerequisites\": [\"...\"],\n    \"modules\": [{{\n        \"id\": \"module_1\",\n        \"title\": \"...\",\n        \"estimatedTime\": \"...\",\n        \"description\": \"...\",\n        \"keyConcepts\": [\"...\"],\n        \"activities\": [\"...\"],\n        \"assessmentType\": \"...\",\n        \"addressesGaps\": [\"...\"],\n        \"mathBox\": \"...\",\n        \"codeBox\": \"...\",\n        \"caseStudy\": \"...\",\n        \"visualExplanation\": \"...\",\n        \"summaryTable\": \"...\"\n    }}],\n    \"resources\": [\"...\"],\n    \"expectedOutcomes\": [\"...\"]\n}}"""
             response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=2000,
+                max_tokens=2500,
                 temperature=0.7,
-                timeout=30
+                timeout=40
             )
-            
             content = response.choices[0].message.content.strip()
             if content.startswith('```json'):
                 content = content[7:-3]
             elif content.startswith('```'):
                 content = content[3:-3]
-            
             outline = json.loads(content)
             outline['generated_at'] = datetime.now().isoformat()
-            
             return outline
-            
         except Exception as e:
             print(f"Error generating lesson outline: {e}")
             return self._generate_fallback_outline(topic, difficulty)
     
     def _generate_fallback_outline(self, topic: str, difficulty: str) -> Dict:
-        """Generate a fallback lesson outline that aligns with the enhanced title promises"""
-        
-        # Analyze the topic title to understand what should be delivered
+        """Generate a robust fallback lesson outline with numbered, deepening modules and rich content types."""
         title_analysis = self._analyze_topic_title(topic)
-        
-        # Create implementation-focused learning objectives based on title analysis
         action_verb = title_analysis['actions'][0] if title_analysis['actions'] else "implement"
         main_tech = title_analysis['technologies'][0] if title_analysis['technologies'] else "core concepts"
         domain = title_analysis['domain']
         deliverable = title_analysis['deliverables'][0] if title_analysis['deliverables'] else "practical solution"
-        
+        modules = []
+        for i in range(1, 5):
+            modules.append({
+                "id": f"module_{i}",
+                "title": f"Module {i}: {'Foundations' if i==1 else 'Advanced Concepts' if i==4 else 'Deepening Skills'} in {main_tech}",
+                "estimatedTime": f"{30 + i*15} minutes",
+                "description": f"{'Establish theoretical foundation and setup.' if i==1 else 'Apply and extend concepts.' if i==2 else 'Real-world application.' if i==3 else 'Integration and mastery.'}",
+                "keyConcepts": [f"Key concept {i}A", f"Key concept {i}B"],
+                "activities": [f"Activity {i}A", f"Activity {i}B"],
+                "assessmentType": "quiz" if i < 4 else "project",
+                "addressesGaps": [f"Gap {i}"],
+                "mathBox": f"Math concept explanation for module {i}.",
+                "codeBox": f"Code example for module {i}.",
+                "caseStudy": f"Case study for module {i}.",
+                "visualExplanation": f"Visual explanation for module {i}.",
+                "summaryTable": f"Summary table for module {i}."
+            })
         return {
+            "course_title": f"{action_verb.title()} {main_tech} for {domain.title() if domain else 'AI'}: From Fundamentals to {deliverable.title()}",
             "topic": topic,
             "difficulty": difficulty,
             "title_promises": title_analysis,
-            "estimatedDuration": "3-4 hours for hands-on implementation",
+            "estimatedDuration": "4-6 hours for hands-on implementation",
             "learningObjectives": [
                 f"Students will {action_verb} a {deliverable} using {main_tech}",
-                f"Students will apply {main_tech} techniques to {domain} problems",
-                f"Students will demonstrate practical mastery through a working implementation",
-                f"Students will understand the theoretical foundations behind {main_tech}"
+                f"Apply {main_tech} techniques to {domain} problems",
+                f"Demonstrate mastery through a working implementation",
+                f"Understand the theoretical and mathematical foundations behind {main_tech}"
             ],
             "prerequisites": ["Basic programming knowledge", "Familiarity with Python", "Mathematical fundamentals"],
-            "finalProject": f"Complete {deliverable} that demonstrates mastery of {main_tech} for {domain} applications",
-            "modules": [
-                {
-                    "id": "module_1",
-                    "title": f"Foundation and Setup for {main_tech}",
-                    "estimatedTime": "45 minutes",
-                    "description": f"Establish theoretical foundation and set up development environment for {action_verb} {main_tech}",
-                    "keyConcepts": ["Core principles", "Mathematical foundations", "Development environment"],
-                    "activities": ["Environment setup", "Foundational coding exercises", "Conceptual walkthrough"],
-                    "assessmentType": "practical setup verification",
-                    "buildsToward": f"Preparation for {action_verb} {deliverable}"
-                },
-                {
-                    "id": "module_2", 
-                    "title": f"Implementing {main_tech} Components",
-                    "estimatedTime": "60 minutes",
-                    "description": f"Hands-on implementation of core {main_tech} components and algorithms",
-                    "keyConcepts": ["Algorithm implementation", "Code structure", "Best practices"],
-                    "activities": ["Step-by-step coding", "Component testing", "Debugging exercises"],
-                    "assessmentType": "code implementation review",
-                    "buildsToward": f"Core functionality for {deliverable}"
-                },
-                {
-                    "id": "module_3",
-                    "title": f"Application to {domain.title()} Domain",
-                    "estimatedTime": "50 minutes", 
-                    "description": f"Apply {main_tech} implementation to solve real {domain} problems",
-                    "keyConcepts": ["Domain-specific challenges", "Real-world data", "Performance optimization"],
-                    "activities": ["Domain problem analysis", "Implementation adaptation", "Testing with real data"],
-                    "assessmentType": "domain application project",
-                    "buildsToward": f"Domain-specific {deliverable}"
-                },
-                {
-                    "id": "module_4",
-                    "title": f"Complete {deliverable.title()} Development",
-                    "estimatedTime": "45 minutes",
-                    "description": f"Integrate all components into a fully functional {deliverable}",
-                    "keyConcepts": ["System integration", "Testing", "Deployment considerations"],
-                    "activities": ["Integration coding", "End-to-end testing", "Performance evaluation"],
-                    "assessmentType": "final project demonstration", 
-                    "buildsToward": f"Working {deliverable} that fulfills the title's promise"
-                }
-            ],
+            "modules": modules,
             "resources": [f"Documentation for {main_tech}", "Code examples and templates", "Domain-specific datasets"],
             "expectedOutcomes": [
                 f"Fully functional {deliverable}",
@@ -2422,3 +2251,12 @@ Return ONLY a JSON object with this format:
             ],
             "generated_at": datetime.now().isoformat()
         }
+
+# --- Flask API server entry point for frontend integration ---
+if __name__ == "__main__":
+    try:
+        from api_server import app
+        print("[profai_engine] Running Flask API server for frontend integration...")
+        app.run(host="0.0.0.0", port=5000, debug=True)
+    except Exception as e:
+        print(f"[profai_engine] Error running Flask API server: {e}")
