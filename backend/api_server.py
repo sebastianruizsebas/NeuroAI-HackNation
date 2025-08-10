@@ -16,32 +16,44 @@ engine = ProfAIEngine()
 @app.route('/api/users', methods=['POST'])
 def create_user():
     """Create a new user"""
+    print("[API] Received user creation request")
+    print("[API] Request data:", request.get_json())
     try:
+        print("[API] Starting user creation request")
         data = request.get_json()
         if not data:
+            print("[API] No JSON data received")
             return jsonify({'error': 'No JSON data received'}), 400
             
         name = data.get('name')
         if not name:
+            print("[API] Name is required but not provided")
             return jsonify({'error': 'Name is required'}), 400
         
+        print(f"[API] Attempting to create user with name: {name}")
         # Create the user
         user_id = engine.create_user(name)
         if not user_id:
-            return jsonify({'error': 'Failed to create user'}), 500
+            print("[API] Failed to create user - engine returned None")
+            return jsonify({'error': 'Failed to create user. Please check server logs for details.'}), 500
             
+        print(f"[API] User created successfully with ID: {user_id}")
         # Get the user data
         user_data = engine.get_user(user_id)
         if not user_data:
+            print(f"[API] Failed to retrieve data for user_id: {user_id}")
             return jsonify({'error': 'User created but failed to retrieve data'}), 500
             
+        print("[API] Successfully retrieved user data")
         return jsonify({
             'user_id': user_id,
             'user_data': user_data
         })
     except Exception as e:
-        print(f"Error in create_user endpoint: {str(e)}")
-        return jsonify({'error': f'Server error: {str(e)}'}), 500
+        import traceback
+        print(f"[API] Error in create_user endpoint: {str(e)}")
+        print(f"[API] Stack trace: {traceback.format_exc()}")
+        return jsonify({'error': 'Internal server error. Please try again.'}), 500
 
 @app.route('/api/users/<user_id>', methods=['GET'])
 def get_user(user_id):
@@ -65,14 +77,14 @@ def generate_assessment_questions():
         return jsonify({'error': 'Topic is required'}), 400
     
     try:
-        print(f"Generating assessment questions for topic: {topic}")
+        print(f"[API] Generating assessment questions for topic: {topic}")
         questions = engine.generate_initial_assessment(topic)  # Use new enhanced method
         return jsonify({
             'questions': questions,
             'total_questions': len(questions)
         })
     except Exception as e:
-        print(f"Error generating assessment questions: {str(e)}")
+        print(f"[API] Error generating assessment questions: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/assessment/submit', methods=['POST'])
@@ -107,6 +119,8 @@ def submit_assessment():
     except Exception as e:
         print(f"Error submitting assessment: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+
 
 @app.route('/api/lesson/generate', methods=['POST'])
 def generate_lesson():
@@ -280,22 +294,7 @@ def get_user_progress(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/assessment/quality', methods=['POST'])
-def assess_question_quality():
-    """Assess the quality of generated questions"""
-    try:
-        data = request.get_json()
-        questions = data.get('questions', [])
-        topic = data.get('topic', '')
-        
-        if not questions:
-            return jsonify({'error': 'No questions provided'}), 400
-        
-        quality_report = engine.get_question_quality_report(questions, topic)
-        return jsonify(quality_report)
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/lesson/outline', methods=['POST'])
 def generate_lesson_outline():

@@ -1,5 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { apiService, Lesson, SentimentAnalysis } from '../services/api';
+import { apiService, SentimentAnalysis } from '../services/api';
+
+interface LessonChunk {
+  title: string;
+  content: string;
+  mathematical_concepts?: string[];
+  examples?: string[];
+  applications?: string[];
+  source_references?: string[];
+  difficulty_level?: string;
+  estimated_time?: string;
+}
+
+interface Lesson {
+  topic: string;
+  competency_level: number;
+  overview: string;
+  chunks: LessonChunk[];
+  key_takeaways: string[];
+  prerequisites?: string[];
+  mathematical_foundations?: string[];
+  further_reading?: string[];
+  assessment_criteria?: string[];
+  industry_connections?: string[];
+  common_misconceptions?: string[];
+}
 
 interface LessonViewProps {
   topic: string;
@@ -84,7 +109,7 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
   };
 
   const buildChunkNarration = (chunk: Lesson['chunks'][number]) =>
-    `${chunk.title}. ${chunk.content} Key point: ${chunk.key_point}`;
+    `${chunk.title}. ${chunk.content}`;
 
   const toggleChunkVoice = async () => {
     if (!lesson) return;
@@ -111,7 +136,7 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
 
     if (responses[currentChunk]?.trim()) {
       try {
-        const lessonContext = `${chunk.title}: ${chunk.content}\nKey Point: ${chunk.key_point}`;
+        const lessonContext = `${chunk.title}: ${chunk.content}`;
         const sentiment = await apiService.analyzeSentiment(responses[currentChunk], lessonContext);
         updated[currentChunk] = sentiment;
         setSentimentData(updated);
@@ -161,10 +186,54 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
             </button>
           </div>
 
-          <p>{chunk.content}</p>
+          <div className="lesson-content-text">
+            <div className="main-content">
+              {chunk.content}
+            </div>
 
-          <div className="key-point">
-            <strong>Key Point:</strong> {chunk.key_point}
+            {chunk.mathematical_concepts && chunk.mathematical_concepts.length > 0 && (
+              <div className="mathematical-concepts">
+                <h4>Mathematical Concepts</h4>
+                <ul>
+                  {chunk.mathematical_concepts.map((concept, i) => (
+                    <li key={i}>{concept}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {chunk.examples && chunk.examples.length > 0 && (
+              <div className="examples">
+                <h4>Examples</h4>
+                <ul>
+                  {chunk.examples.map((example, i) => (
+                    <li key={i}>{example}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {chunk.applications && chunk.applications.length > 0 && (
+              <div className="applications">
+                <h4>Practical Applications</h4>
+                <ul>
+                  {chunk.applications.map((application, i) => (
+                    <li key={i}>{application}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {chunk.source_references && chunk.source_references.length > 0 && (
+              <div className="references">
+                <h4>References</h4>
+                <ul>
+                  {chunk.source_references.map((ref, i) => (
+                    <li key={i}>{ref}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="response-section">
@@ -208,11 +277,49 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
       </div>
 
       {currentChunk === lesson.chunks.length - 1 && (
-        <div className="card">
-          <h3>Key Takeaways</h3>
-          <ul>
-            {lesson.key_takeaways.map((takeaway, i) => <li key={i}>{takeaway}</li>)}
-          </ul>
+        <div className="lesson-summary">
+          <div className="card">
+            <h3>Key Takeaways</h3>
+            <ul>
+              {lesson.key_takeaways.map((takeaway, i) => <li key={i}>{takeaway}</li>)}
+            </ul>
+          </div>
+
+          {lesson.mathematical_foundations && (
+            <div className="card">
+              <h3>Mathematical Foundations</h3>
+              <ul>
+                {lesson.mathematical_foundations.map((concept, i) => <li key={i}>{concept}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {lesson.common_misconceptions && (
+            <div className="card">
+              <h3>Common Misconceptions to Avoid</h3>
+              <ul>
+                {lesson.common_misconceptions.map((misconception, i) => <li key={i}>{misconception}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {lesson.further_reading && (
+            <div className="card">
+              <h3>Further Reading</h3>
+              <ul>
+                {lesson.further_reading.map((reading, i) => <li key={i}>{reading}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {lesson.industry_connections && (
+            <div className="card">
+              <h3>Industry Applications</h3>
+              <ul>
+                {lesson.industry_connections.map((connection, i) => <li key={i}>{connection}</li>)}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -444,5 +444,141 @@
     "user_id": "user_11",
     "timestamp": "2025-08-10T05:02:38.629080",
     "session_id": "session_11"
+  },
+  {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to engage with the material and has low confidence in their understanding. Encourage the student to actively participate in discussions, ask questions, and seek clarification on concepts they find challenging.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be very confused and lacking confidence in their understanding. They may benefit from going back to the basics of transformer models and gradually building up their knowledge. Encouraging active participation in discussions and asking questions could also help increase engagement.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to engage with the content and has low confidence in their understanding. Encourage the student to actively participate in discussions, ask questions, and seek clarification on concepts they find challenging.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_13",
+    "timestamp": "2025-08-10T05:19:13.945730",
+    "session_id": "session_12"
+  },
+  {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to engage with the material and has low confidence in their understanding. Encourage active participation in discussions, provide additional examples and practical exercises to enhance comprehension.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems to be completely lost and disengaged. They may benefit from going back to basics and reviewing fundamental concepts before delving into more complex topics. Providing more interactive and hands-on activities could also help increase engagement.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be very confused and not engaged with the lesson content. They lack confidence in their understanding. Encourage the student to actively participate in discussions, ask questions, and seek clarification on concepts they find challenging. Provide additional resources or examples to help improve their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_13",
+    "timestamp": "2025-08-10T05:20:04.422315",
+    "session_id": "session_13"
+  },
+  {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to engage with the material and has low confidence in their understanding. Encourage the student to actively participate in discussions, ask questions, and seek additional resources for clarification. Breaking down the concepts into smaller, more digestible parts may also help improve understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems completely lost and disengaged. It would be helpful to break down the concepts of pre-training, fine-tuning, and regularization in simpler terms. Encouraging the student to ask questions and actively participate in discussions may also improve understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be very confused and disengaged based on the response 'aa'. It is important to provide more context and examples to help improve understanding. Encourage the student to ask questions and actively participate in discussions.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_13",
+    "timestamp": "2025-08-10T05:21:07.002079",
+    "session_id": "session_14"
+  },
+  {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to engage with the material and has low confidence in their understanding. Encourage the student to actively participate in discussions, ask questions, and seek clarification on concepts they find challenging. Providing additional examples and practical exercises may also help improve their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to grasp the concept of self-attention mechanism. It would be beneficial to provide more examples and visual aids to explain the mathematical formulation. Encouraging the student to ask questions and actively participate in discussions may also help improve understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "Encourage the student to ask questions or seek clarification on the topic. Provide additional examples or explanations to help improve understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_13",
+    "timestamp": "2025-08-10T05:22:10.949187",
+    "session_id": "session_15"
   }
 ]

@@ -33,5 +33,16 @@
     "session_history": [
       "session_11"
     ]
+  },
+  "user_13": {
+    "lessons_completed": 0,
+    "total_lessons": 0,
+    "average_quiz_score": 0,
+    "session_history": [
+      "session_12",
+      "session_13",
+      "session_14",
+      "session_15"
+    ]
   }
 }
