@@ -1,0 +1,94 @@
+.lesson-progress {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.progress-bar-container {
+  margin-bottom: 1rem;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.progress-stats {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.progress-percentage {
+  font-weight: 600;
+  color: #2196F3;
+}
+
+.deadline-info {
+  color: #F57C00;
+  font-weight: 500;
+}
+
+.time-spent {
+  color: #666;
+}
+
+.deadlines-list {
+  flex: 1;
+  min-width: 250px;
+}
+
+.deadlines-list h4 {
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+
+.deadline-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.deadline-item:last-child {
+  border-bottom: none;
+}
+
+.deadline-date {
+  color: #666;
+}
+
+.deadline-status {
+  font-weight: 500;
+}
+
+.deadline-status.completed {
+  color: #4CAF50;
+}
+
+.deadline-status:not(.completed) {
+  color: #F57C00;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .progress-info {
+    flex-direction: column;
+  }
+  
+  .progress-stats {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .deadlines-list {
+    width: 100%;
+  }
+}

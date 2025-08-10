@@ -226,5 +226,112 @@
     "completed_lessons": [],
     "total_lessons": 0,
     "current_curriculum": null
+  },
+  "user_15": {
+    "name": "aw",
+    "created_at": "2025-08-10T06:33:39.935841",
+    "competency_scores": {
+      "Mastering i wanna learn transformer models: From Theory to Implementation": 0.0,
+      "Machine Learning Fundamentals": 0.0
+    },
+    "knowledge_gaps": {
+      "Mastering i wanna learn transformer models: From Theory to Implementation": [
+        "statistical_learning_theory",
+        "combinatorial_bandits",
+        "general_loss_function",
+        "prediction_with_expert_advice",
+        "adversarial_models"
+      ],
+      "Machine Learning Fundamentals": [
+        "Convex relaxation in empirical risk minimization",
+        "Positive semi-definite kernels in machine learning",
+        "Hinge loss function in machine learning",
+        "Convex function behavior on domains",
+        "Rademacher complexity in model generalization"
+      ]
+    },
+    "strong_areas": {
+      "Mastering i wanna learn transformer models: From Theory to Implementation": [],
+      "Machine Learning Fundamentals": []
+    },
+    "learning_path": [
+      "Convex relaxation in empirical risk minimization",
+      "Positive semi-definite kernels in machine learning",
+      "Hinge loss function in machine learning",
+      "Convex function behavior on domains",
+      "Rademacher complexity in model generalization"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_16": {
+    "name": "aw",
+    "created_at": "2025-08-10T06:44:46.042792",
+    "competency_scores": {
+      "Mastering i wanna learn transformer models: From Theory to Implementation": 0.0
+    },
+    "knowledge_gaps": {
+      "Mastering i wanna learn transformer models: From Theory to Implementation": [
+        "Adversarial models in machine learning",
+        "Machine learning blackbox approach",
+        "Binary classification risk function",
+        "Linear discriminant analysis in binary classification",
+        "Combinatorial bandits problem"
+      ]
+    },
+    "strong_areas": {
+      "Mastering i wanna learn transformer models: From Theory to Implementation": []
+    },
+    "learning_path": [
+      "Adversarial models in machine learning",
+      "Machine learning blackbox approach",
+      "Binary classification risk function",
+      "Linear discriminant analysis in binary classification",
+      "Combinatorial bandits problem"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_17": {
+    "name": "as",
+    "created_at": "2025-08-10T06:54:08.513788",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_18": {
+    "name": "ar",
+    "created_at": "2025-08-10T07:00:00.323695",
+    "competency_scores": {
+      "Machine Learning Fundamentals": 0.0
+    },
+    "knowledge_gaps": {
+      "Machine Learning Fundamentals": [
+        "Convexity in machine learning",
+        "Convex relaxation in machine learning",
+        "Symmetrization trick in machine learning",
+        "Bypassing computational issues in machine learning",
+        "Minimizing a convex upperbound in machine learning"
+      ]
+    },
+    "strong_areas": {
+      "Machine Learning Fundamentals": []
+    },
+    "learning_path": [
+      "Convexity in machine learning",
+      "Convex relaxation in machine learning",
+      "Symmetrization trick in machine learning",
+      "Bypassing computational issues in machine learning",
+      "Minimizing a convex upperbound in machine learning"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
   }
 }

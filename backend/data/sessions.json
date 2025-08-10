@@ -580,5 +580,107 @@
     "user_id": "user_13",
     "timestamp": "2025-08-10T05:22:10.949187",
     "session_id": "session_15"
+  },
+  {
+    "topic": "models Fundamentals",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to grasp the concept of models. It would be beneficial to provide more examples and practical applications to help solidify their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 1,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "It seems like the student may not have fully engaged with the lesson content. Encourage them to read the lesson material again and take notes to improve understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to ask questions or seek clarification on the concepts presented. Provide additional examples or real-world applications to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_18",
+    "timestamp": "2025-08-10T07:03:06.338059",
+    "session_id": "session_16"
+  },
+  {
+    "topic": "models Fundamentals",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to actively participate in the lesson by asking questions or seeking clarification. Provide additional examples or practical applications of modeling to help solidify understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "Encourage the student to actively participate in the lesson by asking questions or seeking clarification on concepts they find confusing. Provide additional examples or real-world applications of the different types of models to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be very confused and not engaged with the material. They may benefit from additional explanations, examples, or interactive activities to enhance their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_18",
+    "timestamp": "2025-08-10T07:03:41.467739",
+    "session_id": "session_17"
+  },
+  {
+    "topic": "models Fundamentals",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems completely lost and disengaged. They may benefit from additional examples or interactive activities to help grasp the concept of models.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be very confused and not engaged with the lesson content. They may benefit from more interactive and visual aids to help grasp the concepts. Encouraging them to ask questions and participate in discussions could also improve their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to ask questions or seek clarification on the topic. Provide additional examples or explanations to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_18",
+    "timestamp": "2025-08-10T07:04:44.492458",
+    "session_id": "session_18"
   }
 ]
