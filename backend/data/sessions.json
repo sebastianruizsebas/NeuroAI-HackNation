@@ -32,5 +32,81 @@
     "user_id": "user_2",
     "timestamp": "2025-08-09T23:00:05.164473",
     "session_id": "session_1"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "Encourage the student to actively engage with the lesson material and provide more detailed responses.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to actively engage with the lesson content and ask questions for clarification. Provide additional examples or explanations to help solidify understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "It seems like the student may not have fully engaged with the lesson content. Encouraging them to read the text more carefully and actively participate in the learning process could help improve their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-09T23:38:36.354809",
+    "session_id": "session_2"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 1,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student should review the lesson material on supervised learning and try to actively engage with the content. It may be helpful to ask questions or seek additional resources for clarification.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to understand the concept of unsupervised learning. It would be beneficial to provide more examples and explanations to clarify the topic.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems completely lost in the lesson content. It would be beneficial to provide more examples and simplify the explanation of reinforcement learning. Encouraging the student to ask questions and actively participate in discussions may also help improve their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to grasp the concept of neural networks. Encourage them to ask questions and seek clarification. Provide additional examples and explanations to help solidify their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-09T23:51:08.773962",
+    "session_id": "session_3"
   }
 ]

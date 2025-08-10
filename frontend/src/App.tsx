@@ -38,22 +38,25 @@ function App() {
   };
 
   const handleLessonComplete = async (sentimentData: any[]) => {
-    if (user) {
-      const sessionData = {
-        topic,
-        pre_assessment_score: assessmentScore,
-        sentiment_analysis: sentimentData,
-        completed: true
-      };
-      
-      try {
-        await apiService.saveSession(user.user_id, sessionData);
-        setCurrentState('complete');
-      } catch (error) {
-        console.error('Failed to save session:', error);
-      }
-    }
+  if (!user) return;
+
+  const sessionData = {
+    topic,
+    pre_assessment_score: assessmentScore,
+    sentiment_analysis: sentimentData,
+    completed: true
   };
+
+  // Move the UI forward immediately
+  setCurrentState('complete');
+
+  try {
+    await apiService.saveSession(user.user_id, sessionData);
+  } catch (error) {
+    console.error('Failed to save session:', error);
+  }
+};
+
 
   if (!user) {
     return (
