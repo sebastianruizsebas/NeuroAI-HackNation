@@ -1,3 +1,8 @@
+import json
+import os
+from typing import List, Dict, Tuple
+import re
+
 def load_all_chunks(chunk_paths: list) -> Dict[str, List[str]]:
     """Load and merge chunks from multiple JSON files (supports both dict and list formats)."""
     all_chunks = {}
@@ -14,10 +19,6 @@ def load_all_chunks(chunk_paths: list) -> Dict[str, List[str]]:
                 for fname, chunk_list in chunks.items():
                     all_chunks.setdefault(fname, []).extend(chunk_list)
     return all_chunks
-import json
-import os
-from typing import List, Dict, Tuple
-import re
 
 CHUNKS_PATH = os.path.join(os.path.dirname(__file__), 'math_ml_chunks.json')
 
