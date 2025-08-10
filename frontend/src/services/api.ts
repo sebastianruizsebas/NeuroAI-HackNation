@@ -80,6 +80,40 @@ export interface UserProgress {
   recommendations: string[];
 }
 
+export interface Topic {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimated_time: string;
+}
+
+export interface CustomTopic {
+  id: string;
+  title: string;
+  description: string;
+  userInput: string;
+  baseTopic: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimatedHours: number;
+  createdAt: string;
+  deadline?: string;
+  intensity: 'light' | 'moderate' | 'intensive';
+  progress?: number;
+  timeSpent?: number; // in minutes
+  lastAccessed?: string;
+}
+
+export interface LearningSession {
+  id: string;
+  userId: string;
+  topicId: string;
+  startTime: string;
+  endTime?: string;
+  duration?: number; // in minutes
+  active: boolean;
+}
+
 export type TTSOptions = {
   voice_id?: string;
   model_id?: string;
@@ -368,5 +402,114 @@ export const apiService = {
     
     return response.json();
   },
+
+  // Get available topics
+  async getAvailableTopics(): Promise<{ topics: Topic[] }> {
+    const response = await fetch(`${API_BASE_URL}/topics`, {
+      method: 'GET'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get available topics');
+    }
+    
+    return response.json();
+  },
+
+  // Generate custom topics based on user input
+  async generateCustomTopics(userId: string, userInput: string): Promise<{ suggestions: CustomTopic[] }> {
+    const response = await fetch(`${API_BASE_URL}/topics/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, user_input: userInput })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to generate custom topics');
+    }
+    
+    return response.json();
+  },
+
+  // Save custom topic to user's library
+  async saveCustomTopic(userId: string, topic: CustomTopic): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/topics/custom`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, topic })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to save custom topic');
+    }
+  },
+
+  // Get user's custom topics library
+  async getUserCustomTopics(userId: string): Promise<{ topics: CustomTopic[] }> {
+    const response = await fetch(`${API_BASE_URL}/topics/custom/${userId}`, {
+      method: 'GET'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get user custom topics');
+    }
+    
+    return response.json();
+  },
+
+  // Update custom topic progress
+  async updateTopicProgress(userId: string, topicId: string, progress: number, timeSpent: number): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/topics/progress`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, topic_id: topicId, progress, time_spent: timeSpent })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to update topic progress');
+    }
+  },
+
+  // Learning session management
+  async startLearningSession(userId: string, topicId: string): Promise<{ sessionId: string }> {
+    const response = await fetch(`${API_BASE_URL}/session/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, topic_id: topicId })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to start learning session');
+    }
+    
+    return response.json();
+  },
+
+  async endLearningSession(sessionId: string): Promise<{ duration: number }> {
+    const response = await fetch(`${API_BASE_URL}/session/end`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to end learning session');
+    }
+    
+    return response.json();
+  },
+
+  async getActiveSessions(userId: string): Promise<{ sessions: LearningSession[] }> {
+    const response = await fetch(`${API_BASE_URL}/session/active/${userId}`, {
+      method: 'GET'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get active sessions');
+    }
+    
+    return response.json();
+  },
+
   tts
 };

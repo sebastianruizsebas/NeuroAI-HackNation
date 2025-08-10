@@ -360,5 +360,47 @@
     "user_id": "user_3",
     "timestamp": "2025-08-10T03:20:58.551896",
     "session_id": "session_9"
+  },
+  {
+    "topic": "Introduction to I want to learn about CNNs",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_7",
+    "timestamp": "2025-08-10T04:24:00.934010",
+    "session_id": "session_10"
   }
 ]

@@ -280,6 +280,41 @@ def get_user_progress(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/assessment/quality', methods=['POST'])
+def assess_question_quality():
+    """Assess the quality of generated questions"""
+    try:
+        data = request.get_json()
+        questions = data.get('questions', [])
+        topic = data.get('topic', '')
+        
+        if not questions:
+            return jsonify({'error': 'No questions provided'}), 400
+        
+        quality_report = engine.get_question_quality_report(questions, topic)
+        return jsonify(quality_report)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/lesson/outline', methods=['POST'])
+def generate_lesson_outline():
+    """Generate a lesson outline based on topic and assessment results"""
+    try:
+        data = request.get_json()
+        topic = data.get('topic')
+        difficulty = data.get('difficulty', 'beginner')
+        user_assessment = data.get('assessment_results')
+        
+        if not topic:
+            return jsonify({'error': 'Topic is required'}), 400
+        
+        outline = engine.generate_lesson_outline(topic, difficulty, user_assessment)
+        return jsonify(outline)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/assessment/final', methods=['POST'])
 def generate_final_assessment():
     """Generate final wrap-up assessment"""
@@ -323,6 +358,180 @@ def save_session():
     try:
         engine.save_detailed_session(user_id, session_data)
         return jsonify({'message': 'Session saved successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/topics', methods=['GET'])
+def get_available_topics():
+    """Get list of available learning topics"""
+    try:
+        # Default topics available for learning
+        topics = [
+            {
+                'id': 'types_of_ai_models',
+                'name': 'Types of AI Models',
+                'description': 'Learn about different types of AI models and their applications',
+                'difficulty': 'beginner',
+                'estimated_time': '30-45 minutes'
+            },
+            {
+                'id': 'machine_learning_fundamentals',
+                'name': 'Machine Learning Fundamentals',
+                'description': 'Core concepts of machine learning including supervised and unsupervised learning',
+                'difficulty': 'beginner',
+                'estimated_time': '45-60 minutes'
+            },
+            {
+                'id': 'neural_networks',
+                'name': 'Neural Networks',
+                'description': 'Understanding neural networks, perceptrons, and basic architectures',
+                'difficulty': 'intermediate',
+                'estimated_time': '60-90 minutes'
+            },
+            {
+                'id': 'deep_learning',
+                'name': 'Deep Learning',
+                'description': 'Advanced neural networks and deep learning techniques',
+                'difficulty': 'intermediate',
+                'estimated_time': '90-120 minutes'
+            },
+            {
+                'id': 'natural_language_processing',
+                'name': 'Natural Language Processing',
+                'description': 'NLP fundamentals including text processing and language models',
+                'difficulty': 'intermediate',
+                'estimated_time': '60-90 minutes'
+            },
+            {
+                'id': 'computer_vision',
+                'name': 'Computer Vision',
+                'description': 'Image processing and computer vision techniques',
+                'difficulty': 'intermediate',
+                'estimated_time': '60-90 minutes'
+            },
+            {
+                'id': 'reinforcement_learning',
+                'name': 'Reinforcement Learning',
+                'description': 'Learning through interaction and reward systems',
+                'difficulty': 'advanced',
+                'estimated_time': '90-120 minutes'
+            },
+            {
+                'id': 'ai_ethics_and_safety',
+                'name': 'AI Ethics and Safety',
+                'description': 'Ethical considerations and safety measures in AI development',
+                'difficulty': 'beginner',
+                'estimated_time': '30-45 minutes'
+            }
+        ]
+        
+        return jsonify({'topics': topics})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/topics/generate', methods=['POST'])
+def generate_custom_topics():
+    """Generate custom topics based on user input"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        user_input = data.get('user_input')
+        
+        if not user_id or not user_input:
+            return jsonify({'error': 'User ID and user input are required'}), 400
+        
+        # Generate custom topics using the engine
+        suggestions = engine.generate_custom_topics(user_id, user_input)
+        
+        return jsonify({'suggestions': suggestions})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/topics/custom', methods=['POST'])
+def save_custom_topic():
+    """Save a custom topic to user's library"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        topic = data.get('topic')
+        
+        if not user_id or not topic:
+            return jsonify({'error': 'User ID and topic are required'}), 400
+        
+        # Save the custom topic
+        engine.save_custom_topic(user_id, topic)
+        
+        return jsonify({'message': 'Custom topic saved successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/topics/custom/<user_id>', methods=['GET'])
+def get_user_custom_topics(user_id):
+    """Get user's custom topics library"""
+    try:
+        topics = engine.get_user_custom_topics(user_id)
+        return jsonify({'topics': topics})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/topics/progress', methods=['PUT'])
+def update_topic_progress():
+    """Update custom topic progress"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        topic_id = data.get('topic_id')
+        progress = data.get('progress')
+        time_spent = data.get('time_spent')
+        
+        if not all([user_id, topic_id, progress is not None]):
+            return jsonify({'error': 'User ID, topic ID, and progress are required'}), 400
+        
+        engine.update_topic_progress(user_id, topic_id, progress, time_spent)
+        
+        return jsonify({'message': 'Progress updated successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/session/start', methods=['POST'])
+def start_learning_session():
+    """Start a learning session"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        topic_id = data.get('topic_id')
+        
+        if not user_id or not topic_id:
+            return jsonify({'error': 'User ID and topic ID are required'}), 400
+        
+        session_id = engine.start_learning_session(user_id, topic_id)
+        
+        return jsonify({'sessionId': session_id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/session/end', methods=['POST'])
+def end_learning_session():
+    """End a learning session"""
+    try:
+        data = request.get_json()
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return jsonify({'error': 'Session ID is required'}), 400
+        
+        duration = engine.end_learning_session(session_id)
+        
+        return jsonify({'duration': duration})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/session/active/<user_id>', methods=['GET'])
+def get_active_sessions(user_id):
+    """Get active learning sessions for a user"""
+    try:
+        sessions = engine.get_active_sessions(user_id)
+        return jsonify({'sessions': sessions})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { apiService, User } from './services/api';
 import { UserSetup } from './components/UserSetup';
+import { Dashboard } from './components/Dashboard';
+import { TopicSelection, CustomTopic } from './components/TopicSelection';
+import { LearningTracker } from './components/LearningTracker';
 import { Assessment } from './components/Assessment';
 import { LessonView } from './components/LessonView';
+import QualityReport from './components/QualityReport';
+import LessonOutline from './components/LessonOutline';
 
-type AppState = 'setup' | 'assessment' | 'lesson' | 'complete';
+type AppState = 'setup' | 'dashboard' | 'topic-selection' | 'assessment' | 'lesson-outline' | 'lesson' | 'complete' | 'quality-test';
 
 const uniq = (arr: string[] = []) => Array.from(new Set(arr));
 
@@ -62,12 +67,15 @@ function App() {
   const [assessmentScore, setAssessmentScore] = useState<number>(0);
   const [enhancedAssessmentResult, setEnhancedAssessmentResult] = useState<any>(null);
   const [userProgress, setUserProgress] = useState<any>(null);
-  const topic = "Types of AI Models"; // Fixed topic for MVP
+  const [currentTopic, setCurrentTopic] = useState<string>("Types of AI Models"); // Dynamic topic
+  const [selectedCustomTopic, setSelectedCustomTopic] = useState<CustomTopic | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [showBreakReminder, setShowBreakReminder] = useState(false);
 
   const handleUserCreated = (newUser: User) => {
     setUser(newUser);
     loadUserProgress(newUser.user_id);
-    setCurrentState('assessment');
+    setCurrentState('dashboard'); // Go to dashboard instead of assessment
   };
 
   const loadUserProgress = async (userId: string) => {
@@ -84,7 +92,7 @@ function App() {
     if (enhancedResult) {
       setEnhancedAssessmentResult(enhancedResult);
     }
-    setCurrentState('lesson');
+    setCurrentState('lesson-outline');
   };
 
   const [sessionSentiments, setSessionSentiments] = useState<any[] | null>(null);
@@ -97,7 +105,7 @@ function App() {
     setCurrentState('complete');
 
     const sessionData = {
-      topic,
+      topic: currentTopic,
       pre_assessment_score: assessmentScore,
       sentiment_analysis: sentiments,
       completed: true,
@@ -114,6 +122,45 @@ function App() {
         setUserProgress(progress);
       } catch {}
     }
+  };
+
+  // Dashboard handlers
+  const handleStartLesson = (topic: string) => {
+    setCurrentTopic(topic);
+    setCurrentState('lesson');
+  };
+
+  const handleStartAssessment = (topic: string) => {
+    setCurrentTopic(topic);
+    setCurrentState('assessment');
+  };
+
+  const handleCreateNewTopic = () => {
+    setCurrentState('topic-selection');
+  };
+
+  const handleTopicSelected = (customTopic: CustomTopic) => {
+    setSelectedCustomTopic(customTopic);
+    setCurrentTopic(customTopic.title);
+    setCurrentState('assessment'); // Start with assessment for custom topics
+  };
+
+  const handleBreakRecommended = () => {
+    setShowBreakReminder(true);
+  };
+
+  const handleSessionEnd = (duration: number) => {
+    setCurrentSessionId(null);
+    // Update topic progress with time spent
+    if (selectedCustomTopic && user) {
+      apiService.updateTopicProgress(user.user_id, selectedCustomTopic.id, 0, duration);
+    }
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentState('dashboard');
+    setEnhancedAssessmentResult(null);
+    setSelectedCustomTopic(null);
   };
 
 
@@ -139,23 +186,109 @@ function App() {
       
       <main className="app-main">
         {currentState === 'setup' && (
-          <UserSetup onUserCreated={handleUserCreated} />
+          <div>
+            <UserSetup onUserCreated={handleUserCreated} />
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <button 
+                onClick={() => setCurrentState('quality-test')}
+                style={{ 
+                  backgroundColor: '#6b7280', 
+                  color: 'white', 
+                  padding: '8px 16px', 
+                  border: 'none', 
+                  borderRadius: '4px', 
+                  fontSize: '14px' 
+                }}
+              >
+                Test Quality Vetting System
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {currentState === 'quality-test' && (
+          <div>
+            <QualityReport />
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <button 
+                onClick={() => setCurrentState('setup')}
+                style={{ 
+                  backgroundColor: '#3b82f6', 
+                  color: 'white', 
+                  padding: '8px 16px', 
+                  border: 'none', 
+                  borderRadius: '4px' 
+                }}
+              >
+                Back to Setup
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {currentState === 'dashboard' && user && (
+          <Dashboard 
+            user={user}
+            onStartLesson={handleStartLesson}
+            onStartAssessment={handleStartAssessment}
+            onCreateNewTopic={handleCreateNewTopic}
+          />
+        )}
+        
+        {currentState === 'topic-selection' && user && (
+          <TopicSelection
+            userId={user.user_id}
+            userName={user.name}
+            onTopicSelected={handleTopicSelected}
+          />
         )}
         
         {currentState === 'assessment' && user && (
-          <Assessment 
-            topic={topic}
-            userId={user.user_id}
-            onComplete={handleAssessmentComplete}
+          <div>
+            {selectedCustomTopic && (
+              <LearningTracker
+                userId={user.user_id}
+                topicId={selectedCustomTopic.id}
+                topicTitle={selectedCustomTopic.title}
+                onBreakRecommended={handleBreakRecommended}
+                onSessionEnd={handleSessionEnd}
+              />
+            )}
+            <Assessment 
+              topic={currentTopic}
+              userId={user.user_id}
+              onComplete={handleAssessmentComplete}
+            />
+          </div>
+        )}
+        
+        {currentState === 'lesson-outline' && user && currentTopic && (
+          <LessonOutline
+            topic={currentTopic}
+            difficulty={selectedCustomTopic?.difficulty || 'beginner'}
+            assessmentResults={enhancedAssessmentResult}
+            onStartLesson={() => setCurrentState('lesson')}
+            onBackToAssessment={() => setCurrentState('assessment')}
           />
         )}
         
         {currentState === 'lesson' && user && (
-          <LessonView
-            topic={topic}
-            userId={user.user_id}
-            onComplete={handleLessonComplete}
-          />
+          <div>
+            {selectedCustomTopic && (
+              <LearningTracker
+                userId={user.user_id}
+                topicId={selectedCustomTopic.id}
+                topicTitle={selectedCustomTopic.title}
+                onBreakRecommended={handleBreakRecommended}
+                onSessionEnd={handleSessionEnd}
+              />
+            )}
+            <LessonView
+              topic={currentTopic}
+              userId={user.user_id}
+              onComplete={handleLessonComplete}
+            />
+          </div>
         )}
         
         {currentState === 'complete' && (
@@ -231,6 +364,9 @@ function App() {
 
             {/* Clear next-step CTA */}
             <div style={{display:'flex', gap:8, marginTop:'12px', flexWrap:'wrap'}}>
+              <button className="btn btn-primary" onClick={handleBackToDashboard}>
+                Back to Dashboard
+              </button>
               <button className="btn btn-primary" onClick={() => setCurrentState('lesson')}>
                 Review Weakest Concept
               </button>

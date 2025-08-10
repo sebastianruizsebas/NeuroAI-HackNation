@@ -49,5 +49,74 @@
     "completed_lessons": [],
     "total_lessons": 0,
     "current_curriculum": null
+  },
+  "user_4": {
+    "name": "Sebas",
+    "created_at": "2025-08-10T03:34:31.473294",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_5": {
+    "name": "Sebas",
+    "created_at": "2025-08-10T03:56:01.266611",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_6": {
+    "name": "Sebas",
+    "created_at": "2025-08-10T04:05:14.413907",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_7": {
+    "name": "Sebast",
+    "created_at": "2025-08-10T04:19:28.245629",
+    "competency_scores": {
+      "Introduction to I want to learn about CNNs": 0.0
+    },
+    "knowledge_gaps": {
+      "Introduction to I want to learn about CNNs": [
+        "Basic Understanding",
+        "Domain Knowledge",
+        "Applications"
+      ]
+    },
+    "strong_areas": {
+      "Introduction to I want to learn about CNNs": []
+    },
+    "learning_path": [
+      "Basic Understanding",
+      "Domain Knowledge",
+      "Applications"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_8": {
+    "name": "Sebast",
+    "created_at": "2025-08-10T04:24:22.604595",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
   }
 }
