@@ -2005,35 +2005,57 @@ Return ONLY a JSON object with this format:
         sessions = self.load_data(learning_sessions_file)
         return [s for s in sessions if s['userId'] == user_id and s['active']]
     
-    def generate_lesson_outline(self, topic: str, difficulty: str = "beginner", user_assessment: Dict = None) -> Dict:
-        """Generate a comprehensive, pedagogically progressive lesson outline with numbered modules, model-specific titles, and deepening content."""
-        try:
-            analysis = self._analyze_topic_title(topic)
-            course_title = analysis.get('course_title') or topic
-            # Make course title more specific if needed
-            if course_title.strip().lower() == topic.strip().lower() or 'i wanna' in course_title.lower() or 'learn' in course_title.lower():
-                course_title = self._generate_fallback_title(topic)
-            knowledge_gaps = user_assessment.get('knowledge_gaps', []) if user_assessment else []
-            strong_areas = user_assessment.get('strong_areas', []) if user_assessment else []
-            prompt = f"""You are an expert AI curriculum designer. Create a comprehensive, implementation-focused lesson outline for the course titled: '{course_title}'.\n\nREQUIREMENTS:\n- Number each module sequentially (e.g., Module 1, Module 2, ...).\n- Each module must deepen in complexity and build on the previous.\n- Make the course title specific to the type of model or topic.\n- For each module, elaborate on mathematical concepts, provide concrete examples, and include practical applications.\n- Add a variety of content types: math boxes, code boxes, real-world case studies, visual explanations, and summary tables.\n- Each module must have: title, estimated time, description, key concepts, activities, assessment type, and which gaps it addresses.\n- The outline must show clear pedagogical progression from fundamentals to advanced applications.\n- Include a final project/deliverable that is concrete and measurable.\n- List prerequisites and resources.\n- Use the following user knowledge profile:\n  - Knowledge gaps: {knowledge_gaps}\n  - Strong areas: {strong_areas}\n  - Difficulty: {difficulty}\n- Return ONLY a JSON object with this format:\n{{\n    \"course_title\": \"{course_title}\",\n    \"topic\": \"{topic}\",\n    \"difficulty\": \"{difficulty}\",\n    \"title_promises\": {analysis},\n    \"estimatedDuration\": \"4-6 hours for hands-on implementation\",\n    \"learningObjectives\": [\"...\"],\n    \"prerequisites\": [\"...\"],\n    \"modules\": [{{\n        \"id\": \"module_1\",\n        \"title\": \"...\",\n        \"estimatedTime\": \"...\",\n        \"description\": \"...\",\n        \"keyConcepts\": [\"...\"],\n        \"activities\": [\"...\"],\n        \"assessmentType\": \"...\",\n        \"addressesGaps\": [\"...\"],\n        \"mathBox\": \"...\",\n        \"codeBox\": \"...\",\n        \"caseStudy\": \"...\",\n        \"visualExplanation\": \"...\",\n        \"summaryTable\": \"...\"\n    }}],\n    \"resources\": [\"...\"],\n    \"expectedOutcomes\": [\"...\"]\n}}"""
-            response = self.client.chat.completions.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=2500,
-                temperature=0.7,
-                timeout=40
-            )
-            content = response.choices[0].message.content.strip()
-            if content.startswith('```json'):
-                content = content[7:-3]
-            elif content.startswith('```'):
-                content = content[3:-3]
-            outline = json.loads(content)
-            outline['generated_at'] = datetime.now().isoformat()
-            return outline
-        except Exception as e:
-            print(f"Error generating lesson outline: {e}")
-            return self._generate_fallback_outline(topic, difficulty)
+    def generate_lesson_outline(
+        self,
+        topic,
+        difficulty='beginner',
+        assessment_results=None,
+        user_id=None,
+        course_deadline=None
+    ):
+        """
+        Generate a lesson outline for the given topic and difficulty.
+        Accepts optional assessment_results, user_id, and course_deadline.
+        """
+        print(f"[Engine] Generating lesson outline for topic='{topic}', difficulty='{difficulty}', user_id='{user_id}'")
+        print(f"[Engine] Assessment results: {assessment_results}")
+        print(f"[Engine] Course deadline: {course_deadline}")
+
+        # Use your actual AI logic here
+        # For now, we'll mock a basic outline
+        return {
+            "topic": topic,
+            "difficulty": difficulty,
+            "lessons": lessons,  # ✅ always present
+            "course_deadline": course_deadline
+        }
+
+        lessons = [
+            {"id": "lesson1", "title": "Introduction to " + topic, "estimated_time": "10m"},
+            {"id": "lesson2", "title": "Core Concepts", "estimated_time": "20m"},
+            {"id": "lesson3", "title": "Case Studies", "estimated_time": "15m"},
+            {"id": "lesson4", "title": "Review & Quiz", "estimated_time": "10m"}
+        ]
+
+        if assessment_results:
+            # Example tweak: prioritize lessons based on weaknesses
+            for lesson in lessons:
+                lesson["priority"] = "high" if "weak" in str(assessment_results).lower() else "normal"
+
+        outline["lessons"] = lessons
+        return outline
+
+    def save_lesson_outline(self, user_id, topic, outline):
+        """
+        Save a lesson outline for a specific user & topic.
+        Currently stores in memory; replace with persistent storage as needed.
+        """
+        print(f"[Engine] Saving lesson outline for user_id='{user_id}', topic='{topic}'")
+        if not hasattr(self, "_lesson_outlines"):
+            self._lesson_outlines = {}
+        self._lesson_outlines[(user_id, topic)] = outline
+        return True
+
     
     def _generate_fallback_outline(self, topic: str, difficulty: str) -> Dict:
         """Generate a robust fallback lesson outline with numbered, deepening modules and rich content types."""

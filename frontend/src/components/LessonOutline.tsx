@@ -26,6 +26,7 @@ interface LessonOutlineData {
 
 interface LessonOutlineProps {
   topic: string;
+  userId: string;  // new
   difficulty: string;
   userId?: string;
   assessmentResults?: any;
@@ -35,6 +36,7 @@ interface LessonOutlineProps {
 
 const LessonOutline: React.FC<LessonOutlineProps> = ({ 
   topic, 
+  userId,  
   difficulty, 
   userId,
   assessmentResults, 
@@ -64,6 +66,7 @@ const LessonOutline: React.FC<LessonOutlineProps> = ({
       console.log('LessonOutline: Making API request to /api/lesson/outline');
       const requestBody = {
         topic,
+        user_id: userId,  // Pass from props or context
         difficulty,
         user_id: userId || 'default_user',
         assessment_results: assessmentResults

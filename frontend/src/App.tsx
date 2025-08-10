@@ -96,7 +96,7 @@ function App() {
       console.log('Enhanced result set in App.tsx:', enhancedResult);
     }
     console.log('Transitioning to lesson-outline state from App.tsx');
-    setCurrentState('lesson-outline');
+    setCurrentState('lesson');
   };
 
   const [sessionSentiments, setSessionSentiments] = useState<any[] | null>(null);
@@ -277,10 +277,15 @@ function App() {
               <strong>Debug Info:</strong> Showing lesson outline for "{currentTopic}" 
               {enhancedAssessmentResult && ` (Score: ${enhancedAssessmentResult.overall_score})`}
             </div>
-            <LessonOutline
+            <LessonOutline 
               topic={currentTopic}
+<<<<<<< HEAD
               difficulty={selectedCustomTopic?.difficulty || 'beginner'}
               userId={user?.user_id}
+=======
+              userId={user.user_id}  // add this
+              difficulty="beginner"
+>>>>>>> bf93ea46238a876c45ce5e92078f90443960fc1e
               assessmentResults={enhancedAssessmentResult}
               onStartLesson={() => setCurrentState('lesson')}
               onBackToAssessment={() => setCurrentState('assessment')}
