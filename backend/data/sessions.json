@@ -234,5 +234,89 @@
     "user_id": "user_9",
     "timestamp": "2025-08-10T00:09:41.961220",
     "session_id": "session_6"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "It seems like the student may not have fully engaged with the lesson content or understood it. Encourage the student to carefully read and process the information provided. Encourage them to ask questions if something is unclear.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student response 'adw' indicates a lack of understanding and engagement with the lesson content. It seems like the student may be confused about the concept of unsupervised learning. Encourage the student to actively participate in discussions or ask questions to clarify any confusion.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to ask questions or seek clarification on the concept of reinforcement learning. Provide additional examples or practical applications to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be very confused and disengaged based on their response of 'wad'. It is important to provide more engaging examples or visuals to help them grasp the concept of neural networks. Encouraging active participation and asking questions to gauge their understanding could also be beneficial.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-10T00:30:09.371412",
+    "session_id": "session_7"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems completely disconnected from the lesson content. Encourage them to actively engage with the material and seek clarification on concepts they do not understand.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to actively participate in the lesson by asking questions or seeking clarification. Provide additional examples or visuals to help illustrate the concepts of unsupervised learning models.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems to be completely lost or disengaged. It would be helpful to provide more examples or interactive activities to help them grasp the concept of reinforcement learning models.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be struggling to understand the content. Encourage them to read the lesson material more carefully and ask questions for clarification.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-10T00:40:52.009886",
+    "session_id": "session_8"
   }
 ]

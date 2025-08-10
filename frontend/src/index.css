@@ -292,3 +292,82 @@ li { margin: .35rem 0; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+
+/* Key Point — more breathing room + cohesive look */
+.lesson-content .key-point {
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-3);
+  padding: calc(var(--space-3) + .2rem);
+  border-radius: 18px;
+  border: 2px dashed rgba(104,225,162,.55); /* mint */
+  background: #f6fff9;
+}
+.lesson-content .key-point strong {
+  display: block;
+  margin-bottom: .35rem;
+}
+
+/* Put more space between the lesson card and Takeaways card */
+.lesson-chunk + .card {
+  margin-top: var(--space-4) !important;
+}
+
+/* Make the “Key Takeaways” list visually match the Key Point panel */
+.card h3 + ul {
+  margin-top: var(--space-3) !important;
+  padding: var(--space-3);
+  border: 2px dashed rgba(104,225,162,.55);
+  border-radius: 18px;
+  background: #f6fff9;
+}
+
+/* Slightly larger gap under the progress bar for cleaner composition */
+.card .progress-bar {
+  margin-top: .75rem;
+  margin-bottom: .35rem;
+}
+
+/* ===== Setup/Login splash (CSS-only, gentle animated background) =====
+   Targets the wrapper that contains the #name input on the setup page.
+   Falls back gracefully if :has() is unsupported. */
+.app > div:has(#name) {
+  position: relative;
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(143,211,255,.35), transparent 60%),
+    radial-gradient(1100px 600px at 85% 15%, rgba(104,225,162,.30), transparent 60%),
+    linear-gradient(135deg, #cfeaff 0%, #f7fbff 100%) !important; /* override inline gradient */
+  background-size: 140% 140%, 140% 140%, 100% 100%;
+  animation: splashMove 24s ease-in-out infinite alternate;
+}
+
+/* Soft floating glow blobs */
+.app > div:has(#name)::before,
+.app > div:has(#name)::after {
+  content: "";
+  position: absolute;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: .32;
+  pointer-events: none;
+  animation: floaty 16s ease-in-out infinite alternate;
+}
+.app > div:has(#name)::before { left: 6%;  top: 12%;  background: var(--mint); }
+.app > div:has(#name)::after  { right: 6%; bottom: 10%; background: var(--sky); animation-duration: 20s; }
+
+/* Make the setup card feel special but still simple */
+.app > div:has(#name) .card {
+  border: 0;
+  border-radius: 28px;
+  box-shadow: 0 14px 48px rgba(16,33,43,.12);
+}
+
+@keyframes splashMove {
+  0%   { background-position: 0% 0%, 100% 15%, 0 0; }
+  100% { background-position: 30% 15%, 70% 0%,   0 0; }
+}
+@keyframes floaty {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-16px); }
+}
