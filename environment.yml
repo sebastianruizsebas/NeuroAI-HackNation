@@ -1,0 +1,15 @@
+name: prof.ai
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - ipykernel
+  - rich
+  - openai
+  - fastapi
+  - pydantic
+  - python-dotenv
+  - uvicorn
+  - flask
+  - flask_cors
+prefix: C:\msys64\home\srseb\Miniforge3\envs\prof.ai

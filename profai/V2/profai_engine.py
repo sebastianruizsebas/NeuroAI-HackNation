@@ -3,7 +3,17 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any
 import openai
-from config import OPENAI_API_KEY, DATA_DIR
+
+# Use relative import or direct import from local config
+try:
+    from .config import OPENAI_API_KEY, DATA_DIR
+except ImportError:
+    try:
+        from config import OPENAI_API_KEY, DATA_DIR
+    except ImportError:
+        # Fallback to environment variables
+        OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+        DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 # Initialize OpenAI
 openai.api_key = OPENAI_API_KEY

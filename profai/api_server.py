@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
-from profai_engine import ProfAIEngine
+from V2.profai_engine import ProfAIEngine
 import json
 import time
 from threading import Thread
