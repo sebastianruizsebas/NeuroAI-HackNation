@@ -2,7 +2,7 @@ import json
 import os
 import traceback
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 import openai
 
 # Import from local config
@@ -256,6 +256,7 @@ Return a JSON object with detailed, topic-specific outline information."""
             }
 
     def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
+<<<<<<< HEAD
         """Generate sequential, in-depth lesson content structured like a tutoring session."""
         competency = user_profile.get('competency_scores', {}).get(topic, 0)
         knowledge_gaps = user_profile.get('knowledge_gaps', {}).get(topic, [])
@@ -263,6 +264,15 @@ Return a JSON object with detailed, topic-specific outline information."""
         completed_lessons = user_profile.get('completed_lessons', [])
         
         # --- RAG: Retrieve relevant chunks from course materials ---
+=======
+        """Generate personalized lesson content that delivers on the specific outcomes promised in the topic title."""
+        competency = user_profile.get('competency_scores', {}).get(topic, 0)
+        
+        # Extract actionable components from the topic title
+        title_analysis = self._analyze_topic_title(topic)
+        
+        # --- RAG: Retrieve relevant chunks ---
+>>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
         try:
             from rag_utils import load_all_chunks, find_relevant_chunks
             import os
@@ -272,13 +282,25 @@ Return a JSON object with detailed, topic-specific outline information."""
                 os.path.join(base_dir, 'mit_ocw_chunks.json'),
             ]
             chunks = load_all_chunks(chunk_files)
+<<<<<<< HEAD
             # Get more chunks for in-depth content
             relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)
             context = '\n\n'.join([f"From {fname}: {chunk}" for fname, chunk in relevant_chunks])
+=======
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)  # Get more chunks for better coverage
+            
+            if relevant_chunks:
+                context = '\n\n'.join([f"EDUCATIONAL CONTENT FROM {fname}:\n{chunk}" for fname, chunk in relevant_chunks])
+                print(f"Successfully retrieved {len(relevant_chunks)} relevant chunks for topic: {topic}")
+            else:
+                print(f"No relevant chunks found for topic: {topic}")
+                context = ""
+>>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
         except Exception as rag_e:
             print(f"RAG retrieval failed: {rag_e}")
             context = ""
 
+<<<<<<< HEAD
         # Determine the next topic in the learning path
         current_topic_index = learning_path.index(topic) if topic in learning_path else -1
         is_sequential = current_topic_index >= 0 and len(completed_lessons) > 0
@@ -287,10 +309,20 @@ Return a JSON object with detailed, topic-specific outline information."""
 
 {'Previous topics completed: ' + ', '.join(completed_lessons) if completed_lessons else 'This is the first lesson.'}
 {'This lesson should build upon and reference concepts from previous lessons.' if is_sequential else 'This is a foundational lesson that will be referenced in future topics.'}
+=======
+        prompt = f"""You are a world-class AI educator creating a lesson that MUST deliver on the specific learning outcomes promised in the title: "{topic}".
+>>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
 
-Course context (from real lecture notes):
+Title Analysis:
+- Action words: {title_analysis['actions']}
+- Technical components: {title_analysis['technologies']}
+- Application domain: {title_analysis['domain']}
+- Expected deliverables: {title_analysis['deliverables']}
+
+EDUCATIONAL FOUNDATION - YOU MUST BASE YOUR LESSON ON THIS MATERIAL:
 {context}
 
+<<<<<<< HEAD
 TUTORING APPROACH:
 1. Start with a clear connection to previously learned concepts
 2. Break down complex ideas into digestible steps
@@ -309,37 +341,70 @@ DEPTH AND SEQUENCING:
 - Connect theoretical concepts to practical applications
 - Reference and build upon concepts from previous lessons
 - Challenge understanding with thought-provoking questions
+=======
+CRITICAL REQUIREMENTS:
+1. DIRECTLY INCORPORATE the provided educational content from MIT OCW and lecture notes
+2. Build lesson content that references and expands on the specific concepts from the source material
+3. Use the mathematical formulations, examples, and explanations from the provided chunks
+4. Ensure lesson content reflects the title and enables students to {', '.join(title_analysis['actions'])} the specific {', '.join(title_analysis['technologies'])} for {title_analysis['domain']} applications
+5. Create substantial content (200+ words per chunk) that demonstrates deep understanding of the source material
+
+CONTENT ALIGNMENT STRATEGY:
+- Quote key definitions and theorems from the source material
+- Build upon mathematical formulations provided in the chunks
+- Reference specific examples and case studies from the educational content
+- Connect theoretical concepts from the source to practical applications
+- Ensure each lesson chunk directly builds from the foundation laid in the source material
+
+LESSON STRUCTURE REQUIREMENTS:
+1. THEORETICAL FOUNDATION - Start with concepts from the source material
+2. MATHEMATICAL FORMULATION - Use equations and proofs from the chunks where relevant
+3. PRACTICAL APPLICATION - Show how theory applies to the domain specified in the title
+4. IMPLEMENTATION GUIDANCE - Provide step-by-step guidance for achieving the title's promise
+
+CONTENT DEPTH (Competency Level {competency}/10):
+- Competency 0-3: Explain source concepts clearly with detailed examples from the material
+- Competency 4-6: Connect source theory to intermediate applications with mathematical rigor
+- Competency 7-10: Extend source material to advanced applications and cutting-edge techniques
+
+Each section must be substantial (200+ words) with:
+- Direct references to the source educational material
+- Mathematical formulations from the chunks when relevant
+- Concrete examples that build upon source content
+- Clear connection between source theory and title's promised outcome
+>>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
 
 Return ONLY a JSON object with this enhanced format:
 {{
     "topic": "{topic}",
     "competency_level": {competency},
-    "overview": "Comprehensive overview establishing context, importance, and learning objectives. Should connect to broader field and reference the source material.",
+    "title_promises": {title_analysis},
+    "source_material_used": true,
+    "overview": "Overview that explicitly connects source material to the lesson objectives and states what students will BUILD/IMPLEMENT/MASTER as promised in the title, with clear foundation in the provided educational content.",
     "chunks": [
         {{
             "title": "Descriptive Academic Title",
-            "content": "Detailed, rigorous explanation with mathematical derivations, concrete examples, and connections to applications. Minimum 200 words.",
-            "key_point": "Specific, actionable takeaway demonstrating mastery",
-            "mathematical_concepts": ["concept1", "concept2"],
-            "examples": ["example1", "example2"],
-            "applications": ["application1", "application2"],
-            "source_references": ["reference to course material"],
+            "content": "Detailed explanation that DIRECTLY REFERENCES and BUILDS UPON the provided source material. Include specific concepts, mathematical formulations, and examples from the educational chunks. Minimum 200 words that demonstrate deep engagement with the source content.",
+            "key_point": "Specific, actionable takeaway that connects source theory to practical mastery",
+            "source_connections": ["Specific references to concepts from the provided chunks"],
+            "mathematical_concepts": ["concept1 from source", "concept2 from source"],
+            "examples": ["examples that build on source material"],
+            "applications": ["applications that realize the title's promise"],
             "difficulty_level": "1-5 scale",
             "estimated_time": "15-20 minutes"
         }}
     ],
     "key_takeaways": [
-        "Specific technical knowledge with quantitative understanding",
-        "Practical implementation skills developed",
-        "Conceptual frameworks mastered",
-        "Real-world applications identified"
+        "Specific technical knowledge gained from source material",
+        "Practical implementation skills connecting source to application",
+        "Mathematical understanding drawn from provided content",
+        "Real-world capabilities that fulfill the title's promise"
     ],
-    "prerequisites": ["specific prerequisite topics"],
-    "mathematical_foundations": ["foundational math concepts"],
-    "further_reading": ["academic papers", "textbook chapters"],
-    "assessment_criteria": ["measurable learning outcomes"],
-    "industry_connections": ["how this applies in practice"],
-    "common_misconceptions": ["typical student errors to avoid"]
+    "prerequisites": ["specific concepts from source material"],
+    "mathematical_foundations": ["foundational concepts from the educational chunks"],
+    "further_reading": ["references that extend the source material"],
+    "assessment_criteria": ["how to verify achievement of title's promise"],
+    "source_material_references": ["specific chunks and concepts used"]
 }}"""
         try:
             print(f"Calling OpenAI for lesson generation with RAG context...")
@@ -358,6 +423,23 @@ Return ONLY a JSON object with this enhanced format:
                 content = content[3:-3]
             lesson = json.loads(content)
             print(f"Lesson parsed successfully")
+            
+            # Validate lesson alignment with source material and title
+            if relevant_chunks:
+                validation_report = self.validate_lesson_alignment(lesson, topic, relevant_chunks)
+                print(f"Lesson validation score: {validation_report['overall_score']:.2f}")
+                
+                if not validation_report['validation_passed']:
+                    print("Lesson validation failed. Issues found:")
+                    for issue in validation_report['issues']:
+                        print(f"  - {issue}")
+                    print("Recommendations:")
+                    for rec in validation_report['recommendations']:
+                        print(f"  - {rec}")
+                
+                # Add validation metadata to lesson
+                lesson['validation_report'] = validation_report
+            
             # Cache the lesson
             try:
                 lessons = self.load_data(self.lessons_file)
@@ -1177,6 +1259,112 @@ Return JSON format:
             "recommendations": self._generate_quality_recommendations(avg_score, issues_summary)
         }
     
+    def validate_lesson_alignment(self, lesson: Dict, topic: str, source_chunks: List[Tuple[str, str]]) -> Dict:
+        """Validate that the generated lesson properly incorporates the source chunks and aligns with the title."""
+        validation_report = {
+            "title_alignment_score": 0.0,
+            "source_material_usage_score": 0.0,
+            "content_depth_score": 0.0,
+            "overall_score": 0.0,
+            "issues": [],
+            "recommendations": [],
+            "validation_passed": False
+        }
+        
+        try:
+            # Extract lesson content for analysis
+            lesson_text = lesson.get('overview', '') + ' '
+            for chunk in lesson.get('chunks', []):
+                lesson_text += chunk.get('content', '') + ' ' + chunk.get('key_point', '') + ' '
+            lesson_text = lesson_text.lower()
+            
+            # 1. Title Alignment Analysis
+            title_analysis = self._analyze_topic_title(topic)
+            title_keywords = []
+            for action_list in title_analysis.values():
+                if isinstance(action_list, list):
+                    title_keywords.extend(action_list)
+                elif isinstance(action_list, str):
+                    title_keywords.append(action_list)
+            
+            title_matches = sum(1 for keyword in title_keywords if keyword.lower() in lesson_text)
+            validation_report["title_alignment_score"] = min(1.0, title_matches / max(len(title_keywords), 1))
+            
+            if validation_report["title_alignment_score"] < 0.5:
+                validation_report["issues"].append("Lesson content does not adequately address the specific promises made in the title")
+                validation_report["recommendations"].append("Ensure lesson content directly enables students to achieve what the title promises")
+            
+            # 2. Source Material Usage Analysis
+            if source_chunks:
+                source_concepts = set()
+                source_text = ""
+                for fname, chunk_content in source_chunks:
+                    source_text += chunk_content.lower() + " "
+                    # Extract key concepts from source material
+                    import re
+                    concepts = re.findall(r'\b(?:theorem|definition|algorithm|method|approach|model|technique|principle)\b', chunk_content.lower())
+                    source_concepts.update(concepts)
+                
+                # Check if lesson incorporates source concepts
+                source_matches = sum(1 for concept in source_concepts if concept in lesson_text)
+                validation_report["source_material_usage_score"] = min(1.0, source_matches / max(len(source_concepts), 1))
+                
+                # Check for direct quotes or references
+                has_references = any(ref in lesson.get('source_material_references', []) for ref in ['MIT OCW', 'lecture', 'course material'])
+                if has_references:
+                    validation_report["source_material_usage_score"] += 0.2
+                    validation_report["source_material_usage_score"] = min(1.0, validation_report["source_material_usage_score"])
+                
+                if validation_report["source_material_usage_score"] < 0.4:
+                    validation_report["issues"].append("Lesson does not adequately incorporate the provided source material")
+                    validation_report["recommendations"].append("Include more direct references to concepts, theorems, and examples from the course material")
+            else:
+                validation_report["source_material_usage_score"] = 0.5  # Neutral if no source material available
+            
+            # 3. Content Depth Analysis
+            total_content_length = sum(len(chunk.get('content', '')) for chunk in lesson.get('chunks', []))
+            avg_chunk_length = total_content_length / max(len(lesson.get('chunks', [])), 1)
+            
+            # Check for mathematical content
+            math_indicators = ['equation', 'formula', 'theorem', 'proof', 'algorithm', 'optimization', 'gradient', 'matrix']
+            math_score = sum(1 for indicator in math_indicators if indicator in lesson_text) / len(math_indicators)
+            
+            # Check for practical content
+            practical_indicators = ['implementation', 'example', 'application', 'step-by-step', 'code', 'practice', 'exercise']
+            practical_score = sum(1 for indicator in practical_indicators if indicator in lesson_text) / len(practical_indicators)
+            
+            depth_score = (avg_chunk_length / 200.0 + math_score + practical_score) / 3
+            validation_report["content_depth_score"] = min(1.0, depth_score)
+            
+            if validation_report["content_depth_score"] < 0.5:
+                validation_report["issues"].append("Lesson content lacks sufficient depth and substance")
+                validation_report["recommendations"].append("Include more detailed explanations, mathematical formulations, and practical examples")
+            
+            # 4. Overall Assessment
+            validation_report["overall_score"] = (
+                validation_report["title_alignment_score"] * 0.4 +
+                validation_report["source_material_usage_score"] * 0.4 +
+                validation_report["content_depth_score"] * 0.2
+            )
+            
+            # Determine if validation passed
+            validation_report["validation_passed"] = (
+                validation_report["overall_score"] >= 0.6 and
+                validation_report["title_alignment_score"] >= 0.4 and
+                validation_report["source_material_usage_score"] >= 0.3
+            )
+            
+            if validation_report["validation_passed"]:
+                validation_report["recommendations"].append("Lesson meets quality standards for content alignment and source material usage")
+            else:
+                validation_report["issues"].append(f"Overall lesson quality score {validation_report['overall_score']:.2f} below minimum threshold of 0.6")
+                
+        except Exception as e:
+            validation_report["issues"].append(f"Validation error: {str(e)}")
+            print(f"Error in lesson validation: {e}")
+        
+        return validation_report
+
     def _generate_quality_recommendations(self, avg_score: float, issues_summary: Dict) -> List[str]:
         """Generate recommendations based on quality analysis"""
         recommendations = []
@@ -1210,17 +1398,24 @@ Return JSON format:
                 os.path.join(base_dir, 'mit_ocw_chunks.json'),
             ]
             chunks = load_all_chunks(chunk_files)
-            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=3)
-            context = '\n\n'.join([f"From {fname}: {chunk}" for fname, chunk in relevant_chunks])
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)
+            
+            if relevant_chunks:
+                context = '\n\n'.join([f"EDUCATIONAL CONTENT FROM {fname}:\n{chunk}" for fname, chunk in relevant_chunks])
+                print(f"Successfully retrieved {len(relevant_chunks)} relevant chunks for assessment: {topic}")
+            else:
+                print(f"No relevant chunks found for assessment topic: {topic}")
+                context = "No specific course material found. Use general machine learning principles."
         except Exception as rag_e:
             print(f"RAG retrieval failed (assessment): {rag_e}")
-            context = ""
+            context = "No specific course material found. Use general machine learning principles."
 
         prompt = f"""You are a world-class AI tutor assessing deep understanding of {topic}. Create exactly 5 challenging multiple-choice questions that test specific technical knowledge and problem-solving abilities.
 
-Course context from lecture notes:
+FOUNDATIONAL COURSE MATERIAL TO BASE QUESTIONS ON:
 {context}
 
+<<<<<<< HEAD
 QUESTION REQUIREMENTS:
 1. Highly Specific Focus:
    - Target one precise concept or technique per question
@@ -1249,33 +1444,52 @@ QUESTION REQUIREMENTS:
    - Include specific numbers, parameters, or conditions
    - Reference actual frameworks, libraries, or tools when relevant
 8. Test different cognitive levels (comprehension, application, analysis)
+=======
+CRITICAL REQUIREMENT: Questions MUST be based on the specific concepts, mathematical formulations, and examples provided in the course material above. If course material is available, draw questions directly from it.
+
+REQUIREMENTS for each question:
+1. Base questions on SPECIFIC concepts from the provided course material
+2. Use mathematical formulations and examples from the source content when available
+3. Test DEEP understanding of the source material, not just memorization
+4. Reference specific algorithms, theorems, or techniques mentioned in the chunks
+5. Make distractors based on common misconceptions about the source concepts
+6. Use precise, academic language consistent with the source material
+7. Test different cognitive levels (comprehension, application, analysis)
+
+QUESTION DEVELOPMENT STRATEGY:
+- Extract key concepts, definitions, and theorems from the provided course material
+- Create scenarios that test understanding of mathematical formulations from the chunks
+- Use specific examples and case studies mentioned in the source content
+- Test ability to apply theoretical concepts from the material to new situations
+>>>>>>> 1b0d9b5eb876bbe928b681c0d3c962622d4045c0
 
 QUALITY STANDARDS:
-- Question stem should be at least 20 words and present a clear scenario
-- Each option should be substantive (at least 8 words)
-- Correct answer must be unambiguous and defensible
-- Distractors should reflect common misconceptions
-- Include quantitative elements where appropriate
+- Question stem should reference specific concepts from the course material (at least 20 words)
+- Each option should be substantive (at least 8 words) and based on course content
+- Correct answer must reflect accurate understanding of the source material
+- Distractors should represent realistic misunderstandings of the course concepts
+- Include quantitative elements from the source material where appropriate
 
 DIFFICULTY PROGRESSION:
-- Questions 1-2: Fundamental concepts and definitions
-- Questions 3-4: Application and analysis
-- Question 5: Synthesis and evaluation
+- Questions 1-2: Fundamental definitions and concepts from the course material
+- Questions 3-4: Mathematical applications and analysis from the source content
+- Question 5: Synthesis and evaluation of course concepts in new contexts
 
 Return ONLY a JSON array with this exact format:
 [
     {{
-        "question": "In the context of [specific scenario], which approach would be most effective for [specific problem]? Consider the trade-offs between computational complexity and accuracy.",
+        "question": "Based on the [specific concept from course material], when [specific scenario from source content], which approach would be most effective? Consider the [specific mathematical property or constraint mentioned in the material].",
         "options": [
-            "A) [Detailed technical option with specific reasoning]",
-            "B) [Alternative approach with different trade-offs]", 
-            "C) [Common misconception with plausible reasoning]",
-            "D) [Another misconception or oversimplified approach]"
+            "A) [Solution based on correct understanding of source material with specific technical reasoning]",
+            "B) [Alternative approach that misapplies a concept from the source material]", 
+            "C) [Common misconception about the source concept with plausible reasoning]",
+            "D) [Another misconception or oversimplified approach contradicting the source material]"
         ],
         "correct": "A",
-        "concept": "specific_technical_concept",
+        "concept": "specific_concept_from_source_material",
         "difficulty": 1,
-        "explanation": "Why the correct answer is right and others are wrong"
+        "source_reference": "Reference to specific chunk or concept used",
+        "explanation": "Why the correct answer aligns with the course material and others misunderstand it"
     }}
 ]"""
 
@@ -1735,6 +1949,71 @@ Return ONLY a JSON object with this format:
             clean_input = user_input.replace("I'm interested in", "").replace("learning about", "").strip()
             return f"Mastering {clean_input}: From Theory to Implementation"
     
+    def _analyze_topic_title(self, topic_title: str) -> Dict:
+        """Analyze a topic title to extract actionable components and learning outcomes"""
+        title_lower = topic_title.lower()
+        
+        # Extract action verbs that indicate what students will do
+        actions = []
+        action_words = ['building', 'creating', 'implementing', 'developing', 'designing', 'applying', 'mastering', 'optimizing', 'analyzing', 'training', 'deploying']
+        for action in action_words:
+            if action in title_lower:
+                actions.append(action)
+        
+        # Extract technical components/technologies
+        technologies = []
+        tech_keywords = [
+            'neural networks', 'machine learning', 'deep learning', 'computer vision', 
+            'nlp', 'natural language processing', 'reinforcement learning', 'algorithms',
+            'models', 'systems', 'pipelines', 'agents', 'networks', 'transformers',
+            'convolutional', 'recurrent', 'lstm', 'gru', 'pytorch', 'tensorflow',
+            'python', 'pandas', 'numpy', 'scikit-learn'
+        ]
+        for tech in tech_keywords:
+            if tech in title_lower:
+                technologies.append(tech)
+        
+        # Extract application domains
+        domain = "general application"
+        domain_keywords = {
+            'medical': ['medical', 'healthcare', 'diagnosis', 'imaging'],
+            'autonomous vehicles': ['autonomous', 'vehicle', 'driving', 'transportation'],
+            'games': ['game', 'gaming', 'strategic', 'ai'],
+            'finance': ['financial', 'trading', 'market', 'investment'],
+            'robotics': ['robot', 'robotic', 'automation', 'control'],
+            'image analysis': ['image', 'vision', 'visual', 'recognition'],
+            'text analysis': ['text', 'language', 'linguistic', 'sentiment'],
+            'data science': ['data', 'analytics', 'prediction', 'analysis']
+        }
+        
+        for domain_name, keywords in domain_keywords.items():
+            if any(keyword in title_lower for keyword in keywords):
+                domain = domain_name
+                break
+        
+        # Extract expected deliverables
+        deliverables = []
+        if 'system' in title_lower:
+            deliverables.append('functional system')
+        if 'model' in title_lower:
+            deliverables.append('trained model')
+        if 'application' in title_lower:
+            deliverables.append('working application')
+        if 'pipeline' in title_lower:
+            deliverables.append('data pipeline')
+        if 'agent' in title_lower:
+            deliverables.append('intelligent agent')
+        
+        if not deliverables:
+            deliverables = ['practical implementation']
+        
+        return {
+            'actions': actions if actions else ['learn', 'understand'],
+            'technologies': technologies if technologies else ['core concepts'],
+            'domain': domain,
+            'deliverables': deliverables
+        }
+    
     def save_custom_topic(self, user_id: str, topic: Dict):
         """Save a custom topic to user's library"""
         # Create custom topics file if it doesn't exist
@@ -1961,8 +2240,11 @@ Return ONLY a JSON object with this format:
         return [s for s in sessions if s['userId'] == user_id and s['active']]
     
     def generate_lesson_outline(self, topic: str, difficulty: str = "beginner", user_assessment: Dict = None) -> Dict:
-        """Generate a comprehensive lesson outline based on topic and user assessment"""
+        """Generate a comprehensive lesson outline that delivers on the specific outcomes promised in the topic title"""
         try:
+            # Analyze the topic title to understand what students should achieve
+            title_analysis = self._analyze_topic_title(topic)
+            
             # Use assessment results to personalize outline
             knowledge_gaps = []
             strong_areas = []
@@ -1970,35 +2252,59 @@ Return ONLY a JSON object with this format:
                 knowledge_gaps = user_assessment.get('knowledge_gaps', [])
                 strong_areas = user_assessment.get('strong_areas', [])
             
-            prompt = f"""Create a comprehensive lesson outline for learning "{topic}" at {difficulty} level.
+            prompt = f"""Create a comprehensive lesson outline for "{topic}" that MUST deliver on the specific learning outcomes promised in the title.
+
+Title Analysis:
+- Action words: {title_analysis['actions']}
+- Technical components: {title_analysis['technologies']}
+- Application domain: {title_analysis['domain']}
+- Expected deliverables: {title_analysis['deliverables']}
 
 User's Knowledge Profile:
 - Knowledge gaps: {knowledge_gaps}
 - Strong areas: {strong_areas}
+- Difficulty level: {difficulty}
 
-Create a structured outline with:
-1. Learning objectives (3-5 clear, measurable goals)
-2. Lesson structure with 4-6 modules
-3. Each module should have:
-   - Title and estimated time
-   - Key concepts covered
-   - Learning activities
-   - Assessment checkpoints
-4. Prerequisites and recommended background
-5. Resources and materials needed
-6. Expected outcomes
+CRITICAL REQUIREMENT: Students must be able to actually {', '.join(title_analysis['actions'])} {', '.join(title_analysis['technologies'])} for {title_analysis['domain']} by the end of this lesson.
 
-Focus on addressing the user's knowledge gaps while building on their strengths.
+Create a hands-on, implementation-focused outline with:
+
+1. Learning Objectives (3-5 specific, measurable goals that directly fulfill the title's promise)
+   - Must include action verbs from the title
+   - Must specify what students will BUILD/CREATE/IMPLEMENT
+   - Must mention the specific technology and application domain
+
+2. Lesson Structure (4-6 practical modules)
+   - Each module builds toward the final deliverable mentioned in the title
+   - Include hands-on coding/implementation sections
+   - Progress from theory to practical application
+   - Culminate in the specific outcome promised in the title
+
+3. Each Module Requirements:
+   - Title reflecting a specific skill/component being built
+   - Estimated time for hands-on work
+   - Key concepts with implementation focus
+   - Practical activities (coding, building, testing)
+   - Assessment that verifies capability, not just knowledge
+   - How it contributes to the title's promised outcome
+
+4. Final Project/Deliverable:
+   - Must match exactly what the title promises
+   - Concrete, measurable output
+   - Real-world application in the specified domain
+
+Focus on DOING rather than just learning - address knowledge gaps through practical implementation.
 
 Return ONLY a JSON object with this format:
 {{
     "topic": "{topic}",
     "difficulty": "{difficulty}",
-    "estimatedDuration": "2-3 hours",
+    "title_promises": {title_analysis},
+    "estimatedDuration": "3-4 hours for hands-on implementation",
     "learningObjectives": [
-        "Objective 1: Students will be able to...",
-        "Objective 2: Students will understand...",
-        "Objective 3: Students will apply..."
+        "Students will BUILD/IMPLEMENT/CREATE [specific deliverable] using [specific technology]",
+        "Students will APPLY [technique] to solve [domain-specific problem]",
+        "Students will DEMONSTRATE mastery by [specific measurable outcome]"
     ],
     "prerequisites": ["Basic understanding of...", "Familiarity with..."],
     "modules": [
@@ -2041,68 +2347,78 @@ Return ONLY a JSON object with this format:
             return self._generate_fallback_outline(topic, difficulty)
     
     def _generate_fallback_outline(self, topic: str, difficulty: str) -> Dict:
-        """Generate a fallback lesson outline when AI generation fails"""
+        """Generate a fallback lesson outline that aligns with the enhanced title promises"""
+        
+        # Analyze the topic title to understand what should be delivered
+        title_analysis = self._analyze_topic_title(topic)
+        
+        # Create implementation-focused learning objectives based on title analysis
+        action_verb = title_analysis['actions'][0] if title_analysis['actions'] else "implement"
+        main_tech = title_analysis['technologies'][0] if title_analysis['technologies'] else "core concepts"
+        domain = title_analysis['domain']
+        deliverable = title_analysis['deliverables'][0] if title_analysis['deliverables'] else "practical solution"
+        
         return {
             "topic": topic,
             "difficulty": difficulty,
-            "estimatedDuration": "2-3 hours",
+            "title_promises": title_analysis,
+            "estimatedDuration": "3-4 hours for hands-on implementation",
             "learningObjectives": [
-                f"Understand the fundamental concepts of {topic}",
-                f"Apply basic principles of {topic} to simple problems",
-                f"Recognize the importance and applications of {topic}"
+                f"Students will {action_verb} a {deliverable} using {main_tech}",
+                f"Students will apply {main_tech} techniques to {domain} problems",
+                f"Students will demonstrate practical mastery through a working implementation",
+                f"Students will understand the theoretical foundations behind {main_tech}"
             ],
-            "prerequisites": ["Basic computer literacy", "Interest in learning"],
+            "prerequisites": ["Basic programming knowledge", "Familiarity with Python", "Mathematical fundamentals"],
+            "finalProject": f"Complete {deliverable} that demonstrates mastery of {main_tech} for {domain} applications",
             "modules": [
                 {
                     "id": "module_1",
-                    "title": f"Introduction to {topic}",
-                    "estimatedTime": "20 minutes",
-                    "description": f"Overview of {topic} and its significance",
-                    "keyConcepts": ["Definition", "History", "Importance"],
-                    "activities": ["Reading", "Video overview"],
-                    "assessmentType": "quiz",
-                    "addressesGaps": []
+                    "title": f"Foundation and Setup for {main_tech}",
+                    "estimatedTime": "45 minutes",
+                    "description": f"Establish theoretical foundation and set up development environment for {action_verb} {main_tech}",
+                    "keyConcepts": ["Core principles", "Mathematical foundations", "Development environment"],
+                    "activities": ["Environment setup", "Foundational coding exercises", "Conceptual walkthrough"],
+                    "assessmentType": "practical setup verification",
+                    "buildsToward": f"Preparation for {action_verb} {deliverable}"
                 },
                 {
                     "id": "module_2", 
-                    "title": "Core Concepts",
-                    "estimatedTime": "40 minutes",
-                    "description": "Deep dive into the main ideas",
-                    "keyConcepts": ["Key principles", "Terminology", "Examples"],
-                    "activities": ["Interactive examples", "Practice exercises"],
-                    "assessmentType": "practical",
-                    "addressesGaps": []
+                    "title": f"Implementing {main_tech} Components",
+                    "estimatedTime": "60 minutes",
+                    "description": f"Hands-on implementation of core {main_tech} components and algorithms",
+                    "keyConcepts": ["Algorithm implementation", "Code structure", "Best practices"],
+                    "activities": ["Step-by-step coding", "Component testing", "Debugging exercises"],
+                    "assessmentType": "code implementation review",
+                    "buildsToward": f"Core functionality for {deliverable}"
                 },
                 {
                     "id": "module_3",
-                    "title": "Applications and Practice",
-                    "estimatedTime": "30 minutes", 
-                    "description": "Real-world applications and hands-on practice",
-                    "keyConcepts": ["Use cases", "Best practices", "Common patterns"],
-                    "activities": ["Case studies", "Hands-on exercises"],
-                    "assessmentType": "discussion",
-                    "addressesGaps": []
+                    "title": f"Application to {domain.title()} Domain",
+                    "estimatedTime": "50 minutes", 
+                    "description": f"Apply {main_tech} implementation to solve real {domain} problems",
+                    "keyConcepts": ["Domain-specific challenges", "Real-world data", "Performance optimization"],
+                    "activities": ["Domain problem analysis", "Implementation adaptation", "Testing with real data"],
+                    "assessmentType": "domain application project",
+                    "buildsToward": f"Domain-specific {deliverable}"
                 },
                 {
                     "id": "module_4",
-                    "title": "Summary and Next Steps",
-                    "estimatedTime": "20 minutes",
-                    "description": "Review and planning for continued learning",
-                    "keyConcepts": ["Key takeaways", "Advanced topics", "Resources"],
-                    "activities": ["Review quiz", "Planning session"],
-                    "assessmentType": "quiz",
-                    "addressesGaps": []
+                    "title": f"Complete {deliverable.title()} Development",
+                    "estimatedTime": "45 minutes",
+                    "description": f"Integrate all components into a fully functional {deliverable}",
+                    "keyConcepts": ["System integration", "Testing", "Deployment considerations"],
+                    "activities": ["Integration coding", "End-to-end testing", "Performance evaluation"],
+                    "assessmentType": "final project demonstration", 
+                    "buildsToward": f"Working {deliverable} that fulfills the title's promise"
                 }
             ],
-            "resources": [
-                "Course materials and readings",
-                "Online tutorials and documentation",
-                "Practice exercises and examples"
-            ],
+            "resources": [f"Documentation for {main_tech}", "Code examples and templates", "Domain-specific datasets"],
             "expectedOutcomes": [
-                f"Solid understanding of {topic} fundamentals",
-                "Ability to apply concepts to basic problems",
-                "Confidence to pursue advanced topics"
+                f"Fully functional {deliverable}",
+                f"Understanding of {main_tech} principles through implementation",
+                f"Ability to apply techniques to new {domain} problems",
+                "Confidence in building similar systems independently"
             ],
             "generated_at": datetime.now().isoformat()
         }
