@@ -44,36 +44,59 @@ const LessonOutline: React.FC<LessonOutlineProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('LessonOutline useEffect triggered:', { topic, difficulty, assessmentResults });
     generateOutline();
   }, [topic, difficulty, assessmentResults]);
 
   const generateOutline = async () => {
+    console.log('LessonOutline: Starting outline generation...');
     setLoading(true);
     setError(null);
     
+    // Set a timeout to prevent infinite loading
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000);
+    });
+    
     try {
-      const response = await fetch('http://localhost:5000/api/lesson/outline', {
+      console.log('LessonOutline: Making API request to /api/lesson/outline');
+      const requestBody = {
+        topic,
+        difficulty,
+        assessment_results: assessmentResults
+      };
+      console.log('LessonOutline: Request body:', requestBody);
+      
+      const fetchPromise = fetch('http://localhost:5000/api/lesson/outline', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          topic,
-          difficulty,
-          assessment_results: assessmentResults
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      // Race between fetch and timeout
+      const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
+      console.log('LessonOutline: API response status:', response.status);
+      
       if (response.ok) {
         const outlineData = await response.json();
+        console.log('LessonOutline: Outline data received:', outlineData);
         setOutline(outlineData);
       } else {
-        setError('Failed to generate lesson outline');
+        const errorText = await response.text();
+        console.error('LessonOutline: API error response:', errorText);
+        setError(`Failed to generate lesson outline: ${response.status}`);
       }
-    } catch (err) {
-      setError('Error generating lesson outline');
-      console.error('Error:', err);
+    } catch (err: any) {
+      console.error('LessonOutline: Exception during API call:', err);
+      if (err.message === 'Request timeout after 30 seconds') {
+        setError('Request timed out. The server may be processing your request. Please try again.');
+      } else {
+        setError(`Error generating lesson outline: ${err.message || err}`);
+      }
     } finally {
+      console.log('LessonOutline: Setting loading to false');
       setLoading(false);
     }
   };
