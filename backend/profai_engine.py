@@ -1,15 +1,7 @@
 import json
 import os
 from datetime import datetime
-<<<<<<< HEAD
-from typing import Dict, List, Any, Tuple
-=======
 from typing import Dict, List, Any
-<<<<<<< HEAD
-=======
-from typing import Dict, List, Any
->>>>>>> 0783f9e56c8039b9b58e5e1952ded158592261d1
->>>>>>> 2a569b9be3cd61fdb74097f8f64276bf1d033fbd
 import openai
 
 # Import from local config
@@ -122,19 +114,15 @@ Course context (from real lecture notes):\n{context}\n
                 content = content[3:-3]
             lesson = json.loads(content)
             print(f"Lesson parsed successfully")
-            # Optionally cache the lesson
-            return lesson
-        except Exception as e:
-            print(f"Lesson generation failed: {e}")
-            return {}
+            # Cache the lesson
             try:
                 lessons = self.load_data(self.lessons_file)
-            except Exception:
-                lessons = {}
-            lesson_id = f"lesson_{len(lessons) + 1}"
-            lessons[lesson_id] = lesson
-            self.save_data(self.lessons_file, lessons)
-            print(f"Lesson saved with ID: {lesson_id}")
+                lesson_id = f"lesson_{len(lessons) + 1}"
+                lessons[lesson_id] = lesson
+                self.save_data(self.lessons_file, lessons)
+                print(f"Lesson saved with ID: {lesson_id}")
+            except Exception as cache_e:
+                print(f"Warning: Could not cache lesson: {cache_e}")
             return lesson
         except Exception as e:
             print(f"Error in generate_lesson_content: {e}")
