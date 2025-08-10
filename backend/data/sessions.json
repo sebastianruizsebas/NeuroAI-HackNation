@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student may need more explanation and examples to grasp the concept of supervised learning. Encouraging active participation and asking questions could help increase engagement and understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems completely lost and disconnected from the lesson content. They need to actively engage with the material by reading and trying to understand the concepts. Encouraging them to ask questions or seek additional resources may help.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to actively engage with the lesson material by asking questions or seeking clarification. Provide examples or practical applications of reinforcement learning to help solidify understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_2",
+    "timestamp": "2025-08-09T23:00:05.164473",
+    "session_id": "session_1"
+  }
+]

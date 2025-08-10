@@ -17,6 +17,25 @@
   color-scheme: light;
 }
 
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary-color: #10b981;
+    --accent-color: #f59e0b;
+    --danger-color: #ef4444;
+    --background: #0f172a;
+    --surface: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --border: #334155;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    color-scheme: dark;
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -28,12 +47,15 @@ body {
   background: var(--background);
   color: var(--text-primary);
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--background);
+  color: var(--text-primary);
 }
 
 .app-header {
@@ -84,15 +106,17 @@ a:hover {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  background: var(--background);
 }
 
 .loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 50vh;
   font-size: 1.1rem;
   color: var(--text-secondary);
+  background: var(--background);
 }
 
 /* Card Components */
@@ -103,6 +127,8 @@ a:hover {
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   transition: all 0.2s ease;
+  color: var(--text-primary);
+  margin: 1rem 0;
 }
 
 .card:hover {
@@ -141,6 +167,7 @@ a:hover {
   transition: all 0.2s ease;
   text-decoration: none;
   line-height: 1;
+  color: white;
 }
 
 .btn:disabled {
@@ -168,75 +195,52 @@ a:hover {
   transform: translateY(-1px);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-    color: #213547;
-  }
-}
-
-/* Custom styles for ProfAI */
+/* Container and layout */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  background: var(--background);
 }
 
-.card {
-  background: #f5f5f5;
-  border-radius: 12px;
-  padding: 24px;
-  margin: 16px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
+/* Question and lesson cards */
 .question-card {
-  border-left: 4px solid #646cff;
+  border-left: 4px solid var(--primary-color);
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 .lesson-chunk {
-  border-left: 4px solid #4ade80;
+  border-left: 4px solid var(--secondary-color);
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
-.sentiment-positive {
-  border-left: 4px solid #10b981;
-}
-
-.sentiment-negative {
-  border-left: 4px solid #ef4444;
-}
-
+/* Progress bar */
 .progress-bar {
   width: 100%;
   height: 8px;
-  background-color: #e5e7eb;
+  background-color: var(--border);
   border-radius: 4px;
   overflow: hidden;
+  margin: 0.5rem 0;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: #646cff;
+  background-color: var(--primary-color);
   transition: width 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .card {
-    background: #1a1a1a;
-    color: rgba(255, 255, 255, 0.87);
-  }
 }
 
 /* Assessment styles */
 .question-content {
   margin: 1.5rem 0;
+  color: var(--text-primary);
+}
+
+.question-content h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
 }
 
 .options {
@@ -255,14 +259,18 @@ a:hover {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 .option:hover {
   background: var(--background);
+  border-color: var(--primary-color);
 }
 
 .option input[type="radio"] {
   margin: 0;
+  accent-color: var(--primary-color);
 }
 
 .assessment-controls {
@@ -271,17 +279,40 @@ a:hover {
   margin-top: 2rem;
 }
 
+.assessment-phase-indicator {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+  margin: 0.5rem 0;
+}
+
 /* Lesson styles */
 .lesson-content {
   margin: 1.5rem 0;
+  color: var(--text-primary);
+}
+
+.lesson-content h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.lesson-content p {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
 }
 
 .key-point {
-  background: #f0f9ff;
+  background: var(--background);
   border-left: 4px solid var(--primary-color);
   padding: 1rem;
   margin: 1rem 0;
   border-radius: 4px;
+  color: var(--text-primary);
 }
 
 .response-section {
@@ -292,6 +323,7 @@ a:hover {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .response-section textarea {
@@ -301,6 +333,14 @@ a:hover {
   border-radius: 8px;
   font-family: inherit;
   resize: vertical;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.response-section textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .sentiment-metrics {
@@ -308,6 +348,7 @@ a:hover {
   gap: 1rem;
   margin-top: 0.5rem;
   font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 .lesson-controls {
@@ -335,12 +376,19 @@ a:hover {
   font-family: inherit;
   font-size: 1rem;
   transition: border-color 0.2s ease;
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-input:disabled {
+  background: var(--border);
+  color: var(--text-secondary);
 }
 
 .pulse {
@@ -358,11 +406,23 @@ a:hover {
 
 /* V2 Enhanced Features Styles */
 .enhanced-results {
-  background: #f8fafc;
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
   margin: 1.5rem 0;
+  color: var(--text-primary);
+}
+
+.enhanced-results h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.enhanced-results h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
 }
 
 .knowledge-analysis {
@@ -372,18 +432,19 @@ a:hover {
 }
 
 .strong-areas, .knowledge-gaps, .learning-path {
-  background: white;
+  background: var(--surface);
   padding: 1rem;
   border-radius: 8px;
   border-left: 4px solid var(--primary-color);
+  color: var(--text-primary);
 }
 
 .strong-areas {
-  border-left-color: #10b981;
+  border-left-color: var(--secondary-color);
 }
 
 .knowledge-gaps {
-  border-left-color: #f59e0b;
+  border-left-color: var(--accent-color);
 }
 
 .learning-path {
@@ -391,29 +452,31 @@ a:hover {
 }
 
 .progress-summary {
-  background: #f0f9ff;
-  border: 1px solid #bfdbfe;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
   margin: 1.5rem 0;
+  color: var(--text-primary);
+}
+
+.progress-summary h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.progress-summary h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
 }
 
 .recommendations {
   margin-top: 1rem;
   padding: 1rem;
-  background: white;
+  background: var(--background);
   border-radius: 8px;
-}
-
-.enhanced-results h3, .progress-summary h3 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.enhanced-results h4, .progress-summary h4 {
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
 }
 
 .enhanced-results ul, .enhanced-results ol, 
@@ -424,50 +487,51 @@ a:hover {
 
 .enhanced-results li, .progress-summary li {
   margin-bottom: 0.25rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
-/* Adaptive assessment styles */
-.assessment-type-indicator {
-  background: var(--primary-color);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-block;
-  margin-bottom: 1rem;
+/* Sentiment feedback styles */
+.sentiment-excellent, .sentiment-good {
+  border-left-color: var(--secondary-color);
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
-.assessment-type-adaptive {
-  background: #f59e0b;
+.sentiment-fair {
+  border-left-color: var(--accent-color);
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
-.assessment-type-final {
-  background: #059669;
+.sentiment-poor {
+  border-left-color: var(--danger-color);
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
-/* Enhanced sentiment feedback */
-.sentiment-understanding-high {
-  border-left-color: #10b981;
-  background: #f0fdf4;
+/* Better contrast for all sentiment cards */
+.card[class*="sentiment-"] {
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
-.sentiment-understanding-medium {
-  border-left-color: #f59e0b;
-  background: #fefbf3;
+.card[class*="sentiment-"] h4 {
+  color: var(--text-primary);
 }
 
-.sentiment-understanding-low {
-  border-left-color: #ef4444;
-  background: #fef2f2;
+.card[class*="sentiment-"] p {
+  color: var(--text-primary);
 }
 
-/* Progress indicators */
+.card[class*="sentiment-"] strong {
+  color: var(--text-primary);
+}
+
+/* Competency meter */
 .competency-meter {
   width: 100%;
   height: 8px;
-  background: #e5e7eb;
+  background: var(--border);
   border-radius: 4px;
   overflow: hidden;
   margin: 0.5rem 0;
@@ -475,7 +539,46 @@ a:hover {
 
 .competency-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+  background: linear-gradient(90deg, var(--danger-color) 0%, var(--accent-color) 50%, var(--secondary-color) 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
+}
+
+/* Ensure good contrast for all text elements */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-primary);
+}
+
+span {
+  color: inherit;
+}
+
+/* Fix any remaining dark theme issues */
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  
+  .option {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  
+  .form-input, .response-section textarea {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  
+  .key-point {
+    background: var(--background);
+    color: var(--text-primary);
+  }
 }
