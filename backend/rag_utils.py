@@ -1,6 +1,10 @@
 import json
 import os
+<<<<<<< HEAD
+from typing import List, Dict, Tuple
+=======
 from typing import Dict, List, Tuple
+>>>>>>> 0783f9e56c8039b9b58e5e1952ded158592261d1
 import re
 
 def load_all_chunks(chunk_paths: list) -> Dict[str, List[str]]:
@@ -19,10 +23,6 @@ def load_all_chunks(chunk_paths: list) -> Dict[str, List[str]]:
                 for fname, chunk_list in chunks.items():
                     all_chunks.setdefault(fname, []).extend(chunk_list)
     return all_chunks
-import json
-import os
-from typing import List, Dict, Tuple
-import re
 
 CHUNKS_PATH = os.path.join(os.path.dirname(__file__), 'math_ml_chunks.json')
 

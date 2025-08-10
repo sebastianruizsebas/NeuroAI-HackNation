@@ -1,7 +1,15 @@
 import json
 import os
 from datetime import datetime
+<<<<<<< HEAD
+from typing import Dict, List, Any, Tuple
+=======
 from typing import Dict, List, Any
+<<<<<<< HEAD
+=======
+from typing import Dict, List, Any
+>>>>>>> 0783f9e56c8039b9b58e5e1952ded158592261d1
+>>>>>>> 2a569b9be3cd61fdb74097f8f64276bf1d033fbd
 import openai
 
 # Import from local config
