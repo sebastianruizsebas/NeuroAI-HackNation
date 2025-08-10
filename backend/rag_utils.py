@@ -1,3 +1,8 @@
+import json
+import os
+from typing import Dict, List, Tuple
+import re
+
 def load_all_chunks(chunk_paths: list) -> Dict[str, List[str]]:
     """Load and merge chunks from multiple JSON files (supports both dict and list formats)."""
     all_chunks = {}

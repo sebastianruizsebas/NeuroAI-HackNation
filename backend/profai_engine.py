@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, List, Any
+from typing import Dict, List, Any
 import openai
 
 # Import from local config
