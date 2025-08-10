@@ -367,24 +367,18 @@ function App() {
               </div>
             )}
 
-            {/* Clear next-step CTA */}
-            <div style={{display:'flex', gap:8, marginTop:'12px', flexWrap:'wrap'}}>
-              <button className="btn btn-primary" onClick={handleBackToDashboard}>
-                Back to Dashboard
-              </button>
-              <button className="btn btn-primary" onClick={() => setCurrentState('lesson')}>
-                Review Weakest Concept
-              </button>
-              <button className="btn" onClick={() => setCurrentState('assessment')}>
-                Retake Adaptive Quiz
-              </button>
-              <button className="btn btn-primary" onClick={() => {
-                setCurrentState('setup');
-                setEnhancedAssessmentResult(null);
-                setUserProgress(null);
-              }}>
-                Start New Session
-              </button>
+            {/* Navigation buttons */}
+            <div style={{display:'flex', gap:8, marginTop:'12px', flexWrap:'wrap', justifyContent:'center'}}>
+              <div style={{display:'flex', gap:8, marginBottom:'8px', width:'100%'}}>
+                <button className="btn btn-primary" style={{flex:1}} onClick={() => setCurrentState('lesson')}>
+                  Next Lesson
+                </button>
+              </div>
+              <div style={{display:'flex', gap:8, width:'100%'}}>
+                <button className="btn btn-secondary" style={{flex:1}} onClick={handleBackToDashboard}>
+                  Back to Topic Dashboard
+                </button>
+              </div>
             </div>
           </div>
         )}

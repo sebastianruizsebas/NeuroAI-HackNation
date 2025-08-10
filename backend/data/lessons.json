@@ -478,5 +478,604 @@
       "Reinforcement learning models learn through trial and error.",
       "Neural network models are versatile and powerful in learning complex patterns."
     ]
+  },
+  "lesson_16": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized natural language processing and machine learning tasks. Understanding the theory behind transformers and their practical implementation is crucial for advancing in the field. This lesson will cover the fundamentals of transformer models, their architecture, training processes, and applications in various domains. By the end of this lesson, students will have a solid grasp of transformer models and be able to implement them in real-world scenarios.",
+    "chunks": [
+      {
+        "title": "Introduction to Transformers",
+        "content": "This section will introduce the concept of transformer models, their architecture, and the self-attention mechanism. We will discuss how transformers have improved upon traditional seq2seq models and their advantages in capturing long-range dependencies.",
+        "key_point": "Understanding the basic architecture and functioning of transformer models",
+        "mathematical_concepts": [
+          "self-attention mechanism",
+          "transformer architecture"
+        ],
+        "examples": [
+          "Machine translation",
+          "Text generation"
+        ],
+        "applications": [
+          "Language modeling",
+          "Summarization"
+        ]
+      },
+      {
+        "title": "Training Transformers",
+        "content": "Training transformer models involves optimizing large-scale neural networks with self-attention mechanisms. This section will cover the training process, including data preprocessing, hyperparameter tuning, and fine-tuning strategies.",
+        "key_point": "Mastering the training process for transformer models",
+        "mathematical_concepts": [
+          "Gradient descent",
+          "Backpropagation"
+        ],
+        "examples": [
+          "BERT",
+          "GPT-3"
+        ],
+        "applications": [
+          "Question answering",
+          "Sentiment analysis"
+        ]
+      },
+      {
+        "title": "Advanced Transformer Architectures",
+        "content": "Advanced transformer architectures like BERT, GPT, and T5 have pushed the boundaries of natural language understanding. This section will delve into these architectures, their improvements over basic transformers, and their specific use cases.",
+        "key_point": "Understanding the evolution of transformer models and their applications",
+        "mathematical_concepts": [
+          "BERT architecture",
+          "GPT architecture"
+        ],
+        "examples": [
+          "BERT for text classification",
+          "GPT for text generation"
+        ],
+        "applications": [
+          "Named entity recognition",
+          "Language modeling"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "In-depth knowledge of transformer models and architectures",
+      "Skills in training and fine-tuning transformer models",
+      "Understanding advanced transformer architectures and their applications",
+      "Mastery in implementing transformer models in various NLP tasks"
+    ],
+    "prerequisites": [
+      "Basic understanding of neural networks",
+      "Familiarity with natural language processing"
+    ],
+    "further_reading": [
+      "The Illustrated Transformer by Jay Alammar",
+      "Attention is All You Need paper by Vaswani et al."
+    ],
+    "assessment_criteria": [
+      "Ability to explain transformer architecture",
+      "Implementing a transformer model for a given NLP task"
+    ]
+  },
+  "lesson_17": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized natural language processing by introducing attention mechanisms that allow for capturing long-range dependencies. Understanding and mastering transformer models is crucial for anyone working in the field of deep learning. This lesson will cover the theoretical foundations of transformer models, their practical implementation, and their applications in various domains such as machine translation, text generation, and sentiment analysis.",
+    "chunks": [
+      {
+        "title": "Introduction to Transformer Models",
+        "content": "The introduction will cover the basic architecture of transformer models, including self-attention mechanisms and feedforward neural networks. We will discuss the motivation behind transformer models and how they differ from traditional recurrent and convolutional neural networks.",
+        "key_point": "Understanding the core components of transformer models",
+        "mathematical_concepts": [
+          "self-attention mechanism",
+          "feedforward neural networks"
+        ],
+        "examples": [
+          "Machine translation",
+          "Text summarization"
+        ],
+        "applications": [
+          "Natural language processing",
+          "Language modeling"
+        ]
+      },
+      {
+        "title": "Training Transformer Models",
+        "content": "This section will delve into the training process of transformer models, including the use of backpropagation and optimization algorithms such as Adam. We will also explore techniques for handling overfitting and improving generalization.",
+        "key_point": "Mastering the training process of transformer models",
+        "mathematical_concepts": [
+          "backpropagation",
+          "Adam optimization"
+        ],
+        "examples": [
+          "Language modeling task",
+          "Sentiment analysis task"
+        ],
+        "applications": [
+          "Text classification",
+          "Named entity recognition"
+        ]
+      },
+      {
+        "title": "Advanced Transformer Architectures",
+        "content": "In this part, we will explore advanced transformer architectures such as BERT, GPT, and T5. We will discuss the innovations introduced in these models and their impact on performance in various NLP tasks.",
+        "key_point": "Understanding the advancements in transformer architectures",
+        "mathematical_concepts": [
+          "BERT",
+          "GPT",
+          "T5"
+        ],
+        "examples": [
+          "Question answering",
+          "Language understanding"
+        ],
+        "applications": [
+          "Information retrieval",
+          "Conversational agents"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "In-depth knowledge of transformer models and their components",
+      "Practical skills in implementing and training transformer models",
+      "Conceptual understanding of attention mechanisms and neural networks",
+      "Mastery of transformer applications in NLP tasks"
+    ],
+    "prerequisites": [
+      "Basic understanding of deep learning concepts",
+      "Familiarity with neural networks and optimization algorithms"
+    ],
+    "further_reading": [
+      "The Illustrated Transformer by Jay Alammar",
+      "Attention Is All You Need paper by Vaswani et al."
+    ],
+    "assessment_criteria": [
+      "Ability to implement a transformer model from scratch",
+      "Performance on NLP tasks using transformer models"
+    ]
+  },
+  "lesson_18": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized natural language processing tasks by enabling parallel processing of words in a sequence. Understanding the theory and implementation of transformer models is crucial for mastering advanced NLP applications. This lesson will cover the fundamentals of transformer models, their architecture, training process, and practical applications in various domains.",
+    "chunks": [
+      {
+        "title": "Fundamentals of Transformer Models",
+        "content": "Transformer models rely on self-attention mechanisms to capture long-range dependencies in sequences. The key components include multi-head attention, feed-forward neural networks, and positional encoding. Understanding these components is essential for grasping the functioning of transformer models.",
+        "key_point": "Key takeaway: Self-attention allows transformer models to consider all words in a sequence simultaneously.",
+        "mathematical_concepts": [
+          "Self-attention mechanism",
+          "Positional encoding"
+        ],
+        "examples": [
+          "Calculating attention scores between words in a sequence",
+          "Applying positional encoding to input embeddings"
+        ],
+        "applications": [
+          "Machine translation",
+          "Text summarization"
+        ]
+      },
+      {
+        "title": "Transformer Architecture and Training",
+        "content": "The transformer architecture consists of encoder and decoder stacks, each with multiple layers of self-attention and feed-forward modules. Training a transformer involves optimizing a loss function using backpropagation and techniques like Adam optimization. Understanding the architecture and training process is crucial for implementing transformer models effectively.",
+        "key_point": "Key takeaway: Transformer models can be scaled by increasing the number of layers and attention heads.",
+        "mathematical_concepts": [
+          "Backpropagation",
+          "Adam optimization"
+        ],
+        "examples": [
+          "Building a transformer model with multiple encoder and decoder layers",
+          "Training a transformer on a text classification task"
+        ],
+        "applications": [
+          "Question answering",
+          "Named entity recognition"
+        ]
+      },
+      {
+        "title": "Practical Implementation and Fine-tuning",
+        "content": "Implementing transformer models requires expertise in deep learning frameworks like TensorFlow or PyTorch. Fine-tuning pre-trained transformer models on specific tasks can improve performance significantly with limited data. Understanding the practical aspects of implementation and fine-tuning is essential for deploying transformer models in real-world scenarios.",
+        "key_point": "Key takeaway: Fine-tuning pre-trained transformer models can save time and resources in developing NLP applications.",
+        "mathematical_concepts": [
+          "Transfer learning",
+          "Fine-tuning strategies"
+        ],
+        "examples": [
+          "Fine-tuning BERT for sentiment analysis",
+          "Deploying a transformer model for text generation"
+        ],
+        "applications": [
+          "Sentiment analysis",
+          "Text generation"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "Understanding the fundamentals of transformer models",
+      "Ability to implement and train transformer models",
+      "Skills in fine-tuning pre-trained transformer models for specific tasks",
+      "Applications of transformer models in various NLP tasks"
+    ],
+    "prerequisites": [
+      "Basic knowledge of deep learning",
+      "Familiarity with NLP tasks"
+    ],
+    "further_reading": [
+      "The Illustrated Transformer by Jay Alammar",
+      "Attention is All You Need paper by Vaswani et al."
+    ],
+    "assessment_criteria": [
+      "Ability to explain key components of transformer models",
+      "Performance in implementing a transformer model on a given NLP task"
+    ]
+  },
+  "lesson_19": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized natural language processing and other AI applications. Understanding the theory behind transformers and implementing them effectively is crucial for advanced AI research and development. This lesson will cover the foundational concepts of transformers, their mathematical underpinnings, practical implementations, and cutting-edge advancements in the field.",
+    "chunks": [
+      {
+        "title": "Introduction to Transformers",
+        "content": "Transformers are a type of deep learning model that has shown remarkable performance in tasks like language translation and text generation. We will explore the architecture of transformers, including self-attention mechanisms and feed-forward neural networks. Mathematical formulations of attention mechanisms will be discussed along with simple examples to illustrate their operation.",
+        "key_point": "Understanding the architecture and components of transformers is essential for building advanced AI models.",
+        "mathematical_concepts": [
+          "Self-attention mechanism",
+          "Feed-forward neural networks"
+        ],
+        "examples": [
+          "Language translation",
+          "Text generation"
+        ],
+        "applications": [
+          "Machine translation",
+          "Chatbots"
+        ]
+      },
+      {
+        "title": "Training and Fine-Tuning Transformers",
+        "content": "Training transformers involves optimizing complex objective functions, often with large datasets. We will delve into gradient descent algorithms, learning rate schedules, and regularization techniques specific to transformers. Fine-tuning pre-trained transformer models for specific tasks will also be covered, with practical examples and case studies.",
+        "key_point": "Mastering training and fine-tuning methods is crucial for achieving state-of-the-art performance with transformers.",
+        "mathematical_concepts": [
+          "Gradient descent",
+          "Regularization techniques"
+        ],
+        "examples": [
+          "Text classification",
+          "Named entity recognition"
+        ],
+        "applications": [
+          "Sentiment analysis",
+          "Question answering"
+        ]
+      },
+      {
+        "title": "Advanced Transformer Architectures",
+        "content": "Recent research has introduced advanced transformer architectures like BERT, GPT, and T5, which have pushed the boundaries of AI capabilities. We will explore these models, their improvements over basic transformers, and the challenges in implementing them effectively. Real-world applications and case studies will demonstrate the impact of these advancements.",
+        "key_point": "Keeping up with advanced transformer architectures is key to staying at the forefront of AI research and applications.",
+        "mathematical_concepts": [
+          "BERT",
+          "GPT",
+          "T5"
+        ],
+        "examples": [
+          "Text summarization",
+          "Language modeling"
+        ],
+        "applications": [
+          "Information retrieval",
+          "Conversational AI"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "In-depth knowledge of transformer models and their components",
+      "Skills in training, fine-tuning, and implementing transformers for various tasks",
+      "Understanding of advanced transformer architectures and their applications",
+      "Mastery of cutting-edge developments in transformer research"
+    ],
+    "prerequisites": [
+      "Basic understanding of deep learning",
+      "Familiarity with neural networks and optimization algorithms"
+    ],
+    "further_reading": [
+      "Attention is All You Need paper by Vaswani et al.",
+      "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding paper by Devlin et al."
+    ],
+    "assessment_criteria": [
+      "Ability to explain transformer architecture and components",
+      "Demonstration of training and fine-tuning techniques on a dataset"
+    ]
+  },
+  "lesson_20": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized the field of natural language processing by introducing attention mechanisms that capture dependencies across input and output sequences. Understanding and mastering transformer models is crucial for advancing in the field of deep learning and AI. This lesson will cover the theoretical foundations of transformer models and guide you through implementing them in practical scenarios.",
+    "chunks": [
+      {
+        "title": "Introduction to Transformer Models",
+        "content": "Transformer models are based on self-attention mechanisms that allow them to capture long-range dependencies in sequences. The architecture consists of encoder and decoder layers that process input and output sequences. We will explore the key components of transformer models and their significance in NLP tasks.",
+        "key_point": "Understanding the basic architecture of transformer models",
+        "mathematical_concepts": [
+          "Self-attention mechanism",
+          "Multi-head attention"
+        ],
+        "examples": [
+          "Language translation",
+          "Text summarization"
+        ],
+        "applications": [
+          "Machine translation",
+          "Sentiment analysis"
+        ]
+      },
+      {
+        "title": "Attention Mechanism in Transformers",
+        "content": "Attention mechanisms in transformers compute attention weights to focus on relevant parts of the input sequence. We will delve into the mathematical formulations of attention mechanisms and discuss how they improve the model's performance in capturing dependencies.",
+        "key_point": "Grasping the mathematical underpinnings of attention mechanisms",
+        "mathematical_concepts": [
+          "Attention score computation",
+          "Softmax function"
+        ],
+        "examples": [
+          "Visualizing attention weights",
+          "Calculating attention scores"
+        ],
+        "applications": [
+          "Named entity recognition",
+          "Question answering"
+        ]
+      },
+      {
+        "title": "Training and Fine-tuning Transformer Models",
+        "content": "Training transformer models involves optimizing complex objective functions using techniques like backpropagation and gradient descent. Fine-tuning pretrained transformer models is common practice for adapting them to specific tasks. We will discuss strategies for training and fine-tuning transformer models effectively.",
+        "key_point": "Mastering the training process for transformer models",
+        "mathematical_concepts": [
+          "Loss function optimization",
+          "Learning rate scheduling"
+        ],
+        "examples": [
+          "Fine-tuning on custom datasets",
+          "Hyperparameter tuning"
+        ],
+        "applications": [
+          "Text classification",
+          "Language modeling"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "Understanding transformer model architecture and components",
+      "Proficiency in implementing attention mechanisms",
+      "Skills in training and fine-tuning transformer models",
+      "Ability to apply transformer models to various NLP tasks"
+    ],
+    "prerequisites": [
+      "Basic understanding of neural networks",
+      "Familiarity with deep learning frameworks"
+    ],
+    "further_reading": [
+      "Attention Is All You Need paper by Vaswani et al.",
+      "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding by Devlin et al."
+    ],
+    "assessment_criteria": [
+      "Ability to explain transformer model architecture",
+      "Successful implementation of attention mechanisms"
+    ]
+  },
+  "lesson_21": {
+    "topic": "Mastering Transformer Models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized the field of natural language processing and have become a cornerstone in various AI applications. This lesson aims to provide a comprehensive understanding of transformer models, from their theoretical underpinnings to practical implementation. By delving into the intricacies of transformer architecture, attention mechanisms, and training strategies, learners will gain the necessary knowledge to harness the power of transformers in real-world scenarios.",
+    "chunks": [
+      {
+        "title": "Fundamentals of Transformers",
+        "content": "The foundation of transformer models lies in their unique attention mechanism, which allows them to capture long-range dependencies in data efficiently. By exploring the self-attention mechanism and transformer architecture, learners will grasp the core principles behind these models.",
+        "key_point": "Understanding the self-attention mechanism is crucial for grasping how transformers process input sequences.",
+        "mathematical_concepts": [
+          "dot product attention",
+          "multi-head attention"
+        ],
+        "examples": [
+          "Calculating attention scores for a given input sequence"
+        ],
+        "applications": [
+          "Machine translation",
+          "Text summarization"
+        ]
+      },
+      {
+        "title": "Training Transformers",
+        "content": "Training transformer models involves optimizing complex neural network architectures with millions of parameters. Techniques such as pre-training, fine-tuning, and regularization play a crucial role in ensuring the model's performance and generalization ability.",
+        "key_point": "Balancing model capacity and generalization is essential for training effective transformer models.",
+        "mathematical_concepts": [
+          "gradient descent",
+          "dropout regularization"
+        ],
+        "examples": [
+          "Fine-tuning a pre-trained transformer for a specific task"
+        ],
+        "applications": [
+          "Named entity recognition",
+          "Sentiment analysis"
+        ]
+      },
+      {
+        "title": "Advanced Transformer Architectures",
+        "content": "Recent research has led to the development of advanced transformer variants, including BERT, GPT, and T5. These models incorporate innovative design choices and training strategies to achieve state-of-the-art performance on various natural language tasks.",
+        "key_point": "Exploring advanced transformer architectures can provide insights into cutting-edge research and practical applications.",
+        "mathematical_concepts": [
+          "masked language modeling",
+          "autoregressive decoding"
+        ],
+        "examples": [
+          "Comparing performance of different transformer variants on a benchmark dataset"
+        ],
+        "applications": [
+          "Question answering",
+          "Language generation"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "In-depth understanding of transformer models and attention mechanisms",
+      "Practical skills in training and fine-tuning transformer models",
+      "Knowledge of advanced transformer architectures and their applications",
+      "Mastery of implementing transformer models in real-world scenarios"
+    ],
+    "prerequisites": [
+      "Basic understanding of neural networks",
+      "Familiarity with deep learning frameworks"
+    ],
+    "further_reading": [
+      "Attention Is All You Need paper",
+      "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+    ],
+    "assessment_criteria": [
+      "Ability to explain self-attention mechanism",
+      "Implementing a transformer model for a specific NLP task"
+    ]
+  },
+  "lesson_22": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized natural language processing and machine learning tasks due to their ability to capture long-range dependencies. This lesson will delve into the theory behind transformer models and guide learners through the implementation process. Understanding transformer models is crucial for anyone working in the fields of AI, NLP, or deep learning, as these models have shown state-of-the-art performance in various applications.",
+    "chunks": [
+      {
+        "title": "Introduction to Transformers",
+        "content": "We will start by introducing the architecture of transformer models, including the self-attention mechanism and multi-head attention. Learners will understand how transformers differ from traditional RNNs and LSTMs, and why they are more effective in capturing contextual information in sequences.",
+        "key_point": "Transformers utilize self-attention mechanisms to capture long-range dependencies efficiently.",
+        "mathematical_concepts": [
+          "Self-attention mechanism",
+          "Multi-head attention"
+        ],
+        "examples": [
+          "Machine translation",
+          "Text summarization"
+        ],
+        "applications": [
+          "Language modeling",
+          "Question answering"
+        ]
+      },
+      {
+        "title": "Training Transformer Models",
+        "content": "Next, we will explore the training process of transformer models, including the use of pre-trained models like BERT and GPT. Learners will gain insights into fine-tuning models for specific tasks and optimizing hyperparameters to improve performance.",
+        "key_point": "Fine-tuning pre-trained transformer models can significantly enhance performance on downstream tasks.",
+        "mathematical_concepts": [
+          "BERT",
+          "GPT"
+        ],
+        "examples": [
+          "Sentiment analysis",
+          "Named entity recognition"
+        ],
+        "applications": [
+          "Text classification",
+          "Information retrieval"
+        ]
+      },
+      {
+        "title": "Implementing Transformers in PyTorch",
+        "content": "In this section, we will provide a step-by-step guide to implementing transformer models using PyTorch. Learners will learn how to build transformer encoder and decoder layers, handle input data processing, and train a transformer model on a text dataset.",
+        "key_point": "Hands-on implementation of transformer models reinforces conceptual understanding and practical skills.",
+        "mathematical_concepts": [
+          "Transformer encoder",
+          "Transformer decoder"
+        ],
+        "examples": [
+          "Language generation",
+          "Text classification"
+        ],
+        "applications": [
+          "Speech recognition",
+          "Image captioning"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "Understanding of transformer model architecture and mechanisms",
+      "Ability to train and fine-tune transformer models for NLP tasks",
+      "Hands-on experience in implementing transformer models using PyTorch",
+      "Knowledge of cutting-edge applications and research in transformer models"
+    ],
+    "prerequisites": [
+      "Basic knowledge of deep learning",
+      "Familiarity with PyTorch or similar deep learning frameworks"
+    ],
+    "further_reading": [
+      "Attention Is All You Need paper",
+      "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+    ],
+    "assessment_criteria": [
+      "Completion of PyTorch implementation project",
+      "Performance on transformer model quiz"
+    ]
+  },
+  "lesson_23": {
+    "topic": "Mastering i wanna learn about transformer models: From Theory to Implementation",
+    "overview": "Transformer models have revolutionized natural language processing and machine learning. Understanding the theory and implementation of transformer models is crucial for advanced learners in the field. This lesson will cover the fundamentals of transformer models, their mathematical underpinnings, practical applications, and recent research developments.",
+    "chunks": [
+      {
+        "title": "Introduction to Transformer Models",
+        "content": "Transformer models are a type of neural network architecture that has shown exceptional performance in various NLP tasks. They rely on self-attention mechanisms to capture long-range dependencies in data. We will delve into the architecture of transformer models and how they differ from traditional recurrent neural networks.",
+        "key_point": "Understanding the architecture of transformer models and their reliance on self-attention mechanisms.",
+        "mathematical_concepts": [
+          "self-attention mechanism",
+          "transformer architecture"
+        ],
+        "examples": [
+          "Text summarization",
+          "Language translation"
+        ],
+        "applications": [
+          "Google Translate",
+          "BERT model"
+        ]
+      },
+      {
+        "title": "Self-Attention Mechanism",
+        "content": "The self-attention mechanism allows transformer models to weigh the importance of different words in a sentence when making predictions. We will explore the mathematical formulation of self-attention and how it enables transformers to process input sequences in parallel.",
+        "key_point": "Grasping the mathematical formulation and significance of the self-attention mechanism in transformer models.",
+        "mathematical_concepts": [
+          "softmax function",
+          "query-key-value mechanism"
+        ],
+        "examples": [
+          "Calculating attention scores",
+          "Applying self-attention to a text sequence"
+        ],
+        "applications": [
+          "Named-entity recognition",
+          "Question answering systems"
+        ]
+      },
+      {
+        "title": "Training and Fine-Tuning Transformer Models",
+        "content": "Training transformer models requires large amounts of data and computational resources. We will discuss techniques for training transformer models efficiently, as well as strategies for fine-tuning pre-trained models on specific tasks. Additionally, we will explore common pitfalls and misconceptions in training transformer models.",
+        "key_point": "Mastering the training process and fine-tuning strategies for transformer models, while being aware of potential pitfalls.",
+        "mathematical_concepts": [
+          "gradient descent",
+          "backpropagation"
+        ],
+        "examples": [
+          "Fine-tuning a pre-trained transformer model for sentiment analysis",
+          "Optimizing hyperparameters for training transformer models"
+        ],
+        "applications": [
+          "Sentiment analysis",
+          "Text generation"
+        ]
+      }
+    ],
+    "key_takeaways": [
+      "Understanding the architecture and self-attention mechanism of transformer models",
+      "Ability to train and fine-tune transformer models for specific tasks",
+      "Awareness of common pitfalls and misconceptions in transformer model implementation",
+      "Application of transformer models in real-world NLP tasks"
+    ],
+    "prerequisites": [
+      "Basic understanding of neural networks",
+      "Familiarity with natural language processing"
+    ],
+    "further_reading": [
+      "Attention is All You Need paper by Vaswani et al.",
+      "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding paper by Devlin et al."
+    ],
+    "assessment_criteria": [
+      "Ability to explain the self-attention mechanism in transformer models",
+      "Demonstration of training and fine-tuning a transformer model on a specific NLP task"
+    ]
   }
 }

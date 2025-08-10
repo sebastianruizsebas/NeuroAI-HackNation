@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 from datetime import datetime
 from typing import Dict, List, Any
 import openai
@@ -13,47 +14,150 @@ client = openai.OpenAI()
 
 class ProfAIEngine:
     def __init__(self):
-        self.users_file = f"{DATA_DIR}/users.json"
-        self.lessons_file = f"{DATA_DIR}/lessons.json"
-        self.sessions_file = f"{DATA_DIR}/sessions.json"
-        self.progress_file = f"{DATA_DIR}/progress.json"
-        self.curriculum_file = f"{DATA_DIR}/curriculum.json"
+        print("[__init__] Initializing ProfAIEngine")
+        self.users_file = os.path.join(DATA_DIR, "users.json")  # Use os.path.join for cross-platform compatibility
+        self.lessons_file = os.path.join(DATA_DIR, "lessons.json")
+        self.sessions_file = os.path.join(DATA_DIR, "sessions.json")
+        self.progress_file = os.path.join(DATA_DIR, "progress.json")
+        self.curriculum_file = os.path.join(DATA_DIR, "curriculum.json")
+        print(f"[__init__] Data directory: {DATA_DIR}")
+        print(f"[__init__] Users file path: {self.users_file}")
         self.client = openai.OpenAI(api_key=OPENAI_API_KEY)
         self._ensure_data_files()
     
     def _ensure_data_files(self):
         """Create data files if they don't exist"""
-        os.makedirs(DATA_DIR, exist_ok=True)
-        for file_path in [self.users_file, self.lessons_file, self.progress_file, self.curriculum_file]:
-            if not os.path.exists(file_path):
-                with open(file_path, 'w') as f:
-                    json.dump({}, f)
-        if not os.path.exists(self.sessions_file):
-            with open(self.sessions_file, 'w') as f:
-                json.dump([], f)
+        try:
+            print(f"[_ensure_data_files] Creating data directory: {DATA_DIR}")
+            os.makedirs(DATA_DIR, exist_ok=True)
+            for file_path in [self.users_file, self.lessons_file, self.progress_file, self.curriculum_file]:
+                print(f"[_ensure_data_files] Checking file: {file_path}")
+                if not os.path.exists(file_path):
+                    print(f"[_ensure_data_files] Creating new file: {file_path}")
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        json.dump({}, f, indent=2)
+                else:
+                    print(f"[_ensure_data_files] File exists: {file_path}")
+            if not os.path.exists(self.sessions_file):
+                print(f"[_ensure_data_files] Creating sessions file: {self.sessions_file}")
+                with open(self.sessions_file, 'w', encoding='utf-8') as f:
+                    json.dump([], f, indent=2)
+            else:
+                print(f"[_ensure_data_files] Sessions file exists: {self.sessions_file}")
+        except Exception as e:
+            print(f"[_ensure_data_files] Error: {str(e)}")
+            print(f"[_ensure_data_files] Stack trace: {traceback.format_exc()}")
     
     def load_data(self, file_path: str) -> Any:
         """Load JSON data from file"""
-        with open(file_path, 'r') as f:
-            return json.load(f)
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+                if not content:  # Empty file
+                    return {} if file_path != self.sessions_file else []
+                return json.loads(content)
+        except json.JSONDecodeError:
+            print(f"[load_data] Invalid JSON in {file_path}, resetting to default")
+            return {} if file_path != self.sessions_file else []
+        except Exception as e:
+            print(f"[load_data] Error reading {file_path}: {str(e)}")
+            return {} if file_path != self.sessions_file else []
     
     def save_data(self, file_path: str, data: Any):
-        """Save JSON data to file"""
-        with open(file_path, 'w') as f:
-            json.dump(data, f, indent=2)
+        """Save JSON data to file safely using atomic write"""
+        print(f"[save_data] Saving data to {file_path}")
+        temp_file = file_path + '.tmp'
+        try:
+            # First verify the data can be serialized
+            try:
+                json_str = json.dumps(data, indent=2, ensure_ascii=False)
+            except Exception as json_error:
+                print(f"[save_data] Error serializing data: {str(json_error)}")
+                return False
+
+            # Create directory if it doesn't exist
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            
+            # Write to temp file
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                f.write(json_str)
+            
+            # Verify the temp file was written correctly
+            try:
+                with open(temp_file, 'r', encoding='utf-8') as f:
+                    _ = json.load(f)
+            except Exception as verify_error:
+                print(f"[save_data] Error verifying temp file: {str(verify_error)}")
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+                return False
+            
+            # If successful, rename temp file to actual file
+            try:
+                if os.path.exists(file_path):
+                    os.replace(temp_file, file_path)  # atomic on most platforms
+                else:
+                    os.rename(temp_file, file_path)
+                print(f"[save_data] Successfully saved data to {file_path}")
+                return True
+            except Exception as rename_error:
+                print(f"[save_data] Error during file rename: {str(rename_error)}")
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+                return False
+                
+        except Exception as e:
+            print(f"[save_data] Error saving to {file_path}: {str(e)}")
+            print(f"[save_data] Stack trace: {traceback.format_exc()}")
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except:
+                    pass
+            return False
     
     def create_user(self, name: str) -> str:
         """Create a new user with enhanced profile"""
         try:
-            print(f"Creating user with name: {name}")
-            print(f"Users file path: {self.users_file}")
-            self._ensure_data_files()  # Make sure data files exist
+            print(f"[create_user] Starting user creation with name: {name}")
+            print(f"[create_user] Users file path: {self.users_file}")
             
-            users = self.load_data(self.users_file)
+            # Ensure data directory exists
+            data_dir = os.path.dirname(self.users_file)
+            os.makedirs(data_dir, exist_ok=True)
+            print(f"[create_user] Ensured data directory exists: {data_dir}")
+            
+            # Initialize users dict
+            users = {}
+            
+            # Carefully read existing users file
+            if os.path.exists(self.users_file):
+                try:
+                    print(f"[create_user] Reading existing users file")
+                    with open(self.users_file, 'r', encoding='utf-8') as f:
+                        file_content = f.read()
+                        if file_content.strip():  # Only try to parse if file is not empty
+                            users = json.loads(file_content)
+                            if not isinstance(users, dict):
+                                print(f"[create_user] Warning: users.json contained invalid data, resetting to empty dict")
+                                users = {}
+                except Exception as e:
+                    print(f"[create_user] Error reading users file: {str(e)}")
+                    users = {}
+            
             print(f"Current users: {len(users)}")
             
-            user_id = f"user_{len(users) + 1}"
-            users[user_id] = {
+            print(f"[create_user] Current number of users: {len(users)}")
+            
+            # Generate new user ID
+            next_id = 1
+            while f"user_{next_id}" in users:
+                next_id += 1
+            user_id = f"user_{next_id}"
+            print(f"[create_user] Generated new user ID: {user_id}")
+            
+            # Create user data
+            user_data = {
                 "name": name,
                 "created_at": datetime.now().isoformat(),
                 "competency_scores": {},
@@ -65,19 +169,100 @@ class ProfAIEngine:
                 "current_curriculum": None
             }
             
-            self.save_data(self.users_file, users)
-            print(f"Successfully created user: {user_id}")
-            return user_id
+            # Add user to users dict
+            users[user_id] = user_data
+            print(f"[create_user] Created user data structure")
+            
+            # Validate user data before saving
+            if not isinstance(users, dict):
+                print("[create_user] Error: users data is not a dictionary")
+                return None
+                
+            if not user_id or not isinstance(user_data, dict):
+                print("[create_user] Error: invalid user data structure")
+                return None
+                
+            # Use the improved save_data method
+            if self.save_data(self.users_file, users):
+                print(f"[create_user] Successfully saved user data for {user_id}")
+                # Verify the save was successful by reading back the file
+                try:
+                    saved_users = self.load_data(self.users_file)
+                    if user_id in saved_users:
+                        print(f"[create_user] Verified user {user_id} was saved successfully")
+                        return user_id
+                    else:
+                        print(f"[create_user] Error: User {user_id} not found in saved data")
+                        return None
+                except Exception as verify_error:
+                    print(f"[create_user] Error verifying saved data: {str(verify_error)}")
+                    return None
+            else:
+                print("[create_user] Failed to save user data")
+                return None
+            
         except Exception as e:
-            print(f"Error creating user: {str(e)}")
-            print(f"DATA_DIR: {DATA_DIR}")
-            print(f"Current directory: {os.getcwd()}")
-            raise  # Re-raise the exception after logging
+            print(f"[create_user] Error creating user: {str(e)}")
+            print(f"[create_user] DATA_DIR: {DATA_DIR}")
+            print(f"[create_user] Current directory: {os.getcwd()}")
+            import traceback
+            print(f"[create_user] Stack trace: {traceback.format_exc()}")
+            return None
     
+    def generate_lesson_outline(self, topic: str, difficulty: str, assessment_results: Dict = None) -> Dict:
+        """Generate a detailed, topic-specific lesson outline."""
+        try:
+            prompt = f"""Create a detailed, topic-specific lesson outline for {topic} at {difficulty} level.
+
+Assessment Results: {json.dumps(assessment_results) if assessment_results else 'No prior assessment'}
+
+OUTLINE REQUIREMENTS:
+1. Topic-Specific Structure:
+   - Organize modules in a logical sequence for {topic}
+   - Each module should build upon previous knowledge
+   - Include specific tools, frameworks, and technologies relevant to {topic}
+
+2. Detailed Learning Path:
+   - Break down complex concepts into manageable steps
+   - Specify exact technologies and methods to be covered
+   - Include practical exercises with real-world applications
+
+3. Technical Depth:
+   - List specific algorithms, formulas, or methods to be covered
+   - Include implementation details and best practices
+   - Reference specific libraries or tools where applicable
+
+Return a JSON object with detailed, topic-specific outline information."""
+
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7
+            )
+            
+            return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            print(f"Error generating lesson outline: {e}")
+            return {
+                "topic": topic,
+                "difficulty": difficulty,
+                "modules": [
+                    {
+                        "title": "Introduction to " + topic,
+                        "description": "Basic concepts and fundamentals",
+                        "estimatedTime": "30 minutes"
+                    }
+                ]
+            }
+
     def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
-        """Generate personalized lesson content for a topic and user profile, using OpenAI and RAG from PDF chunks."""
+        """Generate sequential, in-depth lesson content structured like a tutoring session."""
         competency = user_profile.get('competency_scores', {}).get(topic, 0)
-        # --- RAG: Retrieve relevant chunks ---
+        knowledge_gaps = user_profile.get('knowledge_gaps', {}).get(topic, [])
+        learning_path = user_profile.get('learning_path', [])
+        completed_lessons = user_profile.get('completed_lessons', [])
+        
+        # --- RAG: Retrieve relevant chunks from course materials ---
         try:
             from rag_utils import load_all_chunks, find_relevant_chunks
             import os
@@ -87,37 +272,43 @@ class ProfAIEngine:
                 os.path.join(base_dir, 'mit_ocw_chunks.json'),
             ]
             chunks = load_all_chunks(chunk_files)
-            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=3)
+            # Get more chunks for in-depth content
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=5)
             context = '\n\n'.join([f"From {fname}: {chunk}" for fname, chunk in relevant_chunks])
         except Exception as rag_e:
             print(f"RAG retrieval failed: {rag_e}")
             context = ""
 
-        prompt = f"""You are a world-class AI educator with expertise in {topic}. Use the following authentic course material to create a comprehensive, university-level lesson for someone with competency level {competency}/10.
+        # Determine the next topic in the learning path
+        current_topic_index = learning_path.index(topic) if topic in learning_path else -1
+        is_sequential = current_topic_index >= 0 and len(completed_lessons) > 0
+        
+        prompt = f"""You are a world-class AI tutor teaching {topic}. Create a detailed, sequential lesson that builds on the student's current knowledge and guides them through complex concepts step by step. Current competency level: {competency}/10.
+
+{'Previous topics completed: ' + ', '.join(completed_lessons) if completed_lessons else 'This is the first lesson.'}
+{'This lesson should build upon and reference concepts from previous lessons.' if is_sequential else 'This is a foundational lesson that will be referenced in future topics.'}
 
 Course context (from real lecture notes):
 {context}
 
-LESSON REQUIREMENTS:
-- Build directly on the provided course material
-- Academic rigor appropriate for university-level study
-- Include mathematical formulations and equations from the context
-- Provide concrete examples and real-world case studies
-- Connect theory to cutting-edge applications
-- Address common misconceptions and potential pitfalls
-- Reference current research and industry developments
+TUTORING APPROACH:
+1. Start with a clear connection to previously learned concepts
+2. Break down complex ideas into digestible steps
+3. Use concrete examples that build in complexity
+4. Provide detailed explanations of each concept
+5. Include practical applications and real-world scenarios
+6. Challenge common misconceptions
+7. Guide through mathematical derivations step-by-step
+8. Connect theory to implementation
 
-DEPTH CALIBRATION:
-- Competency 0-3: Clear explanations with step-by-step derivations
-- Competency 4-6: Intermediate mathematical concepts and implementation details
-- Competency 7-10: Advanced theory, research frontier, complex optimization problems
-
-ACADEMIC STANDARDS:
-- Each section should be substantial (200+ words)
-- Include quantitative examples with actual numbers
-- Reference equations and proofs from the source material
-- Connect to broader field and interdisciplinary applications
-- Provide multiple perspectives on complex topics
+DEPTH AND SEQUENCING:
+- Build concepts sequentially, each building on the last
+- Minimum 500 words per section for thorough explanations
+- Include detailed mathematical derivations with explanations
+- Provide multiple examples with increasing complexity
+- Connect theoretical concepts to practical applications
+- Reference and build upon concepts from previous lessons
+- Challenge understanding with thought-provoking questions
 
 Return ONLY a JSON object with this enhanced format:
 {{
@@ -1025,19 +1216,38 @@ Return JSON format:
             print(f"RAG retrieval failed (assessment): {rag_e}")
             context = ""
 
-        prompt = f"""You are a world-class AI educator with expertise in {topic}. Create exactly 5 diagnostic multiple choice questions for an initial assessment.
+        prompt = f"""You are a world-class AI tutor assessing deep understanding of {topic}. Create exactly 5 challenging multiple-choice questions that test specific technical knowledge and problem-solving abilities.
 
 Course context from lecture notes:
 {context}
 
-REQUIREMENTS for each question:
-1. Test DEEP understanding, not memorization
-2. Use real-world scenarios and applications
-3. Include mathematical concepts where relevant
-4. Test conceptual reasoning and problem-solving
-5. Avoid trivial or obvious questions
-6. Make distractors plausible but definitively incorrect
-7. Use precise, academic language
+QUESTION REQUIREMENTS:
+1. Highly Specific Focus:
+   - Target one precise concept or technique per question
+   - Test understanding of implementation details and edge cases
+   - Include specific numerical examples or code snippets when relevant
+
+2. Technical Depth:
+   - Require understanding of underlying mathematical principles
+   - Test ability to identify correct approaches to complex problems
+   - Include real parameter values and specific scenarios
+
+3. Practical Application:
+   - Present real-world scenarios that require applying theoretical knowledge
+   - Include industry-relevant problems and solutions
+   - Test ability to choose optimal approaches in concrete situations
+
+4. Conceptual Understanding:
+   - Require understanding of why certain approaches work or fail
+   - Test ability to identify subtle differences between similar concepts
+   - Challenge common misconceptions with carefully crafted distractors
+
+5. Question Structure:
+   - Clear, unambiguous wording using technical terminology
+   - Detailed scenario or problem description (2-3 sentences minimum)
+   - All options should be plausible but only one correct
+   - Include specific numbers, parameters, or conditions
+   - Reference actual frameworks, libraries, or tools when relevant
 8. Test different cognitive levels (comprehension, application, analysis)
 
 QUALITY STANDARDS:

@@ -32,7 +32,7 @@
         "adversarial models",
         "Support Vector Machines (SVMs)",
         "positive symmetric definite kernel (PSD kernel)",
-        "Bernstein\u2019s Inequality",
+        "Bernstein’s Inequality",
         "dynamic pricing and sequential investment examples"
       ]
     },
@@ -43,7 +43,7 @@
       "adversarial models",
       "Support Vector Machines (SVMs)",
       "positive symmetric definite kernel (PSD kernel)",
-      "Bernstein\u2019s Inequality",
+      "Bernstein’s Inequality",
       "dynamic pricing and sequential investment examples"
     ],
     "completed_lessons": [],
@@ -183,6 +183,42 @@
   "user_12": {
     "name": "Sebas",
     "created_at": "2025-08-10T05:04:49.855609",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_13": {
+    "name": "aq",
+    "created_at": "2025-08-10T05:15:06.324024",
+    "competency_scores": {
+      "Mastering i wanna learn about transformer models: From Theory to Implementation": 0.0
+    },
+    "knowledge_gaps": {
+      "Mastering i wanna learn about transformer models: From Theory to Implementation": [
+        "excess_risk",
+        "classifier_dictionary",
+        "adversarial_models"
+      ]
+    },
+    "strong_areas": {
+      "Mastering i wanna learn about transformer models: From Theory to Implementation": []
+    },
+    "learning_path": [
+      "excess_risk",
+      "classifier_dictionary",
+      "adversarial_models"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_14": {
+    "name": "ae",
+    "created_at": "2025-08-10T05:56:06.954200",
     "competency_scores": {},
     "knowledge_gaps": {},
     "strong_areas": {},
