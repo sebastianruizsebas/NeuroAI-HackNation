@@ -333,5 +333,34 @@
     "completed_lessons": [],
     "total_lessons": 0,
     "current_curriculum": null
+  },
+  "user_19": {
+    "name": "d",
+    "created_at": "2025-08-10T07:34:23.908163",
+    "competency_scores": {
+      "Types of AI Models": 0.0
+    },
+    "knowledge_gaps": {
+      "Types of AI Models": [
+        "Types of AI Models",
+        "Types of AI Models",
+        "Types of AI Models",
+        "Types of AI Models",
+        "Types of AI Models"
+      ]
+    },
+    "strong_areas": {
+      "Types of AI Models": []
+    },
+    "learning_path": [
+      "Types of AI Models",
+      "Types of AI Models",
+      "Types of AI Models",
+      "Types of AI Models",
+      "Types of AI Models"
+    ],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
   }
 }
