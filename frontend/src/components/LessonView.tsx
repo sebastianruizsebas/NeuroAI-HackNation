@@ -36,39 +36,42 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
     setResponses(newResponses);
   };
 
+  // inside LessonView.tsx
   const handleNext = async () => {
+    let updated = sentimentData;
+
     if (responses[currentChunk].trim()) {
       try {
-        console.log('Using V2 enhanced sentiment analysis with lesson context...');
-        // V2 Enhanced: Sentiment analysis with lesson context
         const lessonContext = `${chunk.title}: ${chunk.content}\nKey Point: ${chunk.key_point}`;
-        const sentiment = await apiService.analyzeSentiment(
-          responses[currentChunk], 
-          lessonContext
-        );
-        const newSentimentData = [...sentimentData];
-        newSentimentData[currentChunk] = sentiment;
-        setSentimentData(newSentimentData);
-      } catch (error) {
-        console.error('Failed to analyze sentiment with context, falling back to basic:', error);
-        // Fallback to basic sentiment analysis
+        const sentiment = await apiService.analyzeSentiment(responses[currentChunk], lessonContext);
+        updated = [...sentimentData];
+        updated[currentChunk] = sentiment;
+        setSentimentData(updated);
+      } catch (err) {
+        console.error('Sentiment w/ context failed, trying basic...', err);
         try {
           const sentiment = await apiService.analyzeSentiment(responses[currentChunk]);
-          const newSentimentData = [...sentimentData];
-          newSentimentData[currentChunk] = sentiment;
-          setSentimentData(newSentimentData);
-        } catch (fallbackError) {
-          console.error('Failed to analyze sentiment:', fallbackError);
+          updated = [...sentimentData];
+          updated[currentChunk] = sentiment;
+          setSentimentData(updated);
+        } catch (fallbackErr) {
+          console.error('Basic sentiment also failed:', fallbackErr);
+          // still proceed with whatever we have
+          updated = [...sentimentData];
         }
       }
     }
 
-    if (lesson && currentChunk < lesson.chunks.length - 1) {
+    const isLast = lesson && currentChunk >= lesson.chunks.length - 1;
+    if (!isLast) {
       setCurrentChunk(currentChunk + 1);
-    } else {
-      onComplete(sentimentData);
+      return;
     }
+
+    // Last section → finish with the freshest data we have
+    onComplete(updated);
   };
+
 
   if (loading) {
     return <div className="loading">Generating your personalized lesson...</div>;

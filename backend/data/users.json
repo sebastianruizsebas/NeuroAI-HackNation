@@ -56,5 +56,71 @@
     "completed_lessons": [],
     "total_lessons": 0,
     "current_curriculum": null
+  },
+  "user_5": {
+    "name": "Bob",
+    "created_at": "2025-08-09T22:42:01.146082",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_6": {
+    "name": "Bob",
+    "created_at": "2025-08-09T22:44:38.808145",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_7": {
+    "name": "Bob",
+    "created_at": "2025-08-09T22:49:12.862977",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_8": {
+    "name": "Bob",
+    "created_at": "2025-08-09T22:50:52.262215",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_9": {
+    "name": "wad",
+    "created_at": "2025-08-09T23:51:24.519872",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
+  },
+  "user_10": {
+    "name": "Bobby",
+    "created_at": "2025-08-09T22:56:29.669374",
+    "competency_scores": {},
+    "knowledge_gaps": {},
+    "strong_areas": {},
+    "learning_path": [],
+    "completed_lessons": [],
+    "total_lessons": 0,
+    "current_curriculum": null
   }
 }
