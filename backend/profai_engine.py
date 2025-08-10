@@ -59,122 +59,107 @@ class ProfAIEngine:
         self.save_data(self.users_file, users)
         return user_id
     
-    def get_user(self, user_id: str) -> Dict:
-        """Get user data"""
-        users = self.load_data(self.users_file)
-        return users.get(user_id, {})
-    
-    # NEW ENHANCED METHODS
-    def generate_initial_assessment(self, topic: str) -> List[Dict]:
-        """Generate initial 5 questions to identify broad knowledge areas"""
-        prompt = f"""Create exactly 5 multiple choice questions for an initial assessment on "{topic}".
-        
-        These questions should:
-        1. Cover different fundamental aspects of {topic}
-        2. Range from basic to intermediate difficulty
-        3. Help identify what areas the student knows vs doesn't know
-        4. Be diagnostic rather than just testing
-        
-        Return ONLY a JSON array with this exact format:
-        [
-            {{
-                "question": "Question text here",
-                "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
-                "correct": "A",
-                "concept": "fundamental_concept_being_tested",
-                "difficulty": 1
-            }}
+    def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
+        """Generate personalized lesson content for a topic and user profile, using OpenAI and RAG from PDF chunks."""
+        competency = user_profile.get('competency_scores', {}).get(topic, 0)
+        # --- RAG: Retrieve relevant chunks ---
+        try:
+            from rag_utils import load_all_chunks, find_relevant_chunks
+            import os
+            base_dir = os.path.dirname(__file__)
+            chunk_files = [
+                os.path.join(base_dir, 'math_ml_chunks.json'),
+                os.path.join(base_dir, 'mit_ocw_chunks.json'),
+            ]
+            chunks = load_all_chunks(chunk_files)
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=3)
+            context = '\n\n'.join([f"From {fname}: {chunk}" for fname, chunk in relevant_chunks])
+        except Exception as rag_e:
+            print(f"RAG retrieval failed: {rag_e}")
+            context = ""
+
+        prompt = f"""You are an expert AI tutor. Use the following course material as context to create a lesson about {topic} for someone with competency level {competency}/10.
+
+Course context (from real lecture notes):\n{context}\n
         ]
         """
-        
         try:
-            print(f"Calling OpenAI API for initial assessment on topic: {topic}")
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                timeout=30
-            )
-            
-            content = response.choices[0].message.content.strip()
-            print(f"OpenAI response received, length: {len(content)}")
-            
-            if content.startswith('```json'):
-                content = content[7:-3]
-            elif content.startswith('```'):
-                content = content[3:-3]
-            
-            questions = json.loads(content)
-            print(f"Successfully parsed {len(questions)} questions")
-            
-            # Ensure we have exactly 5 questions
-            if len(questions) != 5:
-                print(f"Warning: Expected 5 questions, got {len(questions)}")
-            
-            return questions
-        except json.JSONDecodeError as e:
-            print(f"JSON parsing error: {e}")
-            print(f"Raw content: {content}")
-            return []
-        except Exception as e:
-            print(f"Error generating initial assessment: {e}")
-            import traceback
-            traceback.print_exc()
-            return []
-    
-    def generate_adaptive_assessment(self, topic: str, initial_results: Dict) -> List[Dict]:
-        """Generate adaptive 5 questions targeting identified weak areas"""
-        
-        # Analyze which concepts the user struggled with
-        weak_concepts = []
-        strong_concepts = []
-        
-        for q_idx, result in initial_results.items():
-            if not result.get('correct', False):
-                weak_concepts.append(result.get('concept', 'unknown'))
-            else:
-                strong_concepts.append(result.get('concept', 'unknown'))
-        
-        prompt = f"""Based on initial assessment results for "{topic}", create exactly 5 targeted questions.
-        
-        The student struggled with: {weak_concepts}
-        The student understood: {strong_concepts}
-        
-        Create 5 questions that:
-        1. Focus more on the weak areas: {weak_concepts}
-        2. Are slightly more challenging than the initial questions
-        3. Help pinpoint specific sub-topics within weak areas
-        4. Include at least 2-3 questions on concepts they missed
-        
-        Return ONLY a JSON array with this exact format:
-        [
-            {{
-                "question": "Question text here",
-                "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
-                "correct": "A",
-                "concept": "specific_concept_being_tested",
-                "difficulty": 2,
-                "targets_weakness": true
-            }}
-        ]
-        """
-        
-        try:
+            print(f"Calling OpenAI for lesson generation with RAG context...")
+            print(f"Topic: {topic}, Competency: {competency}")
             response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 timeout=30
             )
-            
+            print(f"OpenAI response received")
             content = response.choices[0].message.content.strip()
             if content.startswith('```json'):
                 content = content[7:-3]
             elif content.startswith('```'):
                 content = content[3:-3]
-            
-            return json.loads(content)
+            lesson = json.loads(content)
+            print(f"Lesson parsed successfully")
+            # Optionally cache the lesson
+            return lesson
         except Exception as e:
+            print(f"Lesson generation failed: {e}")
+            return {}
+            try:
+                lessons = self.load_data(self.lessons_file)
+            except Exception:
+                lessons = {}
+            lesson_id = f"lesson_{len(lessons) + 1}"
+            lessons[lesson_id] = lesson
+            self.save_data(self.lessons_file, lessons)
+            print(f"Lesson saved with ID: {lesson_id}")
+            return lesson
+        except Exception as e:
+            print(f"Error in generate_lesson_content: {e}")
+            print(f"Error type: {type(e).__name__}")
+            # Try to load a cached lesson for this topic
+            try:
+                lessons = self.load_data(self.lessons_file)
+                for lesson in lessons.values():
+                    if lesson.get("topic") == topic:
+                        print("Returning cached lesson for topic.")
+                        return lesson
+            except Exception as cache_e:
+                print(f"No cached lesson found: {cache_e}")
+            # Return a fallback lesson so the user isn't stuck
+            print("Returning fallback lesson...")
+            return {
+                "topic": topic,
+                "overview": f"Introduction to {topic} - exploring the fundamentals and key concepts you need to understand.",
+                "chunks": [
+                    {
+                        "title": "Understanding the Basics",
+                        "content": f"Let's start by understanding what {topic} means and why it's important in the field of artificial intelligence. We'll break down the core concepts and build your foundation knowledge step by step.",
+                        "key_point": f"Understanding {topic} is fundamental to AI knowledge and practical applications."
+                    },
+                    {
+                        "title": "Key Concepts and Components",
+                        "content": f"There are several important concepts within {topic} that form the foundation of this area. Each concept builds on the previous ones, creating a comprehensive understanding of how these systems work.",
+                        "key_point": "Each concept builds on the previous ones to create comprehensive understanding."
+                    },
+                    {
+                        "title": "Real-World Applications",
+                        "content": f"Now let's explore how {topic} is used in real-world scenarios and applications. Understanding practical applications helps bridge the gap between theory and practice.",
+                        "key_point": "Theory becomes powerful when applied to solve real-world problems."
+                    },
+                    {
+                        "title": "Summary and Next Steps",
+                        "content": f"We've covered the fundamentals of {topic}. Let's summarize what we've learned and discuss how you can continue building on this knowledge in your AI learning journey.",
+                        "key_point": "Continuous learning and practice are key to mastering AI concepts."
+                    }
+                ],
+                "key_takeaways": [
+                    f"Learned the fundamentals of {topic} and its importance in AI",
+                    "Understood key concepts and their relationships to each other",
+                    "Explored real-world applications and practical use cases",
+                    "Ready to continue learning more advanced topics and applications"
+                ]
+            }
             print(f"Error generating adaptive assessment: {e}")
             return []
     
@@ -613,9 +598,60 @@ class ProfAIEngine:
         self.save_data(self.progress_file, progress_data)
 
     # BACKWARD COMPATIBILITY METHODS (for old CLI and legacy endpoints to work)
+
     def generate_assessment_questions(self, topic: str) -> List[Dict]:
         """Legacy method for backward compatibility"""
         return self.generate_initial_assessment(topic)
+
+    def generate_initial_assessment(self, topic: str) -> List[Dict]:
+        """Generate initial 5 questions to identify broad knowledge areas, using RAG from PDF chunks."""
+        # --- RAG: Retrieve relevant chunks ---
+        try:
+            from rag_utils import load_all_chunks, find_relevant_chunks
+            import os
+            base_dir = os.path.dirname(__file__)
+            chunk_files = [
+                os.path.join(base_dir, 'math_ml_chunks.json'),
+                os.path.join(base_dir, 'mit_ocw_chunks.json'),
+            ]
+            chunks = load_all_chunks(chunk_files)
+            relevant_chunks = find_relevant_chunks(topic, chunks, top_k=3)
+            context = '\n\n'.join([f"From {fname}: {chunk}" for fname, chunk in relevant_chunks])
+        except Exception as rag_e:
+            print(f"RAG retrieval failed (assessment): {rag_e}")
+            context = ""
+
+        prompt = f"""You are an expert AI tutor. Use the following course material as context to create exactly 5 multiple choice questions for an initial assessment on \"{topic}\".\n\nCourse context (from real lecture notes):\n{context}\n\nThese questions should:\n1. Cover different fundamental aspects of {topic}\n2. Range from basic to intermediate difficulty\n3. Help identify what areas the student knows vs doesn't know\n4. Be diagnostic rather than just testing\n\nReturn ONLY a JSON array with this exact format:\n[\n    {{\n        \"question\": \"Question text here\",\n        \"options\": [\"A) Option 1\", \"B) Option 2\", \"C) Option 3\", \"D) Option 4\"],\n        \"correct\": \"A\",\n        \"concept\": \"fundamental_concept_being_tested\",\n        \"difficulty\": 1\n    }}\n]\n"""
+
+        try:
+            print(f"Calling OpenAI API for initial assessment on topic: {topic}")
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                timeout=30
+            )
+            content = response.choices[0].message.content.strip()
+            print(f"OpenAI response received, length: {len(content)}")
+            if content.startswith('```json'):
+                content = content[7:-3]
+            elif content.startswith('```'):
+                content = content[3:-3]
+            questions = json.loads(content)
+            print(f"Successfully parsed {len(questions)} questions")
+            # Ensure we have exactly 5 questions
+            if len(questions) != 5:
+                print(f"Warning: Expected 5 questions, got {len(questions)}")
+            return questions
+        except json.JSONDecodeError as e:
+            print(f"JSON parsing error: {e}")
+            print(f"Raw content: {content}")
+            return []
+        except Exception as e:
+            print(f"Error generating initial assessment: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
     
     def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
         """Generate personalized lesson content for a topic and user profile, always using OpenAI."""
