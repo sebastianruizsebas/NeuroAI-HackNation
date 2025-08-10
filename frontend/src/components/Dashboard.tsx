@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiService, User, UserProgress, Topic, CustomTopic } from '../services/api';
 import { TopicsLibrary } from './TopicsLibrary';
+import ModernAnalytics from './ModernAnalytics';
 
 interface DashboardProps {
   user: User;
@@ -32,7 +33,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [currentTopics, setCurrentTopics] = useState<TopicProgress[]>([]);
   const [availableTopics, setAvailableTopics] = useState<Topic[]>([]);
   const [customTopics, setCustomTopics] = useState<CustomTopic[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'library'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'library' | 'analytics'>('overview');
 
   // Using the variables to avoid lint errors
   console.log('Available topics:', availableTopics.length, 'Custom topics:', customTopics.length);
@@ -173,6 +174,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
             onClick={() => setActiveTab('library')}
           >
             📚 Topics Library
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+            onClick={() => setActiveTab('analytics')}
+          >
+            📈 Analytics
           </button>
         </div>
       </div>
@@ -467,6 +474,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
           }}
           onStartLesson={onStartLesson}
         />
+      )}
+
+      {/* Analytics Tab Content */}
+      {activeTab === 'analytics' && (
+        <ModernAnalytics userId={user.user_id} />
       )}
     </div>
   );

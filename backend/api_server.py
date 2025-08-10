@@ -705,5 +705,64 @@ def generate_enhanced_lesson():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# ===============================================
+# MODERN WEB ANALYTICS ENDPOINTS
+# ===============================================
+
+@app.route('/api/analytics/all/<user_id>', methods=['GET'])
+def get_all_analytics(user_id):
+    """Get all analytics data for Chart.js rendering"""
+    try:
+        from web_analytics_service import WebAnalyticsService
+        analytics_service = WebAnalyticsService()
+        data = analytics_service.get_all_analytics_data(user_id)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/pie/<user_id>', methods=['GET'])
+def get_pie_chart_data(user_id):
+    """Get pie chart data for time distribution"""
+    try:
+        from web_analytics_service import WebAnalyticsService
+        analytics_service = WebAnalyticsService()
+        data = analytics_service.get_pie_chart_data(user_id)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/progress/<user_id>', methods=['GET'])
+def get_progress_over_time(user_id):
+    """Get progress over time data for line chart"""
+    try:
+        from web_analytics_service import WebAnalyticsService
+        analytics_service = WebAnalyticsService()
+        data = analytics_service.get_progress_over_time_data(user_id)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/performance/<user_id>', methods=['GET'])
+def get_topic_performance(user_id):
+    """Get topic performance data for bar chart"""
+    try:
+        from web_analytics_service import WebAnalyticsService
+        analytics_service = WebAnalyticsService()
+        data = analytics_service.get_topic_performance_data(user_id)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/activity/<user_id>', methods=['GET'])
+def get_weekly_activity(user_id):
+    """Get weekly activity data for bar chart"""
+    try:
+        from web_analytics_service import WebAnalyticsService
+        analytics_service = WebAnalyticsService()
+        data = analytics_service.get_weekly_activity_data(user_id)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
