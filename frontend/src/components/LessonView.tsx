@@ -36,39 +36,31 @@ export const LessonView: React.FC<LessonViewProps> = ({ topic, userId, onComplet
     setResponses(newResponses);
   };
 
-  // inside LessonView.tsx
   const handleNext = async () => {
-    let updated = sentimentData;
+    const chunk = lesson!.chunks[currentChunk];
+    let updated = [...sentimentData];
 
-    if (responses[currentChunk].trim()) {
+    if (responses[currentChunk]?.trim()) {
       try {
         const lessonContext = `${chunk.title}: ${chunk.content}\nKey Point: ${chunk.key_point}`;
         const sentiment = await apiService.analyzeSentiment(responses[currentChunk], lessonContext);
-        updated = [...sentimentData];
         updated[currentChunk] = sentiment;
         setSentimentData(updated);
-      } catch (err) {
-        console.error('Sentiment w/ context failed, trying basic...', err);
+      } catch {
         try {
           const sentiment = await apiService.analyzeSentiment(responses[currentChunk]);
-          updated = [...sentimentData];
           updated[currentChunk] = sentiment;
           setSentimentData(updated);
-        } catch (fallbackErr) {
-          console.error('Basic sentiment also failed:', fallbackErr);
-          // still proceed with whatever we have
-          updated = [...sentimentData];
-        }
+        } catch {}
       }
     }
 
-    const isLast = lesson && currentChunk >= lesson.chunks.length - 1;
+    const isLast = lesson && currentChunk >= lesson!.chunks.length - 1;
     if (!isLast) {
-      setCurrentChunk(currentChunk + 1);
+      setCurrentChunk(c => c + 1);
       return;
     }
-
-    // Last section → finish with the freshest data we have
+    // hand the parent the *updated* array
     onComplete(updated);
   };
 

@@ -108,5 +108,131 @@
     "user_id": "user_9",
     "timestamp": "2025-08-09T23:51:08.773962",
     "session_id": "session_3"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to pay closer attention to the lesson content and actively participate in learning activities. Provide additional examples or explanations to clarify the concept of supervised learning.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems confused and disengaged based on the response 'awdad'. It is important to provide more engaging examples or visuals to help clarify the concept of unsupervised learning. Encouraging active participation through questions or discussions can also help improve understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student response 'awda' indicates a lack of engagement and understanding. It is important to ensure the student is actively participating and comprehending the material. Encourage the student to ask questions or provide examples to clarify the concept of reinforcement learning.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be confused and not fully engaged. Encourage active participation in the lesson and provide additional resources or examples to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-09T23:55:51.752625",
+    "session_id": "session_4"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems to be confused and disengaged. They may benefit from revisiting the lesson content at a slower pace and seeking additional resources or explanations. Encourage them to ask questions and actively participate in discussions.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "The student seems to be completely confused and disengaged. They need to pay more attention and actively participate in the lesson to improve their understanding. Encourage them to ask questions and seek clarification.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-10T00:09:10.661699",
+    "session_id": "session_5"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "Encourage the student to pay more attention and actively participate in the lesson. Provide additional examples or exercises to reinforce the concept of supervised learning models.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      },
+      {
+        "confidence_level": 0.5,
+        "confusion_level": 0,
+        "engagement_level": 0.5,
+        "should_proceed": true,
+        "suggestion": "Continue with current pace",
+        "understanding": "fair"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_9",
+    "timestamp": "2025-08-10T00:09:41.961220",
+    "session_id": "session_6"
   }
 ]

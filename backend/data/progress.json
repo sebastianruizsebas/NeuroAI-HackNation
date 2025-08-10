@@ -1,19 +1,11 @@
 {
-  "user_2": {
-    "lessons_completed": 0,
-    "total_lessons": 0,
-    "average_quiz_score": 0,
-    "session_history": [
-      "session_1"
-    ]
-  },
   "user_9": {
     "lessons_completed": 0,
     "total_lessons": 0,
     "average_quiz_score": 0,
     "session_history": [
-      "session_2",
-      "session_3"
+      "session_5",
+      "session_6"
     ]
   }
 }
