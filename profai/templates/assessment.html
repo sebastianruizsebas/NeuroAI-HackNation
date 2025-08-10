@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment: {{ topic }} - ProfAI{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #667eea;">{{ topic }} Assessment</h1>
+        <p style="color: #666; font-size: 18px;">Let's evaluate your current knowledge level</p>
+    </div>
+
+    {% if questions %}
+    <div id="assessment-container">
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <p style="text-align: center; margin: 10px 0; color: #666;">
+            Question <span id="current-question">1</span> of {{ questions|length }}
+        </p>
+
+        <form id="assessment-form">
+            {% for question in questions %}
+            <div class="question-card" id="question-{{ loop.index0 }}" {% if loop.index0 != 0 %}style="display: none;"{% endif %}>
+                <h3 style="margin-bottom: 20px; color: #333;">{{ question.question }}</h3>
+                
+                <div class="options">
+                    {% for option in question.options %}
+                    <div class="option" data-value="{{ option[:1] }}" onclick="selectOption(this, {{ loop.index0 }}, '{{ option[:1] }}')">
+                        {{ option }}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <input type="hidden" name="question_{{ loop.index0 }}" value="">
+                <input type="hidden" name="correct_{{ loop.index0 }}" value="{{ question.correct }}">
+            </div>
+            {% endfor %}
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" id="prev-btn" class="btn btn-secondary" onclick="previousQuestion()" style="display: none;">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button type="button" id="next-btn" class="btn" onclick="nextQuestion()" disabled>
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+                <button type="button" id="submit-btn" class="btn btn-success" onclick="submitAssessment()" style="display: none;">
+                    <i class="fas fa-check"></i> Submit Assessment
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="results-container" style="display: none;">
+        <div style="text-align: center;">
+            <div class="topic-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 style="color: #667eea;">Assessment Complete!</h2>
+            <div id="score-display" class="stat-item" style="margin: 20px auto; max-width: 200px;">
+                <div class="stat-number" id="score-number">-</div>
+                <div class="stat-label">Correct Answers</div>
+            </div>
+            <div class="alert alert-success" id="competency-message"></div>
+            <a id="lesson-link" class="btn btn-success" style="font-size: 18px;">
+                <i class="fas fa-graduation-cap"></i> Start Personalized Lesson
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="loading">
+        <div class="spinner"></div>
+        <p>Generating personalized assessment questions...</p>
+        <script>
+            // Refresh page after a delay if questions don't load
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        </script>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+let currentQuestion = 0;
+let answers = {};
+const totalQuestions = {{ questions|length if questions else 0 }};
+
+function selectOption(element, questionIndex, value) {
+    // Remove selection from all options in this question
+    const options = element.parentElement.querySelectorAll('.option');
+    options.forEach(opt => opt.classList.remove('selected'));
+    
+    // Add selection to clicked option
+    element.classList.add('selected');
+    
+    // Store the answer
+    answers[questionIndex] = value;
+    document.querySelector(`input[name="question_${questionIndex}"]`).value = value;
+    
+    // Enable next button
+    document.getElementById('next-btn').disabled = false;
+    document.getElementById('submit-btn').disabled = false;
+}
+
+function nextQuestion() {
+    if (currentQuestion < totalQuestions - 1) {
+        document.getElementById(`question-${currentQuestion}`).style.display = 'none';
+        currentQuestion++;
+        document.getElementById(`question-${currentQuestion}`).style.display = 'block';
+        
+        updateProgress();
+        updateButtons();
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestion > 0) {
+        document.getElementById(`question-${currentQuestion}`).style.display = 'none';
+        currentQuestion--;
+        document.getElementById(`question-${currentQuestion}`).style.display = 'block';
+        
+        updateProgress();
+        updateButtons();
+    }
+}
+
+function updateProgress() {
+    const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+    document.getElementById('progress-fill').style.width = progress + '%';
+    document.getElementById('current-question').textContent = currentQuestion + 1;
+}
+
+function updateButtons() {
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Show/hide previous button
+    prevBtn.style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+    
+    // Show/hide next vs submit button
+    if (currentQuestion === totalQuestions - 1) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'inline-block';
+    } else {
+        nextBtn.style.display = 'inline-block';
+        submitBtn.style.display = 'none';
+    }
+    
+    // Enable/disable buttons based on whether question is answered
+    const isAnswered = answers.hasOwnProperty(currentQuestion);
+    nextBtn.disabled = !isAnswered;
+    submitBtn.disabled = !isAnswered;
+}
+
+function submitAssessment() {
+    const formData = new FormData(document.getElementById('assessment-form'));
+    const assessmentData = {
+        topic: '{{ topic }}',
+        answers: []
+    };
+    
+    // Process answers
+    for (let i = 0; i < totalQuestions; i++) {
+        const userAnswer = formData.get(`question_${i}`);
+        const correctAnswer = formData.get(`correct_${i}`);
+        assessmentData.answers.push({
+            question_index: i,
+            user_answer: userAnswer,
+            correct_answer: correctAnswer,
+            correct: userAnswer === correctAnswer
+        });
+    }
+    
+    // Show loading
+    document.getElementById('submit-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    document.getElementById('submit-btn').disabled = true;
+    
+    // Submit to server
+    fetch('/submit_assessment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(assessmentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide assessment, show results
+        document.getElementById('assessment-container').style.display = 'none';
+        document.getElementById('results-container').style.display = 'block';
+        
+        // Display results
+        document.getElementById('score-number').textContent = `${data.score}/${data.total}`;
+        document.getElementById('competency-message').textContent = 
+            `Your competency level: ${data.competency.toFixed(1)}/10`;
+        document.getElementById('lesson-link').href = data.redirect;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting assessment. Please try again.');
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-check"></i> Submit Assessment';
+        document.getElementById('submit-btn').disabled = false;
+    });
+}
+</script>
+{% endblock %}

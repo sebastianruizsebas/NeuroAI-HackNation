@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ProfAI{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #667eea;">Welcome back, {{ user.name }}!</h1>
+        <p style="color: #666; font-size: 18px;">Ready to continue your learning journey?</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number">{{ user.total_lessons or 0 }}</div>
+            <div class="stat-label">Lessons Completed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ user.competency_scores|length }}</div>
+            <div class="stat-label">Topics Studied</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">
+                {% set avg_score = user.competency_scores.values() | list | sum / user.competency_scores|length if user.competency_scores else 0 %}
+                {{ "%.1f" | format(avg_score) }}
+            </div>
+            <div class="stat-label">Avg. Competency</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="color: #667eea; margin-bottom: 25px;">
+        <i class="fas fa-book-open"></i> Choose a Learning Topic
+    </h2>
+    
+    <div class="grid">
+        <div class="topic-card">
+            <div class="topic-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h3>Mathematics</h3>
+            <p style="color: #666; margin: 15px 0;">Master mathematical concepts with personalized lessons</p>
+            {% if user.competency_scores.get('Mathematics') %}
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ user.competency_scores['Mathematics'] * 10 }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">Competency: {{ "%.1f" | format(user.competency_scores['Mathematics']) }}/10</p>
+            {% endif %}
+            <a href="{{ url_for('assessment', topic='Mathematics') }}" class="btn" style="margin-top: 15px;">
+                Start Learning
+            </a>
+        </div>
+
+        <div class="topic-card">
+            <div class="topic-icon">
+                <i class="fas fa-flask"></i>
+            </div>
+            <h3>Chemistry</h3>
+            <p style="color: #666; margin: 15px 0;">Explore chemical reactions and molecular structures</p>
+            {% if user.competency_scores.get('Chemistry') %}
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ user.competency_scores['Chemistry'] * 10 }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">Competency: {{ "%.1f" | format(user.competency_scores['Chemistry']) }}/10</p>
+            {% endif %}
+            <a href="{{ url_for('assessment', topic='Chemistry') }}" class="btn" style="margin-top: 15px;">
+                Start Learning
+            </a>
+        </div>
+
+        <div class="topic-card">
+            <div class="topic-icon">
+                <i class="fas fa-microscope"></i>
+            </div>
+            <h3>Biology</h3>
+            <p style="color: #666; margin: 15px 0;">Discover the wonders of life sciences and organisms</p>
+            {% if user.competency_scores.get('Biology') %}
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ user.competency_scores['Biology'] * 10 }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">Competency: {{ "%.1f" | format(user.competency_scores['Biology']) }}/10</p>
+            {% endif %}
+            <a href="{{ url_for('assessment', topic='Biology') }}" class="btn" style="margin-top: 15px;">
+                Start Learning
+            </a>
+        </div>
+
+        <div class="topic-card">
+            <div class="topic-icon">
+                <i class="fas fa-atom"></i>
+            </div>
+            <h3>Physics</h3>
+            <p style="color: #666; margin: 15px 0;">Understand the fundamental laws of the universe</p>
+            {% if user.competency_scores.get('Physics') %}
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ user.competency_scores['Physics'] * 10 }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">Competency: {{ "%.1f" | format(user.competency_scores['Physics']) }}/10</p>
+            {% endif %}
+            <a href="{{ url_for('assessment', topic='Physics') }}" class="btn" style="margin-top: 15px;">
+                Start Learning
+            </a>
+        </div>
+
+        <div class="topic-card">
+            <div class="topic-icon">
+                <i class="fas fa-laptop-code"></i>
+            </div>
+            <h3>Computer Science</h3>
+            <p style="color: #666; margin: 15px 0;">Learn programming and computational thinking</p>
+            {% if user.competency_scores.get('Computer Science') %}
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ user.competency_scores['Computer Science'] * 10 }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">Competency: {{ "%.1f" | format(user.competency_scores['Computer Science']) }}/10</p>
+            {% endif %}
+            <a href="{{ url_for('assessment', topic='Computer Science') }}" class="btn" style="margin-top: 15px;">
+                Start Learning
+            </a>
+        </div>
+
+        <div class="topic-card">
+            <div class="topic-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>Neuroscience</h3>
+            <p style="color: #666; margin: 15px 0;">Explore the mysteries of the brain and nervous system</p>
+            {% if user.competency_scores.get('Neuroscience') %}
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ user.competency_scores['Neuroscience'] * 10 }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">Competency: {{ "%.1f" | format(user.competency_scores['Neuroscience']) }}/10</p>
+            {% endif %}
+            <a href="{{ url_for('assessment', topic='Neuroscience') }}" class="btn" style="margin-top: 15px;">
+                Start Learning
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if user.competency_scores %}
+<div class="card">
+    <h2 style="color: #667eea; margin-bottom: 20px;">
+        <i class="fas fa-chart-line"></i> Your Progress
+    </h2>
+    
+    <div style="background: #f8f9ff; border-radius: 10px; padding: 20px;">
+        {% for topic, score in user.competency_scores.items() %}
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="font-weight: 600;">{{ topic }}</span>
+                <span style="color: #667eea;">{{ "%.1f" | format(score) }}/10</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ score * 10 }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
