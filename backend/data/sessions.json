@@ -318,5 +318,47 @@
     "user_id": "user_9",
     "timestamp": "2025-08-10T00:40:52.009886",
     "session_id": "session_8"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.5,
+        "Confusion level": 0,
+        "Engagement level": 0.2,
+        "Specific suggestions for improvement": "Encourage the student to actively engage with the lesson content and ask questions to deepen their understanding.",
+        "Understanding quality": "fair",
+        "Whether to proceed or review": "Proceed"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to ask questions or seek clarification on the concept of unsupervised learning models. Provide additional examples or real-world applications to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.5,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to ask questions or seek clarification on the concept of reinforcement learning models. Provide additional examples or real-world applications to enhance understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to ask questions to clarify their confusion. Provide additional examples or visuals to help them grasp the concept of neural network models.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_3",
+    "timestamp": "2025-08-10T03:20:58.551896",
+    "session_id": "session_9"
   }
 ]

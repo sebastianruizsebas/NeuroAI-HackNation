@@ -16,21 +16,32 @@ engine = ProfAIEngine()
 @app.route('/api/users', methods=['POST'])
 def create_user():
     """Create a new user"""
-    data = request.get_json()
-    name = data.get('name')
-    
-    if not name:
-        return jsonify({'error': 'Name is required'}), 400
-    
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data received'}), 400
+            
+        name = data.get('name')
+        if not name:
+            return jsonify({'error': 'Name is required'}), 400
+        
+        # Create the user
         user_id = engine.create_user(name)
+        if not user_id:
+            return jsonify({'error': 'Failed to create user'}), 500
+            
+        # Get the user data
         user_data = engine.get_user(user_id)
+        if not user_data:
+            return jsonify({'error': 'User created but failed to retrieve data'}), 500
+            
         return jsonify({
             'user_id': user_id,
             'user_data': user_data
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error in create_user endpoint: {str(e)}")
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/api/users/<user_id>', methods=['GET'])
 def get_user(user_id):

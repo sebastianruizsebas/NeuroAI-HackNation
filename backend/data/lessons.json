@@ -414,5 +414,69 @@
       "Reinforcement learning models learn through interaction with an environment to maximize rewards over time.",
       "Neural network models are inspired by the human brain and are used in deep learning applications for complex pattern recognition."
     ]
+  },
+  "lesson_14": {
+    "topic": "Types of AI Models",
+    "overview": "Artificial Intelligence (AI) models can be categorized into different types based on their functionality and structure. Understanding these types is crucial for developing AI solutions.",
+    "chunks": [
+      {
+        "title": "Chunk 1: Supervised Learning Models",
+        "content": "Supervised learning models are trained on labeled data, where the algorithm learns to map input to output. Common algorithms include linear regression, decision trees, and neural networks.",
+        "key_point": "Supervised learning models require labeled data for training."
+      },
+      {
+        "title": "Chunk 2: Unsupervised Learning Models",
+        "content": "Unsupervised learning models are used when the data is not labeled. These models aim to find hidden patterns or structures in the data. Clustering and association algorithms are examples of unsupervised learning.",
+        "key_point": "Unsupervised learning models do not require labeled data for training."
+      },
+      {
+        "title": "Chunk 3: Reinforcement Learning Models",
+        "content": "Reinforcement learning models learn through trial and error by receiving feedback in the form of rewards or penalties. These models are used in scenarios where the agent interacts with the environment.",
+        "key_point": "Reinforcement learning models improve their performance based on feedback received."
+      },
+      {
+        "title": "Chunk 4: Neural Network Models",
+        "content": "Neural networks are a type of AI model inspired by the human brain's structure. They consist of layers of interconnected nodes that process information. Deep learning, a subset of neural networks, is used for complex tasks like image and speech recognition.",
+        "key_point": "Neural networks are powerful for handling complex data and tasks."
+      }
+    ],
+    "key_takeaways": [
+      "Supervised, unsupervised, reinforcement learning, and neural networks are common types of AI models.",
+      "Each type of AI model has specific applications and requirements for training.",
+      "Understanding the different types of AI models is essential for designing effective AI solutions.",
+      "AI models can be combined or customized to suit specific use cases."
+    ]
+  },
+  "lesson_15": {
+    "topic": "Types of AI Models",
+    "overview": "Artificial Intelligence (AI) models are the core of AI systems, and they come in various types that serve different purposes. Understanding the different types of AI models is essential for effectively implementing AI solutions.",
+    "chunks": [
+      {
+        "title": "Chunk 1: Supervised Learning Models",
+        "content": "Supervised learning models are trained on labeled data, where the model learns to map input data to output labels. This type of AI model is commonly used for tasks like classification and regression.",
+        "key_point": "Supervised learning models require labeled data for training and are suitable for tasks with clear input-output relationships."
+      },
+      {
+        "title": "Chunk 2: Unsupervised Learning Models",
+        "content": "Unsupervised learning models operate on unlabeled data and aim to discover patterns or structures within the data. These models are used for tasks like clustering and anomaly detection.",
+        "key_point": "Unsupervised learning models do not require labeled data for training and are useful for exploring and understanding underlying patterns in data."
+      },
+      {
+        "title": "Chunk 3: Reinforcement Learning Models",
+        "content": "Reinforcement learning models learn through trial and error by interacting with an environment and receiving rewards or penalties based on their actions. These models are used in scenarios where an agent learns to make sequential decisions.",
+        "key_point": "Reinforcement learning models excel in environments with a dynamic and changing nature, where the agent needs to adapt its actions based on feedback."
+      },
+      {
+        "title": "Chunk 4: Neural Network Models",
+        "content": "Neural network models are inspired by the structure of the human brain and consist of interconnected nodes organized in layers. These models are capable of learning complex patterns and relationships in data.",
+        "key_point": "Neural network models are versatile and can be applied to various tasks, such as image recognition, natural language processing, and predictive analytics."
+      }
+    ],
+    "key_takeaways": [
+      "Supervised learning models require labeled data for training.",
+      "Unsupervised learning models discover patterns in unlabeled data.",
+      "Reinforcement learning models learn through trial and error.",
+      "Neural network models are versatile and powerful in learning complex patterns."
+    ]
   }
 }
