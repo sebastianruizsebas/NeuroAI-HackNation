@@ -66,7 +66,7 @@ const ModernAnalytics: React.FC<AnalyticsProps> = ({ userId }) => {
   const fetchAnalyticsData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/analytics/all/${userId}`);
+      const response = await fetch(`http://localhost:5000/api/analytics/all/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
