@@ -682,5 +682,39 @@
     "user_id": "user_18",
     "timestamp": "2025-08-10T07:04:44.492458",
     "session_id": "session_18"
+  },
+  {
+    "topic": "Types of AI Models",
+    "pre_assessment_score": 0,
+    "sentiment_analysis": [
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.1,
+        "Specific suggestions for improvement": "Encourage the student to actively participate in the lesson, ask questions, and seek clarification on concepts they find confusing. Provide additional examples and explanations to help solidify understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0,
+        "Confusion level": 1,
+        "Engagement level": 0,
+        "Specific suggestions for improvement": "The student seems to be completely lost in the lesson content. They may benefit from going back and reviewing the basics of machine learning before moving forward.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      },
+      {
+        "Confidence level": 0.2,
+        "Confusion level": 0.8,
+        "Engagement level": 0.5,
+        "Specific suggestions for improvement": "The student should review the lesson content on deep learning neural networks and try to understand the key concepts such as CNNs, RNNs, matrix operations, activation functions, and backpropagation. They can also try to relate these concepts to real-world applications to enhance their understanding.",
+        "Understanding quality": "poor",
+        "Whether to proceed or review": "Review"
+      }
+    ],
+    "completed": true,
+    "user_id": "user_25",
+    "timestamp": "2025-08-10T08:37:10.968208",
+    "session_id": "session_19"
   }
 ]
