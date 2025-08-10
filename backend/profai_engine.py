@@ -618,66 +618,68 @@ class ProfAIEngine:
         return self.generate_initial_assessment(topic)
     
     def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
-        """Generate personalized lesson content (legacy method) - WITH DEBUGGING"""
+        """Generate personalized lesson content for a topic and user profile, always using OpenAI."""
         competency = user_profile.get('competency_scores', {}).get(topic, 0)
-        
         prompt = f"""Create a lesson about {topic} for someone with competency level {competency}/10.
-        
-        Structure the lesson with:
-        1. Brief overview
-        2. 4 main learning chunks (each should be digestible in 2-3 minutes)
-        3. Key takeaways
-        
-        Return ONLY a JSON object with this format:
+
+Structure the lesson with:
+1. Brief overview
+2. 4 main learning chunks (each should be digestible in 2-3 minutes)
+3. Key takeaways
+
+Return ONLY a JSON object with this format:
+{{
+    "topic": "{topic}",
+    "overview": "Brief overview...",
+    "chunks": [
         {{
-            "topic": "{topic}",
-            "overview": "Brief overview...",
-            "chunks": [
-                {{
-                    "title": "Chunk 1 Title",
-                    "content": "Detailed explanation...",
-                    "key_point": "Main takeaway"
-                }}
-            ],
-            "key_takeaways": ["Point 1", "Point 2", "Point 3"]
+            "title": "Chunk 1 Title",
+            "content": "Detailed explanation...",
+            "key_point": "Main takeaway"
         }}
-        """
-        
+    ],
+    "key_takeaways": ["Point 1", "Point 2", "Point 3"]
+}}
+"""
         try:
             print(f"Calling OpenAI for lesson generation...")
             print(f"Topic: {topic}, Competency: {competency}")
-            
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",  # Changed from gpt-4 for faster response
+                model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
-                timeout=30  # 30 second timeout
+                timeout=30
             )
-            
             print(f"OpenAI response received")
-            
             content = response.choices[0].message.content.strip()
             if content.startswith('```json'):
                 content = content[7:-3]
             elif content.startswith('```'):
                 content = content[3:-3]
-            
             lesson = json.loads(content)
             print(f"Lesson parsed successfully")
-            
-            # Save lesson to local storage
-            lessons = self.load_data(self.lessons_file)
+            # Optionally cache the lesson
+            try:
+                lessons = self.load_data(self.lessons_file)
+            except Exception:
+                lessons = {}
             lesson_id = f"lesson_{len(lessons) + 1}"
             lessons[lesson_id] = lesson
             self.save_data(self.lessons_file, lessons)
-            
             print(f"Lesson saved with ID: {lesson_id}")
             return lesson
-            
         except Exception as e:
             print(f"Error in generate_lesson_content: {e}")
             print(f"Error type: {type(e).__name__}")
-            
+            # Try to load a cached lesson for this topic
+            try:
+                lessons = self.load_data(self.lessons_file)
+                for lesson in lessons.values():
+                    if lesson.get("topic") == topic:
+                        print("Returning cached lesson for topic.")
+                        return lesson
+            except Exception as cache_e:
+                print(f"No cached lesson found: {cache_e}")
             # Return a fallback lesson so the user isn't stuck
             print("Returning fallback lesson...")
             return {
@@ -695,7 +697,7 @@ class ProfAIEngine:
                         "key_point": "Each concept builds on the previous ones to create comprehensive understanding."
                     },
                     {
-                        "title": "Real-World Applications", 
+                        "title": "Real-World Applications",
                         "content": f"Now let's explore how {topic} is used in real-world scenarios and applications. Understanding practical applications helps bridge the gap between theory and practice.",
                         "key_point": "Theory becomes powerful when applied to solve real-world problems."
                     },
@@ -707,7 +709,7 @@ class ProfAIEngine:
                 ],
                 "key_takeaways": [
                     f"Learned the fundamentals of {topic} and its importance in AI",
-                    "Understood key concepts and their relationships to each other", 
+                    "Understood key concepts and their relationships to each other",
                     "Explored real-world applications and practical use cases",
                     "Ready to continue learning more advanced topics and applications"
                 ]
