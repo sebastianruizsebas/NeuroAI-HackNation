@@ -1,0 +1,407 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Animated Pie Chart Demo</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                }
+                
+                .demo-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 16px;
+                    padding: 40px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                }
+                
+                .demo-header {
+                    text-align: center;
+                    margin-bottom: 40px;
+                }
+                
+                .demo-header h1 {
+                    color: #2c3e50;
+                    margin: 0;
+                    font-size: 2.5em;
+                }
+                
+                .demo-header p {
+                    color: #7f8c8d;
+                    font-size: 1.2em;
+                    margin: 10px 0;
+                }
+                
+                .features-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 30px;
+                    margin: 40px 0;
+                }
+                
+                .feature-card {
+                    background: #f8f9fa;
+                    padding: 30px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                }
+                
+                .feature-card h3 {
+                    color: #2c3e50;
+                    margin-top: 0;
+                }
+                
+                .api-examples {
+                    background: #2c3e50;
+                    color: white;
+                    padding: 30px;
+                    border-radius: 12px;
+                    margin: 40px 0;
+                }
+                
+                .api-examples h3 {
+                    margin-top: 0;
+                    color: #3498db;
+                }
+                
+                .code-block {
+                    background: #34495e;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin: 15px 0;
+                    font-family: 'Courier New', monospace;
+                    overflow-x: auto;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="demo-container">
+                <div class="demo-header">
+                    <h1>🎯 Animated Lesson Analytics</h1>
+                    <p>Interactive charts that bring your learning progress to life!</p>
+                </div>
+                
+                <!-- Live Animated Chart -->
+                
+        <div class="animated-pie-container">
+            <div class="pie-chart-title">
+                <h3>Time Spent on Lessons</h3>
+                <p class="total-time">Total: <span id="animated-total">0</span> minutes</p>
+            </div>
+            
+            <div class="pie-wrapper">
+                <svg class="pie-chart" viewBox="0 0 200 200" width="400" height="400">
+                    <!-- Background circle -->
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="#f0f0f0" stroke-width="4"/>
+                    
+                    <!-- Animated pie slices -->
+                    
+        <path class="pie-slice" 
+              d="M 100 100 L 180.0 100.0 A 80 80 0 0 1 108.95725603042787 179.49696575596684 Z"
+              fill="#FF6B6B"
+              stroke="white"
+              stroke-width="2"
+              style="--dash-array: 116.69; animation-delay: 0.0s;"
+              opacity="0.9">
+            <title>Neural Networks: 65 minutes (23.2%)</title>
+        </path>
+        
+        <path class="pie-slice" 
+              d="M 100 100 L 108.95725603042787 179.49696575596684 A 80 80 0 0 1 22.00571641325969 82.1985470314603 Z"
+              fill="#4ECDC4"
+              stroke="white"
+              stroke-width="2"
+              style="--dash-array: 152.59; animation-delay: 0.3s;"
+              opacity="0.9">
+            <title>Deep Learning: 85 minutes (30.4%)</title>
+        </path>
+        
+        <path class="pie-slice" 
+              d="M 100 100 L 22.00571641325969 82.1985470314603 A 80 80 0 0 1 73.57739595094515 24.48943123464855 Z"
+              fill="#45B7D1"
+              stroke="white"
+              stroke-width="2"
+              style="--dash-array: 80.78; animation-delay: 0.6s;"
+              opacity="0.9">
+            <title>Machine Learning: 45 minutes (16.1%)</title>
+        </path>
+        
+        <path class="pie-slice" 
+              d="M 100 100 L 73.57739595094515 24.48943123464855 A 80 80 0 0 1 126.42200292599391 24.48922089278399 Z"
+              fill="#96CEB4"
+              stroke="white"
+              stroke-width="2"
+              style="--dash-array: 53.86; animation-delay: 0.8999999999999999s;"
+              opacity="0.9">
+            <title>AI Ethics: 30 minutes (10.7%)</title>
+        </path>
+        
+        <path class="pie-slice" 
+              d="M 100 100 L 126.42200292599391 24.48922089278399 A 80 80 0 0 1 179.99999999887336 99.99957542563307 Z"
+              fill="#FFEAA7"
+              stroke="white"
+              stroke-width="2"
+              style="--dash-array: 98.74; animation-delay: 1.2s;"
+              opacity="0.9">
+            <title>Computer Vision: 55 minutes (19.6%)</title>
+        </path>
+        
+                </svg>
+                
+                <!-- Legend -->
+                <div class="pie-legend">
+                    
+                    <div class="legend-item" style="animation-delay: 1.0s;">
+                        <div class="legend-color" style="background-color: #FF6B6B;"></div>
+                        <span class="legend-text">Neural Networks: <span class="lesson-time" data-target="65">65</span> min</span>
+                    </div>
+                    
+                    <div class="legend-item" style="animation-delay: 1.2s;">
+                        <div class="legend-color" style="background-color: #4ECDC4;"></div>
+                        <span class="legend-text">Deep Learning: <span class="lesson-time" data-target="85">85</span> min</span>
+                    </div>
+                    
+                    <div class="legend-item" style="animation-delay: 1.4s;">
+                        <div class="legend-color" style="background-color: #45B7D1;"></div>
+                        <span class="legend-text">Machine Learning: <span class="lesson-time" data-target="45">45</span> min</span>
+                    </div>
+                    
+                    <div class="legend-item" style="animation-delay: 1.6s;">
+                        <div class="legend-color" style="background-color: #96CEB4;"></div>
+                        <span class="legend-text">AI Ethics: <span class="lesson-time" data-target="30">30</span> min</span>
+                    </div>
+                    
+                    <div class="legend-item" style="animation-delay: 1.8s;">
+                        <div class="legend-color" style="background-color: #FFEAA7;"></div>
+                        <span class="legend-text">Computer Vision: <span class="lesson-time" data-target="55">55</span> min</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <style>
+                .animated-pie-container {
+                    font-family: Arial, sans-serif;
+                    max-width: 800px;
+                    margin: 20px auto;
+                    padding: 20px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+                
+                .pie-chart-title {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                
+                .pie-chart-title h3 {
+                    margin: 0;
+                    color: #2c3e50;
+                    font-size: 1.5em;
+                }
+                
+                .total-time {
+                    margin: 10px 0;
+                    color: #7f8c8d;
+                    font-size: 1.1em;
+                }
+                
+                .pie-wrapper {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 40px;
+                    flex-wrap: wrap;
+                }
+                
+                .pie-chart {
+                    transform: rotate(-90deg);
+                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                }
+                
+                .pie-slice {
+                    stroke-dasharray: 0 1000;
+                    animation: fillSlice 2s ease-in-out forwards;
+                    transform-origin: 100px 100px;
+                }
+                
+                .pie-legend {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    min-width: 250px;
+                }
+                
+                .legend-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    opacity: 0;
+                    animation: fadeInLegend 0.5s ease-in-out forwards;
+                }
+                
+                .legend-color {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+                }
+                
+                .legend-text {
+                    font-size: 14px;
+                    color: #2c3e50;
+                    font-weight: 500;
+                }
+                
+                @keyframes fillSlice {
+                    from {
+                        stroke-dasharray: 0 1000;
+                    }
+                    to {
+                        stroke-dasharray: var(--dash-array) 1000;
+                    }
+                }
+                
+                @keyframes fadeInLegend {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                
+                @keyframes countUp {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                
+                /* Responsive design */
+                @media (max-width: 768px) {
+                    .pie-wrapper {
+                        flex-direction: column;
+                        gap: 20px;
+                    }
+                    
+                    .pie-chart {
+                        width: 300px;
+                        height: 300px;
+                    }
+                    
+                    .pie-legend {
+                        width: 100%;
+                        max-width: 300px;
+                    }
+                }
+            </style>
+            
+            <script>
+                // Animate the total time counter
+                function animateCounter(element, target, duration = 2000) {
+                    let start = 0;
+                    const startTime = performance.now();
+                    
+                    function updateCounter(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const current = Math.floor(start + (target - start) * progress);
+                        
+                        element.textContent = current;
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(updateCounter);
+                        }
+                    }
+                    
+                    requestAnimationFrame(updateCounter);
+                }
+                
+                // Start animations when the chart is visible
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // Animate total time
+                            const totalElement = document.getElementById('animated-total');
+                            animateCounter(totalElement, 280);
+                            
+                            // Animate individual lesson times
+                            document.querySelectorAll('.lesson-time').forEach((element, index) => {
+                                const target = parseFloat(element.getAttribute('data-target'));
+                                setTimeout(() => {
+                                    animateCounter(element, target, 1500);
+                                }, index * 200 + 500);
+                            });
+                            
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                });
+                
+                observer.observe(document.querySelector('.animated-pie-container'));
+            </script>
+        </div>
+        
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>🎬 Smooth Animations</h3>
+                        <p>Watch your pie chart fill up progressively with smooth easing animations that make data visualization engaging and intuitive.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>🎨 Multiple Styles</h3>
+                        <p>Choose from professional, vibrant, monochrome, or default color schemes to match your application's design.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>📱 Responsive Design</h3>
+                        <p>Charts automatically adapt to different screen sizes and devices for a consistent experience everywhere.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>⚡ Real-time Updates</h3>
+                        <p>Data updates trigger smooth re-animations, keeping your visualizations current and engaging.</p>
+                    </div>
+                </div>
+                
+                <div class="api-examples">
+                    <h3>🔧 API Usage Examples</h3>
+                    
+                    <p><strong>Get animated frames (for custom players):</strong></p>
+                    <div class="code-block">
+GET /api/analytics/animated-pie-frames/user_123?style=vibrant&frames=60
+                    </div>
+                    
+                    <p><strong>Get web-based animated chart (HTML/CSS/JS):</strong></p>
+                    <div class="code-block">
+GET /api/analytics/web-animated-pie/user_123?style=professional
+                    </div>
+                    
+                    <p><strong>JavaScript integration:</strong></p>
+                    <div class="code-block">
+fetch('/api/analytics/web-animated-pie/user_123')
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('chart-container').innerHTML = data.html_content;
+  });
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px; color: #7f8c8d;">
+                    <p>Built with ❤️ using matplotlib, HTML5, CSS3, and JavaScript</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        
