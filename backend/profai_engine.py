@@ -88,28 +88,38 @@ class ProfAIEngine:
         """
         
         try:
+            print(f"Calling OpenAI API for initial assessment on topic: {topic}")
             response = client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 timeout=30
             )
             
             content = response.choices[0].message.content.strip()
+            print(f"OpenAI response received, length: {len(content)}")
+            
             if content.startswith('```json'):
                 content = content[7:-3]
             elif content.startswith('```'):
                 content = content[3:-3]
             
             questions = json.loads(content)
+            print(f"Successfully parsed {len(questions)} questions")
             
             # Ensure we have exactly 5 questions
             if len(questions) != 5:
                 print(f"Warning: Expected 5 questions, got {len(questions)}")
             
             return questions
+        except json.JSONDecodeError as e:
+            print(f"JSON parsing error: {e}")
+            print(f"Raw content: {content}")
+            return []
         except Exception as e:
             print(f"Error generating initial assessment: {e}")
+            import traceback
+            traceback.print_exc()
             return []
     
     def generate_adaptive_assessment(self, topic: str, initial_results: Dict) -> List[Dict]:
