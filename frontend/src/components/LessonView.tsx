@@ -69,7 +69,6 @@ export const LessonView: React.FC<LessonViewProps> = ({
   const [responses, setResponses] = useState<string[]>([]);
   const [sentimentData, setSentimentData] = useState<SentimentAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [progress, setProgress] = useState<number>(0); // Removed duplicate progress state
   const [deadlines, setDeadlines] = useState<Record<string, Deadline>>({});
 
   // TTS state
@@ -81,12 +80,34 @@ export const LessonView: React.FC<LessonViewProps> = ({
   const [startTime] = useState<number>(Date.now());
   const [timeSpent, setTimeSpent] = useState<number>(0);
 
+  // Normalize whatever the API returns into our Lesson shape
+  const normalizeLesson = (raw: any): Lesson => {
+    // Some backends return { lesson: {...} }. If so, unwrap it.
+    const data = raw?.lesson ?? raw ?? {};
+    return {
+      topic: data.topic ?? topic,
+      competency_level: typeof data.competency_level === 'number' ? data.competency_level : 1,
+      overview: data.overview ?? '',
+      chunks: Array.isArray(data.chunks) ? data.chunks : [],
+      key_takeaways: Array.isArray(data.key_takeaways) ? data.key_takeaways : [],
+      prerequisites: Array.isArray(data.prerequisites) ? data.prerequisites : [],
+      mathematical_foundations: Array.isArray(data.mathematical_foundations) ? data.mathematical_foundations : [],
+      further_reading: Array.isArray(data.further_reading) ? data.further_reading : [],
+      assessment_criteria: Array.isArray(data.assessment_criteria) ? data.assessment_criteria : [],
+      industry_connections: Array.isArray(data.industry_connections) ? data.industry_connections : [],
+      common_misconceptions: Array.isArray(data.common_misconceptions) ? data.common_misconceptions : [],
+    };
+  };
+
   useEffect(() => {
     const loadLesson = async () => {
       try {
-        const lessonData = await apiService.generateLesson(topic, userId);
-        setLesson(lessonData);
-        setResponses(new Array(lessonData.chunks.length).fill(''));
+        // Prefer the outline endpoint if available; otherwise fall back.
+        const lessonData = await (apiService as any).generateLesson?.(topic, userId) 
+                         ?? await (apiService as any).generateLessonOutline?.(userId, topicId);
+        const normalized = normalizeLesson(lessonData);
+        setLesson(normalized);
+        setResponses(new Array(normalized.chunks.length).fill(''));
       } catch (error) {
         console.error('Failed to load lesson:', error);
       } finally {
@@ -94,7 +115,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
       }
     };
     loadLesson();
-  }, [topic, userId]);
+  }, [topic, userId, topicId]);
 
   useEffect(() => () => stopAllAudio(), []);
   useEffect(() => { stopAllAudio(); }, [currentChunk]);
@@ -118,9 +139,9 @@ export const LessonView: React.FC<LessonViewProps> = ({
   const playText = async (text: string) => {
     setTtsLoading(true);
     try {
-      // ALWAYS try ElevenLabs first with your voice
+      // Try ElevenLabs first
       const url = await apiService.tts(text, {
-        voice_id: '2qfp6zPuviqeCOZIE9RZ',
+        voice_id: VOICE_ID,
         model_id: 'eleven_multilingual_v2',
         stability: 0.45,
         similarity_boost: 0.90,
@@ -166,7 +187,8 @@ export const LessonView: React.FC<LessonViewProps> = ({
   };
 
   const handleNext = async () => {
-    const chunk = lesson!.chunks[currentChunk];
+    if (!lesson) return;
+    const chunk = lesson.chunks[currentChunk];
     let updated = [...sentimentData];
 
     if (responses[currentChunk]?.trim()) {
@@ -184,7 +206,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
       }
     }
 
-    const isLast = currentChunk >= lesson!.chunks.length - 1;
+    const isLast = currentChunk >= lesson.chunks.length - 1;
     if (!isLast) return setCurrentChunk(c => c + 1);
     onComplete(updated);
   };
@@ -193,7 +215,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
   if (!lesson) return <div className="card">Failed to load lesson content.</div>;
 
   const chunk = lesson.chunks[currentChunk];
-  const progress = ((currentChunk + 1) / lesson.chunks.length) * 100;
+  const progress = lesson.chunks.length > 0 ? ((currentChunk + 1) / lesson.chunks.length) * 100 : 0;
   const currentSentiment = sentimentData[currentChunk];
 
   return (
@@ -204,16 +226,16 @@ export const LessonView: React.FC<LessonViewProps> = ({
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <p>Section {currentChunk + 1} of {lesson.chunks.length}</p>
+          <p>Section {Math.min(currentChunk + 1, lesson.chunks.length)} of {lesson.chunks.length}</p>
         </div>
 
         <div className="lesson-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <h3 style={{ margin: 0 }}>{chunk.title}</h3>
+            <h3 style={{ margin: 0 }}>{chunk?.title}</h3>
             <button
               className="btn btn-ghost"
               onClick={toggleChunkVoice}
-              disabled={ttsLoading}
+              disabled={ttsLoading || !chunk}
               aria-label={isPlaying ? 'Pause narration' : 'Play narration'}
               title={isPlaying ? 'Pause' : 'Play'}
             >
@@ -223,10 +245,10 @@ export const LessonView: React.FC<LessonViewProps> = ({
 
           <div className="lesson-content-text">
             <div className="main-content">
-              {chunk.content}
+              {chunk?.content}
             </div>
 
-            {chunk.mathematical_concepts && chunk.mathematical_concepts.length > 0 && (
+            {chunk?.mathematical_concepts && chunk.mathematical_concepts.length > 0 && (
               <div className="mathematical-concepts">
                 <h4>Mathematical Concepts</h4>
                 <ul>
@@ -237,7 +259,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
               </div>
             )}
 
-            {chunk.examples && chunk.examples.length > 0 && (
+            {chunk?.examples && chunk.examples.length > 0 && (
               <div className="examples">
                 <h4>Examples</h4>
                 <ul>
@@ -248,7 +270,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
               </div>
             )}
 
-            {chunk.applications && chunk.applications.length > 0 && (
+            {chunk?.applications && chunk.applications.length > 0 && (
               <div className="applications">
                 <h4>Practical Applications</h4>
                 <ul>
@@ -259,7 +281,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
               </div>
             )}
 
-            {chunk.source_references && chunk.source_references.length > 0 && (
+            {chunk?.source_references && chunk.source_references.length > 0 && (
               <div className="references">
                 <h4>References</h4>
                 <ul>
@@ -275,7 +297,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
             <label htmlFor="response">How would you explain this concept in your own words?</label>
             <textarea
               id="response"
-              value={responses[currentChunk]}
+              value={responses[currentChunk] || ''}
               onChange={(e) => handleResponseChange(e.target.value)}
               placeholder="Share your understanding..."
               rows={4}
@@ -304,14 +326,14 @@ export const LessonView: React.FC<LessonViewProps> = ({
           <button
             className="btn btn-primary"
             onClick={handleNext}
-            disabled={!responses[currentChunk].trim()}
+            disabled={!responses[currentChunk]?.trim()}
           >
             {currentChunk < lesson.chunks.length - 1 ? 'Next Section' : 'Complete Lesson'}
           </button>
         </div>
       </div>
 
-      {currentChunk === lesson.chunks.length - 1 && (
+      {currentChunk === lesson.chunks.length - 1 && lesson.key_takeaways && (
         <div className="lesson-summary">
           <div className="card">
             <h3>Key Takeaways</h3>
