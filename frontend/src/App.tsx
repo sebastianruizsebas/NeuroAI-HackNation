@@ -89,10 +89,13 @@ function App() {
   };
 
   const handleAssessmentComplete = (score: number, enhancedResult?: any) => {
+    console.log('Assessment completed - App.tsx:', { score, enhancedResult });
     setAssessmentScore(score);
     if (enhancedResult) {
       setEnhancedAssessmentResult(enhancedResult);
+      console.log('Enhanced result set in App.tsx:', enhancedResult);
     }
+    console.log('Transitioning to lesson-outline state from App.tsx');
     setCurrentState('lesson-outline');
   };
 
@@ -185,6 +188,7 @@ function App() {
           <div className="user-info">
             <span>Welcome, {user.name}!</span>
             <div className="lesson-count">ID: {user.user_id}</div>
+            <div style={{ fontSize: '12px', color: '#666' }}>State: {currentState}</div>
           </div>
         )}
       </header>
@@ -268,13 +272,19 @@ function App() {
         )}
         
         {currentState === 'lesson-outline' && user && currentTopic && (
-          <LessonOutline
-            topic={currentTopic}
-            difficulty={selectedCustomTopic?.difficulty || 'beginner'}
-            assessmentResults={enhancedAssessmentResult}
-            onStartLesson={() => setCurrentState('lesson')}
-            onBackToAssessment={() => setCurrentState('assessment')}
-          />
+          <div>
+            <div style={{ padding: '10px', backgroundColor: '#f0f8ff', marginBottom: '10px', borderRadius: '4px' }}>
+              <strong>Debug Info:</strong> Showing lesson outline for "{currentTopic}" 
+              {enhancedAssessmentResult && ` (Score: ${enhancedAssessmentResult.overall_score})`}
+            </div>
+            <LessonOutline
+              topic={currentTopic}
+              difficulty={selectedCustomTopic?.difficulty || 'beginner'}
+              assessmentResults={enhancedAssessmentResult}
+              onStartLesson={() => setCurrentState('lesson')}
+              onBackToAssessment={() => setCurrentState('assessment')}
+            />
+          </div>
         )}
         
         {currentState === 'lesson' && user && (
