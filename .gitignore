@@ -9,6 +9,7 @@ data/
 !tsconfig.json
 !curriculum.json
 
+
 # Environment files
 .env
 *.env
