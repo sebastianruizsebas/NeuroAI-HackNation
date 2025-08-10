@@ -2,7 +2,6 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, List, Any
-from typing import Dict, List, Any
 import openai
 
 # Import from local config
@@ -44,21 +43,35 @@ class ProfAIEngine:
     
     def create_user(self, name: str) -> str:
         """Create a new user with enhanced profile"""
-        users = self.load_data(self.users_file)
-        user_id = f"user_{len(users) + 1}"
-        users[user_id] = {
-            "name": name,
-            "created_at": datetime.now().isoformat(),
-            "competency_scores": {},
-            "knowledge_gaps": {},
-            "strong_areas": {},
-            "learning_path": [],
-            "completed_lessons": [],
-            "total_lessons": 0,
-            "current_curriculum": None
-        }
-        self.save_data(self.users_file, users)
-        return user_id
+        try:
+            print(f"Creating user with name: {name}")
+            print(f"Users file path: {self.users_file}")
+            self._ensure_data_files()  # Make sure data files exist
+            
+            users = self.load_data(self.users_file)
+            print(f"Current users: {len(users)}")
+            
+            user_id = f"user_{len(users) + 1}"
+            users[user_id] = {
+                "name": name,
+                "created_at": datetime.now().isoformat(),
+                "competency_scores": {},
+                "knowledge_gaps": {},
+                "strong_areas": {},
+                "learning_path": [],
+                "completed_lessons": [],
+                "total_lessons": 0,
+                "current_curriculum": None
+            }
+            
+            self.save_data(self.users_file, users)
+            print(f"Successfully created user: {user_id}")
+            return user_id
+        except Exception as e:
+            print(f"Error creating user: {str(e)}")
+            print(f"DATA_DIR: {DATA_DIR}")
+            print(f"Current directory: {os.getcwd()}")
+            raise  # Re-raise the exception after logging
     
     def generate_lesson_content(self, topic: str, user_profile: Dict) -> Dict:
         """Generate personalized lesson content for a topic and user profile, using OpenAI and RAG from PDF chunks."""
@@ -446,6 +459,11 @@ Course context (from real lecture notes):\n{context}\n
         else:
             return "Consider reviewing the lesson material more thoroughly before continuing."
     
+    def get_user(self, user_id: str) -> Dict:
+        """Get user data by ID"""
+        users = self.load_data(self.users_file)
+        return users.get(user_id, {})
+
     def get_user_progress(self, user_id: str) -> Dict:
         """Get comprehensive user progress data"""
         user = self.get_user(user_id)
