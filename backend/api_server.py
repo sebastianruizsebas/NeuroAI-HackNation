@@ -2,6 +2,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from profai_engine import ProfAIEngine
 import json
+import os, io, hashlib, requests
+from flask import send_file
+from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID, DATA_DIR
+
 
 app = Flask(__name__)
 CORS(app)
@@ -315,6 +319,50 @@ def save_session():
 def health_check():
     """Health check endpoint"""
     return jsonify({'status': 'healthy'})
+
+@app.route('/api/tts', methods=['POST'])
+def tts():
+    data = request.get_json()
+    text = (data.get('text') or '').strip()
+    voice_id = data.get('voice_id') or ELEVENLABS_VOICE_ID
+    model_id = data.get('model_id') or 'eleven_multilingual_v2'
+
+    if not text:
+        return jsonify({'error':'text is required'}), 400
+    if not ELEVENLABS_API_KEY:
+        return jsonify({'error':'ELEVENLABS_API_KEY missing'}), 500
+
+    # simple disk cache (avoid re-billing for same line)
+    os.makedirs(os.path.join(DATA_DIR, 'tts_cache'), exist_ok=True)
+    key = hashlib.sha1(f'{voice_id}::{model_id}::{text}'.encode('utf-8')).hexdigest()
+    path = os.path.join(DATA_DIR, 'tts_cache', f'{key}.mp3')
+    if os.path.exists(path):
+        return send_file(path, mimetype='audio/mpeg', max_age=3600)
+
+    # call ElevenLabs
+    url = f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}'
+    headers = {
+        'xi-api-key': ELEVENLABS_API_KEY,
+        'Accept': 'audio/mpeg',
+        'Content-Type': 'application/json',
+    }
+    payload = {
+        'text': text,
+        'model_id': model_id,
+        'voice_settings': {
+            'stability': 0.35,
+            'similarity_boost': 0.85,
+            'style': 0.4,
+            'use_speaker_boost': True
+        }
+    }
+    r = requests.post(url, json=payload, headers=headers, stream=True, timeout=60)
+    r.raise_for_status()
+    with open(path, 'wb') as f:
+        for chunk in r.iter_content(8192):
+            if chunk: f.write(chunk)
+
+    return send_file(path, mimetype='audio/mpeg', max_age=3600)
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
